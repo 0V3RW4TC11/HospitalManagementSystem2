@@ -22,30 +22,6 @@ namespace HospitalManagementSystem2.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("HospitalManagementSystem2.Models.Entities.Account", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("PersonId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PersonId")
-                        .IsUnique();
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
-                    b.ToTable("Accounts");
-                });
-
             modelBuilder.Entity("HospitalManagementSystem2.Models.Entities.Appointment", b =>
                 {
                     b.Property<Guid>("Id")
@@ -107,37 +83,7 @@ namespace HospitalManagementSystem2.Migrations
                     b.ToTable("DoctorSpecializations");
                 });
 
-            modelBuilder.Entity("HospitalManagementSystem2.Models.Entities.Guest", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("PersonId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PersonId")
-                        .IsUnique();
-
-                    b.ToTable("Guests");
-                });
-
             modelBuilder.Entity("HospitalManagementSystem2.Models.Entities.Patient", b =>
-                {
-                    b.Property<Guid>("AccountId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("BloodType")
-                        .HasColumnType("int");
-
-                    b.HasKey("AccountId");
-
-                    b.ToTable("Patients");
-                });
-
-            modelBuilder.Entity("HospitalManagementSystem2.Models.Entities.Person", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -145,6 +91,9 @@ namespace HospitalManagementSystem2.Migrations
 
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("BloodType")
+                        .HasColumnType("int");
 
                     b.Property<DateOnly?>("DateOfBirth")
                         .HasColumnType("date");
@@ -167,9 +116,16 @@ namespace HospitalManagementSystem2.Migrations
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Persons");
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("Patients");
                 });
 
             modelBuilder.Entity("HospitalManagementSystem2.Models.Entities.Specialization", b =>
@@ -178,26 +134,63 @@ namespace HospitalManagementSystem2.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("DoctorId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DoctorId");
+
                     b.ToTable("Specializations");
                 });
 
             modelBuilder.Entity("HospitalManagementSystem2.Models.Entities.Staff", b =>
                 {
-                    b.Property<Guid>("AccountId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly?>("DateOfBirth")
+                        .HasColumnType("date");
 
                     b.Property<string>("Discriminator")
                         .IsRequired()
                         .HasMaxLength(8)
                         .HasColumnType("nvarchar(8)");
 
-                    b.HasKey("AccountId");
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Gender")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Staff");
 
@@ -418,25 +411,6 @@ namespace HospitalManagementSystem2.Migrations
                     b.HasDiscriminator().HasValue("Doctor");
                 });
 
-            modelBuilder.Entity("HospitalManagementSystem2.Models.Entities.Account", b =>
-                {
-                    b.HasOne("HospitalManagementSystem2.Models.Entities.Person", "Person")
-                        .WithOne()
-                        .HasForeignKey("HospitalManagementSystem2.Models.Entities.Account", "PersonId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
-                        .WithOne()
-                        .HasForeignKey("HospitalManagementSystem2.Models.Entities.Account", "UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Person");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("HospitalManagementSystem2.Models.Entities.Appointment", b =>
                 {
                     b.HasOne("HospitalManagementSystem2.Models.Entities.Doctor", "Doctor")
@@ -478,7 +452,7 @@ namespace HospitalManagementSystem2.Migrations
                     b.HasOne("HospitalManagementSystem2.Models.Entities.Specialization", "Specialization")
                         .WithMany()
                         .HasForeignKey("SpecializationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Doctor");
@@ -486,37 +460,33 @@ namespace HospitalManagementSystem2.Migrations
                     b.Navigation("Specialization");
                 });
 
-            modelBuilder.Entity("HospitalManagementSystem2.Models.Entities.Guest", b =>
+            modelBuilder.Entity("HospitalManagementSystem2.Models.Entities.Patient", b =>
                 {
-                    b.HasOne("HospitalManagementSystem2.Models.Entities.Person", "Person")
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithOne()
-                        .HasForeignKey("HospitalManagementSystem2.Models.Entities.Guest", "PersonId")
+                        .HasForeignKey("HospitalManagementSystem2.Models.Entities.Patient", "UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Person");
+                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("HospitalManagementSystem2.Models.Entities.Patient", b =>
+            modelBuilder.Entity("HospitalManagementSystem2.Models.Entities.Specialization", b =>
                 {
-                    b.HasOne("HospitalManagementSystem2.Models.Entities.Account", "Account")
-                        .WithOne()
-                        .HasForeignKey("HospitalManagementSystem2.Models.Entities.Patient", "AccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Account");
+                    b.HasOne("HospitalManagementSystem2.Models.Entities.Doctor", null)
+                        .WithMany("Specializations")
+                        .HasForeignKey("DoctorId");
                 });
 
             modelBuilder.Entity("HospitalManagementSystem2.Models.Entities.Staff", b =>
                 {
-                    b.HasOne("HospitalManagementSystem2.Models.Entities.Account", "Account")
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithOne()
-                        .HasForeignKey("HospitalManagementSystem2.Models.Entities.Staff", "AccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("HospitalManagementSystem2.Models.Entities.Staff", "UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Account");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -568,6 +538,11 @@ namespace HospitalManagementSystem2.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("HospitalManagementSystem2.Models.Entities.Doctor", b =>
+                {
+                    b.Navigation("Specializations");
                 });
 #pragma warning restore 612, 618
         }

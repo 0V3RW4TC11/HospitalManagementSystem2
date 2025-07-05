@@ -8,7 +8,7 @@ namespace HospitalManagementSystem2.Models.Entities
 
         public static Expression<Func<Specialization, bool>> Matches(Specialization spec)
         {
-            return x => x.Name == spec.Name;
+            return x => x.Name.ToLower() == spec.Name.ToLower();
         }
     }
 }

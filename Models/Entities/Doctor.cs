@@ -2,5 +2,6 @@
 {
     public class Doctor : Staff
     {
+        public IEnumerable<Specialization> Specializations { get; set; }
     }
 }

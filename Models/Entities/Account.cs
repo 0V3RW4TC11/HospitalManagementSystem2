@@ -2,10 +2,8 @@
 
 namespace HospitalManagementSystem2.Models.Entities
 {
-    public class Account : Entity
+    public abstract class Account : Person
     {
-        public Guid PersonId { get; set; }
-        public Person Person { get; set; }
         public string UserId { get; set; }
         public IdentityUser User { get; set; }
     }

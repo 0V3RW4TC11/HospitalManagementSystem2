@@ -1,7 +1,6 @@
 using HospitalManagementSystem2.Data;
-using HospitalManagementSystem2.Repositories;
 using HospitalManagementSystem2.Services;
-using HospitalManagementSystem2.Tests;
+using HospitalManagementSystem2.Utility;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,17 +21,18 @@ builder.Services.AddControllersWithViews();
 
 // Identity //
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services
+    .AddIdentity<IdentityUser, IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>();
+
 builder.Services.AddRazorPages();
 
 // Scoped services //
 
-builder.Services.AddScoped<IAccountRepository, AccountRepository>();
-builder.Services.AddScoped<IPersonRepository, PersonRepository>();
-builder.Services.AddScoped<IAdminRepository, AdminRespository>();
-builder.Services.AddScoped<AccountManager>();
-builder.Services.AddScoped<AdminManager>();
+builder.Services.AddScoped<AccountHelper>();
+builder.Services.AddScoped<IStaffEmailGenerator, StaffEmailGenerator>();
+builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
 
 var app = builder.Build();
 
@@ -72,13 +72,8 @@ app.UseAuthorization();
 using (var scope = app.Services.CreateScope())
 {
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    var accountManager = scope.ServiceProvider.GetRequiredService<AccountManager>();
-    var adminManager = scope.ServiceProvider.GetRequiredService<AdminManager>();
-
     var seeding = new Seeding(roleManager);
-    var adminTest = new AdminTests(accountManager, adminManager);
-
-    await seeding.SeedRoles();
+    await seeding.SeedRolesAsync();
 }
 
 // ------------------------------------------------

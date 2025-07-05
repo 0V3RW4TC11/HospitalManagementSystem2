@@ -1,6 +1,6 @@
 ﻿namespace HospitalManagementSystem2.Models.Entities
 {
-    public class Person : Entity
+    public abstract class Person : Entity
     {
         public string? Title { get; set; }
 

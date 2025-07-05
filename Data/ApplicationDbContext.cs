@@ -12,12 +12,9 @@ namespace HospitalManagementSystem2.Data
         {
         }
 
-        public DbSet<Person> Persons { get; set; }
         public DbSet<Admin> Admins { get; set; }
         public DbSet<Doctor> Doctors { get; set; }
         public DbSet<Patient> Patients { get; set; }
-        public DbSet<Guest> Guests { get; set; }
-        public DbSet<Account> Accounts { get; set; }
         public DbSet<Specialization> Specializations { get; set; }
         public DbSet<DoctorSpecialization> DoctorSpecializations { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
@@ -28,45 +25,25 @@ namespace HospitalManagementSystem2.Data
             // Call base method to configure Identity entities
             base.OnModelCreating(builder);
 
-            // Staff table
-            
+            // Configure TPH for Staff hierarchy
             builder.Entity<Staff>()
                 .HasDiscriminator()
                 .HasValue<Admin>(Constants.AuthRoles.Admin)
                 .HasValue<Doctor>(Constants.AuthRoles.Doctor);
-            builder.Entity<Staff>()
-                .HasOne(x => x.Account)
-                .WithOne()
-                .HasForeignKey<Staff>(x => x.AccountId)
-                .OnDelete(DeleteBehavior.Cascade);
 
-            // Account table
-            
-            builder.Entity<Account>()
-                .HasOne(x => x.Person)
-                .WithOne()
-                .OnDelete(DeleteBehavior.Restrict);
-            builder.Entity<Account>()
+            // Configure delete rules for Staff
+            builder.Entity<Staff>()
                 .HasOne(x => x.User)
                 .WithOne()
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Patient table
-
+            // Configure delete rules for Patient
             builder.Entity<Patient>()
-                .HasOne(x => x.Account)
-                .WithOne()
-                .OnDelete(DeleteBehavior.Cascade);
-
-            // Guest table
-
-            builder.Entity<Guest>()
-                .HasOne(x => x.Person)
+                .HasOne(x => x.User)
                 .WithOne()
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Appointment table
-
+            // Configure delete rules for Appointment
             builder.Entity<Appointment>()
                 .HasOne(x => x.Patient)
                 .WithMany()
@@ -76,11 +53,16 @@ namespace HospitalManagementSystem2.Data
                .WithMany()
                .OnDelete(DeleteBehavior.Restrict);
 
-            // Attendance table
-
+            // Configure delete rules for Attendance
             builder.Entity<Attendance>()
                 .HasOne(x => x.Appointment)
                 .WithOne()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Configure delete rules for DoctorSpecialization
+            builder.Entity<DoctorSpecialization>()
+                .HasOne(x => x.Specialization)
+                .WithMany()
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

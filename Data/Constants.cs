@@ -9,5 +9,8 @@
             public const string Patient = "Patient";
             public static string[] List => [Admin, Doctor, Patient];
         }
+
+        // TODO: move to appsettings.json
+        public const string StaffEmailDomain = "sjog.org.au";
     }
 }

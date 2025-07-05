@@ -13,7 +13,7 @@ namespace HospitalManagementSystem2.Data
             _roleManager = roleManager;
         }
 
-        public async Task SeedRoles()
+        public async Task SeedRolesAsync()
         {
             foreach (var role in Constants.AuthRoles.List)
             {
@@ -21,7 +21,7 @@ namespace HospitalManagementSystem2.Data
                     continue;
 
                 var result = await _roleManager.CreateAsync(new(role));
-                ResultHelper.CheckIdentityResult(result);
+                AccountHelper.CheckIdentityResult(result);
             }
         }
     }
