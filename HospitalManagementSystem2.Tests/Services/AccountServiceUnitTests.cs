@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using MockQueryable;
 using Moq;
 
-namespace HospitalManagementSystem2.Tests.Repositories;
+namespace HospitalManagementSystem2.Tests.Services;
 
 public class AccountServiceUnitTests
 {
