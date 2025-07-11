@@ -1,16 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace HospitalManagementSystem2.Models.Entities
+namespace HospitalManagementSystem2.Models.Entities;
+
+[PrimaryKey(nameof(DoctorId), nameof(SpecializationId))]
+public class DoctorSpecialization
 {
-    [PrimaryKey(nameof(DoctorId), nameof(SpecializationId))]
-    public class DoctorSpecialization
-    {
-        public Guid DoctorId { get; set; }
-        public Doctor Doctor { get; set; }
+    public Guid DoctorId { get; set; }
+    public Doctor Doctor { get; set; }
 
-        public Guid SpecializationId { get; set; }
-        public Specialization Specialization { get; set; }
-    }
+    public Guid SpecializationId { get; set; }
+    public Specialization Specialization { get; set; }
 }

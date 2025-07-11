@@ -1,14 +1,13 @@
 ﻿using System.Linq.Expressions;
 
-namespace HospitalManagementSystem2.Models.Entities
-{
-    public class Specialization : Entity
-    {
-        public string Name { get; set; }
+namespace HospitalManagementSystem2.Models.Entities;
 
-        public static Expression<Func<Specialization, bool>> Matches(Specialization spec)
-        {
-            return x => x.Name.ToLower() == spec.Name.ToLower();
-        }
+public class Specialization : Entity
+{
+    public string Name { get; set; }
+
+    public static Expression<Func<Specialization, bool>> Matches(Specialization spec)
+    {
+        return x => x.Name.ToLower() == spec.Name.ToLower();
     }
 }

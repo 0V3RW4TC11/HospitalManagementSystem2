@@ -1,10 +1,14 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
-namespace HospitalManagementSystem2.Models.Entities
+namespace HospitalManagementSystem2.Models.Entities;
+
+[PrimaryKey(nameof(UserId), nameof(IdentityUserId))]
+public class Account
 {
-    public abstract class Account : Person
-    {
-        public string UserId { get; set; }
-        public IdentityUser User { get; set; }
-    }
+    public Guid UserId { get; set; }
+    
+    public string IdentityUserId { get; set; }
+
+    public IdentityUser IdentityUser { get; set; }
 }

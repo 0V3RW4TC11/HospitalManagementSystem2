@@ -1,28 +1,26 @@
-﻿using HospitalManagementSystem2.Utility;
+﻿using HospitalManagementSystem2.Services;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 
-namespace HospitalManagementSystem2.Data
+namespace HospitalManagementSystem2.Data;
+
+public class Seeding
 {
-    public class Seeding
+    private readonly RoleManager<IdentityRole> _roleManager;
+
+    public Seeding(RoleManager<IdentityRole> roleManager)
     {
-        private readonly RoleManager<IdentityRole> _roleManager;
+        _roleManager = roleManager;
+    }
 
-        public Seeding(RoleManager<IdentityRole> roleManager)
+    public async Task SeedRolesAsync()
+    {
+        foreach (var role in Constants.AuthRoles.List)
         {
-            _roleManager = roleManager;
-        }
+            if (await _roleManager.RoleExistsAsync(role))
+                continue;
 
-        public async Task SeedRolesAsync()
-        {
-            foreach (var role in Constants.AuthRoles.List)
-            {
-                if (await _roleManager.RoleExistsAsync(role))
-                    continue;
-
-                var result = await _roleManager.CreateAsync(new(role));
-                AccountHelper.CheckIdentityResult(result);
-            }
+            var result = await _roleManager.CreateAsync(new IdentityRole(role));
+            AccountService.CheckIdentityResult(result);
         }
     }
 }
