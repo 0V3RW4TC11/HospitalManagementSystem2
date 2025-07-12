@@ -14,14 +14,16 @@ namespace HospitalManagementSystem2.Tests.Services;
 public class AdminServiceIntegrationTests : IDisposable, IAsyncDisposable
 {
     // Test Admin Details
-    private const string TestTitle = "ExampleTitle";
-    private const string TestFirstName = "ExampleFirstName";
-    private const string TestLastName = "ExampleLastName";
-    private const string TestGender = "ExampleGender";
-    private const string TestAddress = "ExampleAddress";
-    private const string TestPhone = "ExamplePhone";
-    private const string TestEmail = "ExampleEmail";
+    private const string TestTitle = "TestTitle";
+    private const string TestFirstName = "TestFirstName";
+    private const string TestLastName = "TestLastName";
+    private const string TestGender = "TestGender";
+    private const string TestAddress = "TestAddress";
+    private const string TestPhone = "TestPhone";
+    private const string TestEmail = "TestEmail";
     private const string TestPassword = "TestPass123!";
+    private static readonly string ExpectedOrgEmail 
+        = $"{TestFirstName.ToLower()}.{TestLastName.ToLower()}@{Constants.StaffEmailDomain}";
 
     private static readonly DateOnly TestDateOfBirth = DateOnly.FromDateTime(DateTime.UnixEpoch);
 
@@ -112,12 +114,13 @@ public class AdminServiceIntegrationTests : IDisposable, IAsyncDisposable
         await sut.CreateAsync(admin, TestPassword);
 
         // Assert
-        Assert.NotEqual(admin.Id, Guid.Empty);
+        Assert.NotEqual(Guid.Empty, admin.Id);
         Assert.Contains(context.Admins, a => a.Id == admin.Id);
         var account = context.Accounts.FirstOrDefault(a => a.UserId == admin.Id);
         Assert.NotNull(account);
         var identityUser = context.Users.FirstOrDefault(u => u.Id == account.IdentityUserId);
         Assert.NotNull(identityUser);
+        Assert.Equal(ExpectedOrgEmail, identityUser.UserName);
         Assert.True(await userMan.IsInRoleAsync(identityUser, Constants.AuthRoles.Admin));
     }
 
@@ -157,7 +160,7 @@ public class AdminServiceIntegrationTests : IDisposable, IAsyncDisposable
         // Act & Assert
         var result = await Assert.ThrowsAnyAsync<Exception>(() => sut.CreateAsync(otherAdmin, TestPassword));
         Assert.Equal(expectedMessage, result.Message);
-        Assert.Equal(otherAdmin.Id, Guid.Empty);
+        Assert.Equal(Guid.Empty, otherAdmin.Id);
         Assert.DoesNotContain(context.Admins, a => a == otherAdmin);
         Assert.Empty(context.Accounts);
         Assert.Empty(context.Users);
@@ -211,7 +214,7 @@ public class AdminServiceIntegrationTests : IDisposable, IAsyncDisposable
         await sut.CreateAsync(admin, TestPassword);
         
         // Assert
-        Assert.NotEqual(admin.Id, Guid.Empty);
+        Assert.NotEqual(Guid.Empty, admin.Id);
         Assert.Contains(context.Admins, a => a.Id == admin.Id);
         var account = context.Accounts.FirstOrDefault(a => a.UserId == admin.Id);
         Assert.NotNull(account);
