@@ -28,9 +28,6 @@ public class AdminService
     {
         if (await IsExisting(admin)) throw new Exception("A duplicate record exists");
         
-        // Validate Admin details
-        ValidateAdminDetailsThrowsException(admin);
-
         await TransactionHelper.ExecuteInTransactionAsync(_context, async () =>
         {
             // Create Admin
@@ -55,12 +52,6 @@ public class AdminService
 
     public async Task UpdateAsync(Admin admin)
     {
-        if (admin.Id == Guid.Empty)
-            throw new Exception("Admin Id cannot be empty");
-        
-        // Validate Admin details
-        ValidateAdminDetailsThrowsException(admin);
-        
         // Update Admin
         await _adminRepository.UpdateAsync(admin);
             
@@ -85,12 +76,4 @@ public class AdminService
 
     private async Task<bool> IsExisting(Admin admin)
         => await _adminRepository.Admins.AnyAsync(Admin.Matches(admin));
-
-    private static void ValidateAdminDetailsThrowsException(Admin admin)
-    {
-        ArgumentNullException.ThrowIfNull(admin.DateOfBirth, nameof(admin.DateOfBirth));
-        ArgumentException.ThrowIfNullOrWhiteSpace(admin.FirstName, nameof(admin.FirstName));
-        ArgumentException.ThrowIfNullOrWhiteSpace(admin.Email, nameof(admin.Email));
-        ArgumentException.ThrowIfNullOrWhiteSpace(admin.Phone, nameof(admin.Phone));
-    }
 }

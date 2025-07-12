@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 namespace HospitalManagementSystem2.Data;
 
-public interface IDbContext : IDisposable, IAsyncDisposable
+public interface IDbContext
 {
     DbSet<Admin> Admins { get; set; }
     DbSet<Doctor> Doctors { get; set; }
