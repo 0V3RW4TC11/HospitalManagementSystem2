@@ -157,12 +157,13 @@ public class AccountServiceUnitTests
         var mockIdentityData = new List<IdentityUser> { new() { Id = account.IdentityUserId } };
 
         _mockRepo.Setup(r => r.Accounts).Returns(mockAccountData.BuildMock());
-        _mockRepo.Setup(r => r.Remove(It.IsAny<Account>()))
+        _mockRepo.Setup(r => r.RemoveAsync(It.IsAny<Account>()))
             .Callback((Account a) =>
             {
                 var returnedAccount = mockAccountData.Find(x => x == a);
                 if (returnedAccount != null) mockAccountData.Remove(returnedAccount);
-            });
+            })
+            .Returns(Task.CompletedTask);
         _mockContext.Setup(c => c.SaveChangesAsync()).Returns(Task.CompletedTask);
         _mockUserManager.Setup(u => u.FindByIdAsync(It.IsAny<string>()))
             .ReturnsAsync((string id) => mockIdentityData.FirstOrDefault(a => a.Id == id));

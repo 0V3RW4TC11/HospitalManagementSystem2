@@ -8,5 +8,5 @@ public interface IAccountRepository
     
     Task AddAsync(Account account);
     
-    void Remove(Account account);
+    Task RemoveAsync(Account account);
 }

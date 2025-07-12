@@ -90,9 +90,12 @@ public class AdminServiceIntegrationTests : IDisposable, IAsyncDisposable
     }
 
     [Fact]
-    public async Task CreateAsync_NewAdmin_ShouldAddToDatabase()
+    public async Task CreateAsync_NewAdmin_AddsToDatabase()
     {
         // Arrange
+        var context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
+        var userMan = _serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+        var sut = _serviceProvider.GetRequiredService<AdminService>();
         var admin = new Admin
         {
             Title = TestTitle,
@@ -104,9 +107,6 @@ public class AdminServiceIntegrationTests : IDisposable, IAsyncDisposable
             Email = TestEmail,
             DateOfBirth = TestDateOfBirth
         };
-        var context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
-        var userMan = _serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
-        var sut = _serviceProvider.GetRequiredService<AdminService>();
 
         // Act
         await sut.CreateAsync(admin, TestPassword);
@@ -119,5 +119,263 @@ public class AdminServiceIntegrationTests : IDisposable, IAsyncDisposable
         var identityUser = context.Users.FirstOrDefault(u => u.Id == account.IdentityUserId);
         Assert.NotNull(identityUser);
         Assert.True(await userMan.IsInRoleAsync(identityUser, Constants.AuthRoles.Admin));
+    }
+
+    [Fact]
+    public async Task CreateAsync_AdminWithExistingDetails_ThrowsWithMessage()
+    {
+        // Arrange
+        var context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
+        var sut = _serviceProvider.GetRequiredService<AdminService>();
+        var admin = new Admin
+        {
+            Title = TestTitle,
+            FirstName = TestFirstName,
+            LastName = TestLastName,
+            Gender = TestGender,
+            Address = TestAddress,
+            Phone = TestPhone,
+            Email = TestEmail,
+            DateOfBirth = TestDateOfBirth
+        };
+        var otherAdmin = new Admin
+        {
+            Title = TestTitle,
+            FirstName = TestFirstName,
+            LastName = TestLastName,
+            Gender = TestGender,
+            Address = TestAddress,
+            Phone = TestPhone,
+            Email = TestEmail,
+            DateOfBirth = TestDateOfBirth
+        };
+        var expectedMessage = "A duplicate record exists";
+
+        context.Admins.Add(admin);
+        context.SaveChanges();
+        
+        // Act & Assert
+        var result = await Assert.ThrowsAnyAsync<Exception>(() => sut.CreateAsync(otherAdmin, TestPassword));
+        Assert.Equal(expectedMessage, result.Message);
+        Assert.Equal(otherAdmin.Id, Guid.Empty);
+        Assert.DoesNotContain(context.Admins, a => a == otherAdmin);
+        Assert.Empty(context.Accounts);
+        Assert.Empty(context.Users);
+    }
+
+    [Fact]
+    public async Task CreateAsync_AdminWithRequiredFieldMissing_Throws()
+    {
+        // Arrange
+        var context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
+        var sut = _serviceProvider.GetRequiredService<AdminService>();
+        var admin = new Admin
+        {
+            Title = TestTitle,
+            FirstName = null,
+            LastName = TestLastName,
+            Gender = TestGender,
+            Address = TestAddress,
+            Phone = TestPhone,
+            Email = TestEmail,
+            DateOfBirth = TestDateOfBirth
+        };
+        
+        // Act & Assert
+        await Assert.ThrowsAnyAsync<Exception>(() => sut.CreateAsync(admin, TestPassword));
+        Assert.Empty(context.Admins);
+        Assert.Empty(context.Accounts);
+        Assert.Empty(context.Users);
+    }
+    
+    [Fact]
+    public async Task CreateAsync_AdminWithUnrequiredFieldMissing_AddsToDatabase()
+    {
+        // Arrange
+        var context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
+        var userMan = _serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+        var sut = _serviceProvider.GetRequiredService<AdminService>();
+        var admin = new Admin
+        {
+            Title = null,
+            FirstName = TestFirstName,
+            LastName = TestLastName,
+            Gender = TestGender,
+            Address = TestAddress,
+            Phone = TestPhone,
+            Email = TestEmail,
+            DateOfBirth = TestDateOfBirth
+        };
+        
+        // Act & Assert
+        await sut.CreateAsync(admin, TestPassword);
+        
+        // Assert
+        Assert.NotEqual(admin.Id, Guid.Empty);
+        Assert.Contains(context.Admins, a => a.Id == admin.Id);
+        var account = context.Accounts.FirstOrDefault(a => a.UserId == admin.Id);
+        Assert.NotNull(account);
+        var identityUser = context.Users.FirstOrDefault(u => u.Id == account.IdentityUserId);
+        Assert.NotNull(identityUser);
+        Assert.True(await userMan.IsInRoleAsync(identityUser, Constants.AuthRoles.Admin));
+    }
+
+    [Fact]
+    public async Task CreateAsync_NullAdmin_Throws()
+    {
+        // Arrange
+        var context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
+        var sut = _serviceProvider.GetRequiredService<AdminService>();
+        
+        // Act & Assert
+        await Assert.ThrowsAnyAsync<Exception>(() => sut.CreateAsync(null, TestPassword));
+        Assert.Empty(context.Admins);
+        Assert.Empty(context.Accounts);
+        Assert.Empty(context.Users);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_ExistingAdmin_UpdatesAdmin()
+    {
+        // Arrange
+        var context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
+        var sut = _serviceProvider.GetRequiredService<AdminService>();
+        var admin = new Admin
+        {
+            Title = TestTitle,
+            FirstName = TestFirstName,
+            LastName = TestLastName,
+            Gender = TestGender,
+            Address = TestAddress,
+            Phone = TestPhone,
+            Email = TestEmail,
+            DateOfBirth = TestDateOfBirth
+        };
+        context.Admins.Add(admin);
+        context.SaveChanges();
+        admin.FirstName = "AnotherName";
+        
+        // Act
+        await sut.UpdateAsync(admin);
+        
+        // Assert
+        var result = context.Admins.FirstOrDefault(a => a.Id == admin.Id);
+        Assert.NotNull(result);
+        Assert.Equal(admin.FirstName, result.FirstName);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_NonExistingAdmin_Throws()
+    {
+        // Arrange
+        var sut = _serviceProvider.GetRequiredService<AdminService>();
+        var admin = new Admin
+        {
+            Title = TestTitle,
+            FirstName = TestFirstName,
+            LastName = TestLastName,
+            Gender = TestGender,
+            Address = TestAddress,
+            Phone = TestPhone,
+            Email = TestEmail,
+            DateOfBirth = TestDateOfBirth
+        };
+        
+        // Act & Assert
+        await Assert.ThrowsAnyAsync<Exception>(() => sut.UpdateAsync(admin));
+    }
+
+    [Fact]
+    public async Task UpdateAsync_AdminWithMissingRequiredDetails_Throws()
+    {
+        // Arrange
+        var context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
+        var sut = _serviceProvider.GetRequiredService<AdminService>();
+        var admin = new Admin
+        {
+            Title = TestTitle,
+            FirstName = TestFirstName,
+            LastName = TestLastName,
+            Gender = TestGender,
+            Address = TestAddress,
+            Phone = TestPhone,
+            Email = TestEmail,
+            DateOfBirth = TestDateOfBirth
+        };
+        context.Admins.Add(admin);
+        context.SaveChanges();
+        admin.FirstName = null;
+        
+        // Act & Assert
+        await Assert.ThrowsAnyAsync<Exception>(() => sut.UpdateAsync(admin));
+    }
+
+    [Fact]
+    public async Task UpdateAsync_NullAdmin_Throws()
+    {
+        // Arrange
+        var sut = _serviceProvider.GetRequiredService<AdminService>();
+        
+        // Act & Assert
+        await Assert.ThrowsAnyAsync<Exception>(() => sut.UpdateAsync(null));
+    }
+
+    [Fact]
+    public async Task DeleteAsync_CreateAdminThenDelete_RemovesAdminAndAccount()
+    {
+        // Arrange
+        var context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
+        var sut = _serviceProvider.GetRequiredService<AdminService>();
+        var admin = new Admin
+        {
+            Title = TestTitle,
+            FirstName = TestFirstName,
+            LastName = TestLastName,
+            Gender = TestGender,
+            Address = TestAddress,
+            Phone = TestPhone,
+            Email = TestEmail,
+            DateOfBirth = TestDateOfBirth
+        };
+        
+        // Act
+        await sut.CreateAsync(admin, TestPassword);
+        await sut.DeleteAsync(admin);
+        
+        // Assert
+        Assert.Empty(context.Admins);
+        Assert.Empty(context.Accounts);
+        Assert.Empty(context.Users);
+    }
+
+    [Fact]
+    public async Task DeleteAsync_NonExistingAdmin_Throws()
+    {
+        // Arrange
+        var sut = _serviceProvider.GetRequiredService<AdminService>();
+        var admin = new Admin
+        {
+            Title = TestTitle,
+            FirstName = TestFirstName,
+            LastName = TestLastName,
+            Gender = TestGender,
+            Address = TestAddress,
+            Phone = TestPhone,
+            Email = TestEmail,
+            DateOfBirth = TestDateOfBirth
+        };
+        
+        // Act & Assert
+        await Assert.ThrowsAnyAsync<Exception>(() => sut.DeleteAsync(admin));
+    }
+
+    [Fact]
+    public async Task DeleteAsync_NullAdmin_Throws()
+    {
+        // Arrange
+        var sut = _serviceProvider.GetRequiredService<AdminService>();
+        
+        // Act & Assert
+        await Assert.ThrowsAnyAsync<Exception>(() => sut.DeleteAsync(null));
     }
 }

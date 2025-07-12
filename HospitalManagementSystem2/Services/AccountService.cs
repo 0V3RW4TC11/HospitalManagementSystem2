@@ -54,7 +54,7 @@ public class AccountService
             ?? throw new Exception($"No account for user Id {userId.ToString()}");
         
         // Delete the Account
-        _accountRepository.Remove(account);
+        await _accountRepository.RemoveAsync(account);
         
         // Save changes to DbContext
         await _context.SaveChangesAsync();

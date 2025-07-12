@@ -81,7 +81,7 @@ public class AccountRepositoryUnitTests : IDisposable, IAsyncDisposable
         await _dbContext.SaveChangesAsync();
 
         // Act
-        _sut.Remove(account);
+        await _sut.RemoveAsync(account);
         await _dbContext.SaveChangesAsync();
 
         // Assert
@@ -98,7 +98,7 @@ public class AccountRepositoryUnitTests : IDisposable, IAsyncDisposable
         await _dbContext.SaveChangesAsync();
 
         // Act
-        _sut.Remove(account);
+        await _sut.RemoveAsync(account);
 
         // Assert
         var result = await _dbContext.Accounts.FirstOrDefaultAsync(a => a == account);
@@ -112,9 +112,9 @@ public class AccountRepositoryUnitTests : IDisposable, IAsyncDisposable
         var account = new Account { UserId = Guid.NewGuid(), IdentityUserId = Guid.NewGuid().ToString() };
 
         // Act & Assert
-        Assert.ThrowsAny<Exception>(() =>
+        Assert.ThrowsAnyAsync<Exception>(async () =>
         {
-            _sut.Remove(account);
+            await _sut.RemoveAsync(account);
             _dbContext.SaveChanges();
         });
     }

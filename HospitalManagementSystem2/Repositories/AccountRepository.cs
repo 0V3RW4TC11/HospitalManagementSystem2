@@ -17,5 +17,9 @@ public class AccountRepository : IAccountRepository
     
     public async Task AddAsync(Account account) => await _accounts.AddAsync(account);
 
-    public void Remove(Account account) => _accounts.Remove(account);
+    public async Task RemoveAsync(Account account)
+    {
+        var entry = await _accounts.FirstAsync(a => a == account);
+        _accounts.Remove(entry);
+    }
 }
