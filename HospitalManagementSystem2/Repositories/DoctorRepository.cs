@@ -8,15 +8,12 @@ public class DoctorRepository : IDoctorRepository
 {
     private readonly DbSet<Doctor> _doctors;
     private readonly IDoctorSpecializationRepository _doctorSpecializationRepository;
-    private readonly ISpecializationRepository _specializationRepository;
     
     public DoctorRepository(IDbContext context,
-                            IDoctorSpecializationRepository doctorSpecializationRepository,
-                            ISpecializationRepository specializationRepository)
+                            IDoctorSpecializationRepository doctorSpecializationRepository)
     {
         _doctors = context.Doctors;
         _doctorSpecializationRepository = doctorSpecializationRepository;
-        _specializationRepository = specializationRepository;
     }
 
     public IQueryable<Doctor> Doctors => _doctors.AsNoTracking();
