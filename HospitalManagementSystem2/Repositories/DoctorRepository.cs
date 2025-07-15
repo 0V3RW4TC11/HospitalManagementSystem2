@@ -27,8 +27,7 @@ public class DoctorRepository : IDoctorRepository
 
     public async Task UpdateAsync(Doctor doctor)
     {
-        var entry = await _doctors.FirstOrDefaultAsync(x => x.Id == doctor.Id);
-        if (entry == null) return;
+        var entry = await _doctors.FirstAsync(x => x.Id == doctor.Id);
         
         entry.FirstName = doctor.FirstName;
         entry.LastName = doctor.LastName;
@@ -58,8 +57,7 @@ public class DoctorRepository : IDoctorRepository
 
     public async Task RemoveAsync(Doctor doctor)
     {
-        var entry = await _doctors.FirstOrDefaultAsync(x => x.Id == doctor.Id);
-        if (entry == null) return;
+        var entry = await _doctors.FirstAsync(x => x.Id == doctor.Id);
         
         _doctors.Remove(entry);
     }
