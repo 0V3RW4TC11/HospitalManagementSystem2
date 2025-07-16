@@ -359,6 +359,9 @@ public class DoctorRepositoryUnitTests : IDisposable, IAsyncDisposable
     [Fact]
     public async Task RemoveAsync_NullDoctor_Throws()
     {
+        // Arrange
+        SetupDSMockRemoveRange();
+        
         // Act & Assert
         await Assert.ThrowsAnyAsync<Exception>(() => _sut.UpdateAsync(null));
     }

@@ -35,9 +35,6 @@ public class DoctorService
         if (await IsExistingAsync(doctor))
             throw new Exception("A duplicate record exists");
         
-        // Validate Doctor details
-        ValidateDoctorDetails(doctor);
-        
         // Validate Specialization details
         ValidateSpecializationDetails(doctor.Specializations);
 
@@ -80,8 +77,6 @@ public class DoctorService
         if (doctor.Id == Guid.Empty)
             throw new Exception("Doctor Id cannot be empty");
         
-        // Validate Doctor details
-        ValidateDoctorDetails(doctor);
         // Validate Specialization details
         ValidateSpecializationDetails(doctor.Specializations);
         
@@ -119,26 +114,9 @@ public class DoctorService
     private async Task<bool> IsExistingAsync(Doctor doctor)
         => await _doctorRepository.Doctors.AnyAsync(Doctor.Matches(doctor));
     
-    // simple checks for now, but can extend to more comprehensive checks later
-    // would likely include validation for properties in the entity class itself
-    private static void ValidateDoctorDetails(Doctor doctor)
-    {
-        ArgumentNullException.ThrowIfNull(doctor.DateOfBirth, nameof(doctor.DateOfBirth));
-        ArgumentException.ThrowIfNullOrWhiteSpace(doctor.FirstName, nameof(doctor.FirstName));
-        ArgumentException.ThrowIfNullOrWhiteSpace(doctor.LastName, nameof(doctor.LastName));
-        ArgumentException.ThrowIfNullOrWhiteSpace(doctor.Email, nameof(doctor.Email));
-        ArgumentException.ThrowIfNullOrWhiteSpace(doctor.Phone, nameof(doctor.Phone));
-        ArgumentException.ThrowIfNullOrWhiteSpace(doctor.Address, nameof(doctor.Address));
-    }
-    
     private static void ValidateSpecializationDetails(IEnumerable<Specialization> specializations)
     {
-        ArgumentNullException.ThrowIfNull(specializations, nameof(specializations));
-        var materialized = specializations.ToArray();
-        
-        if(materialized.Length == 0)
-            throw new Exception("Specializations cannot be empty");
-        if(materialized.Any(s => s.Id == Guid.Empty))
-            throw new Exception("Specializations cannot contain empty Ids");
+        if (specializations.IsNullOrEmpty())
+            throw new Exception("Specializations cannot be null or empty");
     }
 }
