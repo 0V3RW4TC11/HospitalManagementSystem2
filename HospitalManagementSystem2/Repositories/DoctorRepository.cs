@@ -8,12 +8,15 @@ public class DoctorRepository : IDoctorRepository
 {
     private readonly DbSet<Doctor> _doctors;
     private readonly IDoctorSpecializationRepository _doctorSpecializationRepository;
+    private readonly ISpecializationRepository _specializationRepository;
     
     public DoctorRepository(IDbContext context,
-                            IDoctorSpecializationRepository doctorSpecializationRepository)
+                            IDoctorSpecializationRepository doctorSpecializationRepository,
+                            ISpecializationRepository specializationRepository)
     {
         _doctors = context.Doctors;
         _doctorSpecializationRepository = doctorSpecializationRepository;
+        _specializationRepository = specializationRepository;
     }
 
     public IQueryable<Doctor> Doctors => _doctors.AsNoTracking();
@@ -23,6 +26,27 @@ public class DoctorRepository : IDoctorRepository
         await _doctors.AddAsync(doctor);
         await _doctorSpecializationRepository.AddRangeAsync(doctor.Specializations.Select(spec =>
             new DoctorSpecialization { DoctorId = doctor.Id, SpecializationId = spec.Id }));
+    }
+
+    public async Task<Doctor?> FindByIdAsync(Guid id)
+    {
+        var doctor = await Doctors.FirstOrDefaultAsync(d => d.Id == id);
+        
+        if (doctor == null) return null;
+        
+        var doctorSpecs 
+            = await _doctorSpecializationRepository.DoctorSpecializations.Where(ds 
+                => ds.DoctorId == id).ToArrayAsync();
+        var specs = new List<Specialization>();
+        foreach (var ds in doctorSpecs)
+        {
+            var spec = await _specializationRepository.Specializations
+                .FirstAsync(s => s.Id == ds.SpecializationId);
+            specs.Add(spec);
+        }
+        doctor.Specializations = specs;
+
+        return doctor;
     }
 
     public async Task UpdateAsync(Doctor doctor)
