@@ -12,20 +12,20 @@ public class DoctorService
 {
     private readonly ApplicationDbContext _context;
     private readonly AccountService _accountService;
-    private readonly DoctorSpecializationService _doctorSpecializationService;
     private readonly IDoctorRepository _doctorRepository;
+    private readonly ISpecializationRepository _specializationRepository;
     private readonly IStaffEmailGenerator _staffEmailGenerator;
 
     public DoctorService(ApplicationDbContext context,
         AccountService accountService,
-        DoctorSpecializationService doctorSpecializationService,
         IDoctorRepository doctorRepository,
+        ISpecializationRepository specializationRepository,
         IStaffEmailGenerator staffEmailGenerator)
     {
         _context = context;
         _accountService = accountService;
-        _doctorSpecializationService = doctorSpecializationService;
         _doctorRepository = doctorRepository;
+        _specializationRepository = specializationRepository;
         _staffEmailGenerator = staffEmailGenerator;
     }
 
@@ -59,15 +59,10 @@ public class DoctorService
     {
         // Get Doctor
         var doctor = await _doctorRepository.Doctors.FirstOrDefaultAsync(x => x.Id == id);
-        if (doctor == null) return null;
-        
-        // Get Doctor Specializations
-        var specializations
-            = await _doctorSpecializationService.GetDoctorSpecializationsAsync(doctor.Id);
-        
-        // Specializations null check
-        if (specializations == null)
-            throw new Exception("Doctor missing Specializations");
+        if (doctor == null)
+            throw new Exception($"Doctor with Id {id} not found");
+        if (doctor.Specializations.IsNullOrEmpty())
+            throw new Exception($"Doctor with Id {id} has no specializations");
         
         return doctor;
     }
@@ -84,9 +79,6 @@ public class DoctorService
         {
             // Update Doctor
             await _doctorRepository.UpdateAsync(doctor);
-
-            // Update DoctorSpecializations
-            await _doctorSpecializationService.UpdateDoctorSpecializationsAsync(doctor);
 
             // Save DbContext changes
             await _context.SaveChangesAsync();
