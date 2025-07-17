@@ -36,7 +36,7 @@ public class DoctorService
             throw new Exception("A duplicate record exists");
         
         // Validate Specialization details
-        ValidateSpecializationDetails(doctor.Specializations);
+        await ValidateSpecializations(doctor.Specializations);
 
         await TransactionHelper.ExecuteInTransactionAsync(_context, async () =>
         {
@@ -73,7 +73,7 @@ public class DoctorService
             throw new Exception("Doctor Id cannot be empty");
         
         // Validate Specialization details
-        ValidateSpecializationDetails(doctor.Specializations);
+        await ValidateSpecializations(doctor.Specializations);
         
         await TransactionHelper.ExecuteInTransactionAsync(_context, async () =>
         {
@@ -106,9 +106,25 @@ public class DoctorService
     private async Task<bool> IsExistingAsync(Doctor doctor)
         => await _doctorRepository.Doctors.AnyAsync(Doctor.Matches(doctor));
     
-    private static void ValidateSpecializationDetails(IEnumerable<Specialization> specializations)
+    private async Task<bool> IsExistingSpecializationByIdAsync(Guid id)
+        => await _specializationRepository.Specializations.AnyAsync(s => s.Id == id);
+    
+    private async Task ValidateSpecializations(IEnumerable<Specialization> specializations)
     {
-        if (specializations.IsNullOrEmpty())
-            throw new Exception("Specializations cannot be null or empty");
+        ArgumentNullException.ThrowIfNull(specializations);
+        
+        var materialization = specializations.ToArray();
+        
+        if (materialization.Length == 0)
+            throw new Exception("Specialization list cannot be empty");
+        
+        foreach (var spec in materialization)
+        {
+            if (spec.Id == Guid.Empty)
+                throw new Exception("Specialization Id cannot be empty");
+            
+            if (!await IsExistingSpecializationByIdAsync(spec.Id))
+                throw new Exception($"Specialization with Id {spec.Id} not found");
+        }
     }
 }

@@ -17,7 +17,7 @@ public class DoctorServiceIntegrationTests : IDisposable, IAsyncDisposable
     private const string TestPhone = "TestPhone";
     private const string TestEmail = "TestEmail";
     private const string TestPassword = "TestPass123!";
-    private static readonly string ExpectedOrgEmail 
+    private static readonly string ExpectedOrgEmail
         = $"{TestFirstName.ToLower()}.{TestLastName.ToLower()}@{Constants.StaffEmailDomain}";
 
     private static readonly DateOnly TestDateOfBirth = DateOnly.FromDateTime(DateTime.UnixEpoch);
@@ -32,9 +32,10 @@ public class DoctorServiceIntegrationTests : IDisposable, IAsyncDisposable
         {
             services.AddScoped<IDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
             services.AddScoped<IAccountRepository, AccountRepository>();
-            services.AddScoped<AccountService>();
             services.AddScoped<IDoctorRepository, DoctorRepository>();
+            // <-- specialization repository
             services.AddScoped<IStaffEmailGenerator, StaffEmailGenerator>();
+            services.AddScoped<AccountService>();
             services.AddScoped<DoctorService>();
         });
         
