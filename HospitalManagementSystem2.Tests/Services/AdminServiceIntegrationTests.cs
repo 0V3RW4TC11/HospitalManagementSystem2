@@ -2,6 +2,7 @@
 using HospitalManagementSystem2.Models.Entities;
 using HospitalManagementSystem2.Repositories;
 using HospitalManagementSystem2.Services;
+using HospitalManagementSystem2.Tests.Helpers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -28,67 +29,38 @@ public class AdminServiceIntegrationTests : IDisposable, IAsyncDisposable
     private static readonly DateOnly TestDateOfBirth = DateOnly.FromDateTime(DateTime.UnixEpoch);
 
     // Services
-    private readonly SqliteConnection _connection;
+    private readonly SqliteInMemDbHelper _dbHelper;
     private readonly IServiceProvider _serviceProvider;
 
     public AdminServiceIntegrationTests()
     {
-        // Create and open a shared SQLite in-memory connection
-        _connection = new SqliteConnection("DataSource=:memory:");
-        _connection.Open();
-
-        // Set up a service collection
-        var services = new ServiceCollection();
-
-        // Add null logging
-        services.AddLogging(builder =>
+        _dbHelper = new SqliteInMemDbHelper(services =>
         {
-            builder.ClearProviders();
-            builder.AddProvider(NullLoggerProvider.Instance);
+            services.AddScoped<IDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
+            services.AddScoped<IAccountRepository, AccountRepository>();
+            services.AddScoped<AccountService>();
+            services.AddScoped<IAdminRepository, AdminRepository>();
+            services.AddScoped<IStaffEmailGenerator, StaffEmailGenerator>();
+            services.AddScoped<AdminService>();
         });
-
-        // Configure ApplicationDbContext with SQLite in-memory
-        services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlite(_connection));
-
-        // Add Identity services for UserManager<IdentityUser>
-        services.AddIdentity<IdentityUser, IdentityRole>()
-            .AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddDefaultTokenProviders();
-
-        // Add scoped services
-        services.AddScoped<IDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
-        services.AddScoped<IAccountRepository, AccountRepository>();
-        services.AddScoped<AccountService>();
-        services.AddScoped<IAdminRepository, AdminRepository>();
-        services.AddScoped<IStaffEmailGenerator, StaffEmailGenerator>();
-        services.AddScoped<AdminService>();
-
-        // Build service provider
-        _serviceProvider = services.BuildServiceProvider();
-
-        // Ensure the database schema is created (including Identity tables)
-        using var scope = _serviceProvider.CreateScope();
-        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        context.Database.EnsureCreated();
+        
+        // Set service provider
+        _serviceProvider = _dbHelper.ServiceProvider;
 
         // Inject ADMIN role
+        using var scope = _serviceProvider.CreateScope();
         var roleMan = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
         roleMan.CreateAsync(new IdentityRole(Constants.AuthRoles.Admin)).GetAwaiter().GetResult();
     }
 
     public async ValueTask DisposeAsync()
     {
-        await (_serviceProvider as IAsyncDisposable).DisposeAsync();
-        await _connection.CloseAsync();
-        await _connection.DisposeAsync();
+        await _dbHelper.DisposeAsync();
     }
 
     public void Dispose()
     {
-        (_serviceProvider as IDisposable).Dispose();
-        _connection.Close();
-        _connection.Dispose();
+        _dbHelper.Dispose();
     }
 
     [Fact]
