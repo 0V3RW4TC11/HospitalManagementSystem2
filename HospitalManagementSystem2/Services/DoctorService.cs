@@ -32,8 +32,7 @@ public class DoctorService
     public async Task CreateAsync(Doctor doctor, string password)
     {
         // Check for existing Doctor
-        if (await IsExistingAsync(doctor))
-            throw new Exception("A duplicate record exists");
+        if (await IsExistingAsync(doctor)) throw new Exception("A duplicate record exists");
         
         // Validate Specialization details
         await ValidateSpecializations(doctor.Specializations);
@@ -42,6 +41,7 @@ public class DoctorService
         {
             // Create Doctor
             await _doctorRepository.AddAsync(doctor);
+            await _context.SaveChangesAsync();
             
             // Create username
             var username = await _staffEmailGenerator
@@ -49,23 +49,11 @@ public class DoctorService
 
             // Create Account
             await _accountService.CreateAsync(doctor.Id, Constants.AuthRoles.Doctor, username, password);
-
-            // Save DbContext changes
-            await _context.SaveChangesAsync();
         });
     }
 
-    public async Task<Doctor?> FindByIdAsync(Guid id)
-    {
-        // Get Doctor
-        var doctor = await _doctorRepository.Doctors.FirstOrDefaultAsync(x => x.Id == id);
-        if (doctor == null)
-            throw new Exception($"Doctor with Id {id} not found");
-        if (doctor.Specializations.IsNullOrEmpty())
-            throw new Exception($"Doctor with Id {id} has no specializations");
-        
-        return doctor;
-    }
+    public async Task<Doctor?> FindByIdAsync(Guid id) 
+        => await _doctorRepository.FindByIdAsync(id);
 
     public async Task UpdateAsync(Doctor doctor)
     {

@@ -47,8 +47,9 @@ public class DoctorSpecializationRepositoryUnitTests : IDisposable, IAsyncDispos
     {
         // Arrange
         var range = new List<DoctorSpecialization>();
+        var doctorId = Guid.NewGuid();
         for (var i = 0; i < 10; i++)
-            range.Add(new DoctorSpecialization { DoctorId = Guid.NewGuid(), SpecializationId = Guid.NewGuid() });
+            range.Add(new DoctorSpecialization { DoctorId = doctorId, SpecializationId = Guid.NewGuid() });
 
         // Act
         await _sut.AddRangeAsync(range);
