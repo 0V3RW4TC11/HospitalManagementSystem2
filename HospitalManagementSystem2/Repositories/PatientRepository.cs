@@ -22,8 +22,7 @@ public class PatientRepository : IPatientRepository
 
     public async Task UpdateAsync(Patient patient)
     {
-        var entry = await _patients.FirstOrDefaultAsync(p => p.Id == patient.Id)
-            ?? throw new Exception($"Patient not found for Id {patient.Id}");
+        var entry = await _patients.FirstAsync(p => p.Id == patient.Id);
         
         entry.Title = patient.Title;
         entry.FirstName = patient.FirstName;
@@ -40,9 +39,7 @@ public class PatientRepository : IPatientRepository
 
     public async Task RemoveAsync(Patient patient)
     {
-        var entry = await _patients.FirstOrDefaultAsync(p => p.Id == patient.Id)
-            ?? throw new Exception($"Patient not found for Id {patient.Id}");
-        
-        _patients.Remove(entry);       
+        var entry = await _patients.FirstAsync(p => p.Id == patient.Id);
+        _patients.Remove(entry);
     }
 }
