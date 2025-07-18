@@ -30,10 +30,14 @@ builder.Services.AddRazorPages();
 
 // Scoped services //
 
-builder.Services.AddScoped<AccountService>();
-builder.Services.AddScoped<IStaffEmailGenerator, StaffEmailGenerator>();
-builder.Services.AddScoped<IAdminRepository, AdminRepository>();
-builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
+// builder.Services.AddScoped<IDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
+// builder.Services.AddScoped<IStaffEmailGenerator, StaffEmailGenerator>();
+// builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+// builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+// builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
+// builder.Services.AddScoped<IDoctorSpecializationRepository, DoctorSpecializationRepository>();
+// builder.Services.AddScoped<ISpecializationRepository, SpecializationRepository>();
+// builder.Services.AddScoped<AccountService>();
 
 var app = builder.Build();
 

@@ -32,8 +32,6 @@ public class AdminService
         {
             // Create Admin
             await _adminRepository.AddAsync(admin);
-            
-            // Save changes to DbContext
             await _context.SaveChangesAsync();
             
             // Create Username
