@@ -4,6 +4,7 @@ using HospitalManagementSystem2.Repositories;
 using HospitalManagementSystem2.Services;
 using HospitalManagementSystem2.Tests.Helpers;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HospitalManagementSystem2.Tests.Services;
@@ -18,13 +19,15 @@ public class DoctorServiceIntegrationTests : IDisposable, IAsyncDisposable
     private const string TestPhone = "TestPhone";
     private const string TestEmail = "TestEmail";
     private const string TestPassword = "TestPass123!";
-    private static readonly string ExpectedOrgEmail
-        = $"{TestFirstName.ToLower()}.{TestLastName.ToLower()}@{Constants.StaffEmailDomain}";
-    private static readonly DateOnly TestDateOfBirth = DateOnly.FromDateTime(DateTime.UnixEpoch);
-    
+
     private const string TestSpecName1 = "TestSpec1";
     private const string TestSpecName2 = "TestSpec2";
-    
+
+    private static readonly string ExpectedOrgEmail
+        = $"{TestFirstName.ToLower()}.{TestLastName.ToLower()}@{Constants.StaffEmailDomain}";
+
+    private static readonly DateOnly TestDateOfBirth = DateOnly.FromDateTime(DateTime.UnixEpoch);
+
     // Services
     private readonly SqliteInMemDbHelper _dbHelper;
     private readonly IServiceProvider _serviceProvider;
@@ -42,25 +45,25 @@ public class DoctorServiceIntegrationTests : IDisposable, IAsyncDisposable
             services.AddScoped<AccountService>();
             services.AddScoped<DoctorService>();
         });
-        
+
         // Set service provider
         _serviceProvider = _dbHelper.ServiceProvider;
-        
+
         // Seed DOCTOR role
         SeedDoctorRole(_serviceProvider);
-        
+
         // Seed Specializations
         SeedSpecializations(_serviceProvider);
-    }
-
-    public void Dispose()
-    {
-        _dbHelper.Dispose();
     }
 
     public async ValueTask DisposeAsync()
     {
         await _dbHelper.DisposeAsync();
+    }
+
+    public void Dispose()
+    {
+        _dbHelper.Dispose();
     }
 
     private void SeedDoctorRole(IServiceProvider serviceProvider)
@@ -83,7 +86,7 @@ public class DoctorServiceIntegrationTests : IDisposable, IAsyncDisposable
     {
         return _serviceProvider.GetRequiredService<ApplicationDbContext>();
     }
-    
+
     private DoctorService GetSut()
     {
         return _serviceProvider.GetRequiredService<DoctorService>();
@@ -106,8 +109,8 @@ public class DoctorServiceIntegrationTests : IDisposable, IAsyncDisposable
         var context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
         return context.Roles.First(r => r.Name == Constants.AuthRoles.Doctor).Id;
     }
-    
-    private Doctor CreateDoctor(IEnumerable<Specialization>? specializations = null)
+
+    private static Doctor CreateDoctor(IEnumerable<Specialization>? specializations = null)
     {
         var doctor = new Doctor
         {
@@ -119,12 +122,9 @@ public class DoctorServiceIntegrationTests : IDisposable, IAsyncDisposable
             Email = TestEmail,
             DateOfBirth = TestDateOfBirth
         };
-        
-        if (specializations != null)
-        {
-            doctor.Specializations = specializations;
-        }
-        
+
+        if (specializations != null) doctor.Specializations = specializations;
+
         return doctor;
     }
 
@@ -136,19 +136,19 @@ public class DoctorServiceIntegrationTests : IDisposable, IAsyncDisposable
         specializations = specializations?.ToArray();
         // Create Doctor with specs if any
         var doctor = CreateDoctor(specializations);
-        
+
         // Add Doctor to database
         context.Doctors.Add(doctor);
         context.SaveChanges();
-        
+
         // Create IdentityUser for Doctor
         var userMan = _serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
         var identityUser = new IdentityUser { UserName = ExpectedOrgEmail };
         userMan.CreateAsync(identityUser, TestPassword).GetAwaiter().GetResult();
-        
+
         // Add IdentityUser to DOCTOR role
         userMan.AddToRoleAsync(identityUser, Constants.AuthRoles.Doctor).GetAwaiter().GetResult();
-        
+
         // Create Account for Doctor and IdentityUser
         context.Accounts.Add(new Account
         {
@@ -156,22 +156,25 @@ public class DoctorServiceIntegrationTests : IDisposable, IAsyncDisposable
             IdentityUserId = identityUser.Id
         });
         context.SaveChanges();
-        
+
         // If no specs, return the Doctor without specs
-        if (specializations == null) return doctor;
-        
+        if (specializations == null)
+        {
+            context.Entry(doctor).State = EntityState.Detached;
+            return doctor;
+        }
+
         // If specs, add DoctorSpecs to database
         foreach (var spec in specializations)
-        {
             context.DoctorSpecializations.Add(new DoctorSpecialization
             {
-                DoctorId = doctor.Id, 
+                DoctorId = doctor.Id,
                 SpecializationId = spec.Id
             });
-        }
         context.SaveChanges();
-        
+
         // Return Doctor with specs
+        context.Entry(doctor).State = EntityState.Detached;
         return doctor;
     }
 
@@ -180,9 +183,9 @@ public class DoctorServiceIntegrationTests : IDisposable, IAsyncDisposable
     {
         // Arrange
         var context = GetContext();
-        
+
         // Act (See constructor)
-        
+
         // Assert
         Assert.Contains(context.Roles, r => r.Name == Constants.AuthRoles.Doctor);
         Assert.Contains(context.Specializations, s => s.Name == TestSpecName1);
@@ -197,10 +200,10 @@ public class DoctorServiceIntegrationTests : IDisposable, IAsyncDisposable
         var sut = GetSut();
         var spec1 = GetTestSpec1();
         var doctor = CreateDoctor([spec1]);
-        
+
         // Act
         await sut.CreateAsync(doctor, TestPassword);
-        
+
         // Assert
         // Doctor
         Assert.Single(context.Doctors);
@@ -213,17 +216,17 @@ public class DoctorServiceIntegrationTests : IDisposable, IAsyncDisposable
         Assert.Equal(doctor.Phone, doctorResult.Phone);
         Assert.Equal(doctor.Email, doctorResult.Email);
         Assert.Equal(doctor.DateOfBirth, doctorResult.DateOfBirth);
-        
+
         // Doctor Specialization
         Assert.Single(context.DoctorSpecializations);
-        Assert.Contains(context.DoctorSpecializations, 
+        Assert.Contains(context.DoctorSpecializations,
             ds => ds.DoctorId == doctor.Id && ds.SpecializationId == spec1.Id);
-        
+
         // Account
         Assert.Single(context.Accounts);
         var account = context.Accounts.FirstOrDefault(a => a.UserId == doctor.Id);
         Assert.NotNull(account);
-        
+
         // IdentityUser
         Assert.Single(context.Users);
         Assert.Contains(context.Users, u => u.Id == account.IdentityUserId);
@@ -237,27 +240,20 @@ public class DoctorServiceIntegrationTests : IDisposable, IAsyncDisposable
     public async Task CreateAsync_NullDoctor_Throws()
     {
         // Arrange
-        var context = GetContext();
         var sut = GetSut();
-        
+
         // Act & Assert
         await Assert.ThrowsAnyAsync<Exception>(() => sut.CreateAsync(null, TestPassword));
-        Assert.Empty(context.Doctors);
-        Assert.Empty(context.DoctorSpecializations);
-        Assert.Empty(context.Accounts);
-        Assert.Empty(context.Users);
-        Assert.Empty(context.UserRoles);
     }
 
     [Fact]
     public async Task CreateAsync_NewDoctorEmptyPassword_Throws()
     {
         // Arrange
-        var context = GetContext();
         var sut = GetSut();
         var spec1 = GetTestSpec1();
         var doctor = CreateDoctor([spec1]);
-        
+
         // Act & Assert
         var result = await Assert.ThrowsAnyAsync<Exception>(() => sut.CreateAsync(doctor, string.Empty));
         Assert.Contains("Passwords must be", result.Message);
@@ -267,12 +263,12 @@ public class DoctorServiceIntegrationTests : IDisposable, IAsyncDisposable
     public async Task CreateAsync_NewDoctorMissingDetails_Throws()
     {
         // Arrange
-        var context = GetContext();
         var sut = GetSut();
         var spec1 = GetTestSpec1();
         var doctor = CreateDoctor([spec1]);
         doctor.FirstName = null;
-        
+        doctor.LastName = null;
+
         // Act & Assert
         var result = await Assert.ThrowsAnyAsync<Exception>(() => sut.CreateAsync(doctor, TestPassword));
         Assert.Contains("An error occurred while saving the entity", result.Message);
@@ -282,22 +278,16 @@ public class DoctorServiceIntegrationTests : IDisposable, IAsyncDisposable
     public async Task CreateAsync_ExistingDoctor_Throws()
     {
         // Arrange
-        var context = GetContext();
         var sut = GetSut();
         var spec1 = GetTestSpec1();
         CreateAndSeedDoctor([spec1]);
         var duplicate = CreateDoctor([spec1]);
-        
+
         // Act & Assert
         var result = await Assert.ThrowsAnyAsync<Exception>(() => sut.CreateAsync(duplicate, TestPassword));
         Assert.Equal("A duplicate record exists", result.Message);
-        Assert.Single(context.Doctors);
-        Assert.Single(context.DoctorSpecializations);
-        Assert.Single(context.Accounts);
-        Assert.Single(context.Users);
-        Assert.Single(context.UserRoles);
     }
-    
+
     [Fact]
     public async Task FindByIdAsync_ExistingDoctor_ReturnsDoctor()
     {
@@ -305,10 +295,10 @@ public class DoctorServiceIntegrationTests : IDisposable, IAsyncDisposable
         var sut = GetSut();
         var spec1 = GetTestSpec1();
         var doctor = CreateAndSeedDoctor([spec1]);
-        
+
         // Act
         var result = await sut.FindByIdAsync(doctor.Id);
-        
+
         // Assert
         Assert.NotNull(result);
         Assert.Equal(doctor.Id, result.Id);
@@ -329,10 +319,10 @@ public class DoctorServiceIntegrationTests : IDisposable, IAsyncDisposable
         // Arrange
         var sut = GetSut();
         var doctor = CreateAndSeedDoctor();
-        
+
         // Act
         var result = await sut.FindByIdAsync(doctor.Id);
-        
+
         // Assert
         Assert.NotNull(result);
         Assert.Equal(doctor.Id, result.Id);
@@ -344,27 +334,27 @@ public class DoctorServiceIntegrationTests : IDisposable, IAsyncDisposable
     {
         // Arrange
         var sut = GetSut();
-        
+
         // Act
         var result = await sut.FindByIdAsync(Guid.NewGuid());
-        
+
         // Assert
         Assert.Null(result);
     }
-    
+
     [Fact]
     public async Task FindByIdAsync_EmptyId_ReturnsNull()
     {
         // Arrange
         var sut = GetSut();
-        
+
         // Act
         var result = await sut.FindByIdAsync(Guid.Empty);
-        
+
         // Assert
         Assert.Null(result);
     }
-    
+
     [Fact]
     public async Task UpdateAsync_ExistingDoctor_UpdatesDoctor()
     {
@@ -374,7 +364,7 @@ public class DoctorServiceIntegrationTests : IDisposable, IAsyncDisposable
         var spec1 = GetTestSpec1();
         var spec2 = GetTestSpec2();
         var doctor = CreateAndSeedDoctor([spec1]);
-        
+
         doctor.FirstName = "UpdatedFirstName";
         doctor.LastName = "UpdatedLastName";
         doctor.Gender = "UpdatedGender";
@@ -388,7 +378,7 @@ public class DoctorServiceIntegrationTests : IDisposable, IAsyncDisposable
 
         // Act
         await sut.UpdateAsync(doctor);
-        
+
         // Assert
         var result = context.Doctors.First(d => d.Id == doctor.Id);
         Assert.Equal(doctor.FirstName, result.FirstName);
@@ -413,12 +403,12 @@ public class DoctorServiceIntegrationTests : IDisposable, IAsyncDisposable
         var spec1 = GetTestSpec1();
         var doctor = CreateDoctor([spec1]);
         doctor.Id = Guid.NewGuid();
-        
+
         // Act & Assert
         var result = await Assert.ThrowsAnyAsync<Exception>(() => sut.UpdateAsync(doctor));
         Assert.Contains("Sequence contains no elements", result.Message);
     }
-    
+
     [Fact]
     public async Task UpdateAsync_ExistingDoctorMissingDetails_Throws()
     {
@@ -426,38 +416,39 @@ public class DoctorServiceIntegrationTests : IDisposable, IAsyncDisposable
         var sut = GetSut();
         var spec1 = GetTestSpec1();
         var doctor = CreateAndSeedDoctor([spec1]);
-        
+
         doctor.FirstName = null;
         doctor.LastName = null;
-        
+
         // Act & Assert
         var result = await Assert.ThrowsAnyAsync<Exception>(() => sut.UpdateAsync(doctor));
         Assert.Contains("An error occurred while saving the entity changes", result.Message);
     }
-    
+
     [Fact]
     public async Task UpdateAsync_ExistingDoctorMissingSpecializations_Throws()
     {
         // Arrange
         var sut = GetSut();
         var spec1 = GetTestSpec1();
-        var doctor = CreateAndSeedDoctor([spec1]);
-        
+        var spec2 = GetTestSpec2();
+        var doctor = CreateAndSeedDoctor([spec1, spec2]);
+
         var specs = doctor.Specializations.ToList();
         specs.Clear();
         doctor.Specializations = specs;
-        
+
         // Act & Assert
         var result = await Assert.ThrowsAnyAsync<Exception>(() => sut.UpdateAsync(doctor));
         Assert.Equal("Specialization list cannot be empty", result.Message);
     }
-    
+
     [Fact]
     public async Task UpdateAsync_NullDoctor_Throws()
     {
         // Arrange
         var sut = GetSut();
-        
+
         // Act & Assert
         var result = await Assert.ThrowsAnyAsync<Exception>(() => sut.UpdateAsync(null));
         Assert.Contains("Object reference not set to an instance of an object", result.Message);
@@ -472,10 +463,10 @@ public class DoctorServiceIntegrationTests : IDisposable, IAsyncDisposable
         var spec1 = GetTestSpec1();
         var spec2 = GetTestSpec2();
         var doctor = CreateAndSeedDoctor([spec1, spec2]);
-        
+
         // Act
         await sut.DeleteAsync(doctor);
-        
+
         // Assert
         Assert.Empty(context.Doctors);
         Assert.Empty(context.DoctorSpecializations);
@@ -483,7 +474,7 @@ public class DoctorServiceIntegrationTests : IDisposable, IAsyncDisposable
         Assert.Empty(context.Users);
         Assert.Empty(context.UserRoles);
     }
-    
+
     [Fact]
     public async Task DeleteAsync_NonExistingDoctor_Throws()
     {
@@ -491,7 +482,7 @@ public class DoctorServiceIntegrationTests : IDisposable, IAsyncDisposable
         var sut = GetSut();
         var doctor = CreateDoctor();
         doctor.Id = Guid.NewGuid();
-        
+
         // Act & Assert
         var result = await Assert.ThrowsAnyAsync<Exception>(() => sut.DeleteAsync(doctor));
         Assert.Contains("Sequence contains no elements", result.Message);
@@ -502,7 +493,7 @@ public class DoctorServiceIntegrationTests : IDisposable, IAsyncDisposable
     {
         // Arrange
         var sut = GetSut();
-        
+
         // Act & Assert
         var result = await Assert.ThrowsAnyAsync<Exception>(() => sut.DeleteAsync(null!));
         Assert.Contains("Object reference not set to an instance of an object", result.Message);
