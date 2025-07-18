@@ -2,22 +2,13 @@
 using HospitalManagementSystem2.Models.Entities;
 using HospitalManagementSystem2.Repositories;
 using HospitalManagementSystem2.Tests.Helpers;
+using HospitalManagementSystem2.Tests.TestData;
 using Microsoft.EntityFrameworkCore;
 
 namespace HospitalManagementSystem2.Tests.Repositories;
 
 public class PatientRepositoryUnitTests : IDisposable, IAsyncDisposable
 {
-    private const string TestTitle = "TestTitle";
-    private const string TestFirstName = "TestFirstName";
-    private const string TestLastName = "TestLastName";
-    private const string TestGender = "TestGender";
-    private const string TestAddress = "TestAddress";
-    private const string TestPhone = "TestPhoneNumber";
-    private const string TestEmail = "TestEmail";
-    private static readonly DateOnly TestDateOfBirth = DateOnly.FromDateTime(DateTime.UnixEpoch);
-    private const BloodType TestBloodType = BloodType.AbNegative;
-    
     private readonly ApplicationDbContext _context;
     private readonly PatientRepository _sut;
         
@@ -36,35 +27,12 @@ public class PatientRepositoryUnitTests : IDisposable, IAsyncDisposable
         _context = InMemoryDbHelper.CreateInMemDb();
         _sut = new PatientRepository(_context);
     }
-
-    private static Patient CreatePatient() => new Patient
-    {
-        Title = TestTitle,
-        FirstName = TestFirstName,
-        LastName = TestLastName,
-        Gender = TestGender,
-        Address = TestAddress,
-        Phone = TestPhone,
-        Email = TestEmail,
-        DateOfBirth = TestDateOfBirth,
-        BloodType = TestBloodType
-    };
-
-    private Patient CreateAndSeedPatient()
-    {
-        var patient = CreatePatient();
-        _context.Patients.Add(patient);
-        _context.SaveChanges();
-
-        _context.Entry(patient).State = EntityState.Detached;
-        return patient;
-    }
     
     [Fact]
     public async Task AddAsync_NewPatient_AddsToDatabase()
     {
         // Arrange
-        var patient = CreatePatient();
+        var patient = PatientTestData.CreatePatient();
         
         // Act
         await _sut.AddAsync(patient);
@@ -89,7 +57,7 @@ public class PatientRepositoryUnitTests : IDisposable, IAsyncDisposable
     public async Task AddAsync_NewPatientMissingDetails_Throws()
     {
         // Arrange
-        var patient = CreatePatient();
+        var patient = PatientTestData.CreatePatient();
         patient.FirstName = null!;
         patient.LastName = null;
         
@@ -105,8 +73,8 @@ public class PatientRepositoryUnitTests : IDisposable, IAsyncDisposable
     public async Task AddAsync_DuplicatePatient_AddsDuplicateToDatabase()
     {
         // Arrange
-        CreateAndSeedPatient();
-        var duplicate = CreatePatient();
+        PatientTestData.CreateAndSeedPatient(_context);
+        var duplicate = PatientTestData.CreatePatient();
         
         // Act
         await _sut.AddAsync(duplicate);
@@ -131,7 +99,7 @@ public class PatientRepositoryUnitTests : IDisposable, IAsyncDisposable
     public async Task UpdateAsync_ExistingPatient_UpdatesInDatabase()
     {
         // Arrange
-        var patient = CreateAndSeedPatient();
+        var patient = PatientTestData.CreateAndSeedPatient(_context);
         patient.FirstName = "UpdatedFirstName";
         patient.LastName = "UpdatedLastName";
         patient.BloodType = BloodType.OPositive;
@@ -152,7 +120,7 @@ public class PatientRepositoryUnitTests : IDisposable, IAsyncDisposable
     public async Task UpdateAsync_NonExistingPatient_Throws()
     {
         // Arrange
-        var patient = CreatePatient();
+        var patient = PatientTestData.CreatePatient();
         
         // Act & Assert
         var result = await Assert.ThrowsAnyAsync<Exception>(() => _sut.UpdateAsync(patient));
@@ -172,7 +140,7 @@ public class PatientRepositoryUnitTests : IDisposable, IAsyncDisposable
     public async Task RemoveAsync_ExistingPatient_RemovesFromDatabase()
     {
         // Arrange
-        var patient = CreateAndSeedPatient();
+        var patient = PatientTestData.CreateAndSeedPatient(_context);
         
         // Act
         await _sut.RemoveAsync(patient);
@@ -186,7 +154,7 @@ public class PatientRepositoryUnitTests : IDisposable, IAsyncDisposable
     public async Task RemoveAsync_NonExistingPatient_Throws()
     {
         // Arrange
-        var patient = CreatePatient();
+        var patient = PatientTestData.CreatePatient();
         
         // Act & Assert
         var result = await Assert.ThrowsAnyAsync<Exception>(() => _sut.RemoveAsync(patient));
