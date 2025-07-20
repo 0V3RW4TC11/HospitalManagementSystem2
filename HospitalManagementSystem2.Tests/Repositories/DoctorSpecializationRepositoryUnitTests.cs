@@ -23,13 +23,11 @@ public class DoctorSpecializationRepositoryUnitTests : IDisposable, IAsyncDispos
     public async ValueTask DisposeAsync()
     {
         await _context.DisposeAsync();
-        GC.SuppressFinalize(this);
     }
 
     public void Dispose()
     {
         _context.Dispose();
-        GC.SuppressFinalize(this);
     }
 
     [Fact]
