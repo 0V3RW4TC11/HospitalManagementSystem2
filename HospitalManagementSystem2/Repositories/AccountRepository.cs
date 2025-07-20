@@ -19,7 +19,7 @@ public class AccountRepository : IAccountRepository
 
     public async Task RemoveAsync(Account account)
     {
-        var entry = await _accounts.FirstAsync(a => a == account);
+        var entry = await _accounts.SingleAsync(a => a == account);
         _accounts.Remove(entry);
     }
 }

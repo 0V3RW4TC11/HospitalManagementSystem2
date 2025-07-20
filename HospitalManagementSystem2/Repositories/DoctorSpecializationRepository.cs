@@ -26,7 +26,7 @@ public class DoctorSpecializationRepository : IDoctorSpecializationRepository
         var toRemove = new List<DoctorSpecialization>();
         foreach (var ds in doctorSpecializations)
         {
-            toRemove.Add(await _doctorSpecs.FirstAsync(x => x == ds));
+            toRemove.Add(await _doctorSpecs.SingleAsync(x => x == ds));
         }
         
         _doctorSpecs.RemoveRange(toRemove);

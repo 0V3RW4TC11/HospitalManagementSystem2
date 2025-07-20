@@ -30,18 +30,19 @@ public class DoctorRepository : IDoctorRepository
 
     public async Task<Doctor?> FindByIdAsync(Guid id)
     {
-        var doctor = await Doctors.FirstOrDefaultAsync(d => d.Id == id);
+        var doctor = await Doctors.SingleOrDefaultAsync(d => d.Id == id);
         
         if (doctor == null) return null;
         
         var doctorSpecs 
             = await _doctorSpecializationRepository.DoctorSpecializations.Where(ds 
                 => ds.DoctorId == id).ToArrayAsync();
+        
         var specs = new List<Specialization>();
         foreach (var ds in doctorSpecs)
         {
             var spec = await _specializationRepository.Specializations
-                .FirstAsync(s => s.Id == ds.SpecializationId);
+                .SingleAsync(s => s.Id == ds.SpecializationId);
             specs.Add(spec);
         }
         doctor.Specializations = specs;
@@ -51,7 +52,7 @@ public class DoctorRepository : IDoctorRepository
 
     public async Task UpdateAsync(Doctor doctor)
     {
-        var entry = await _doctors.FirstAsync(x => x.Id == doctor.Id);
+        var entry = await _doctors.SingleAsync(x => x.Id == doctor.Id);
         
         entry.FirstName = doctor.FirstName;
         entry.LastName = doctor.LastName;
@@ -81,7 +82,7 @@ public class DoctorRepository : IDoctorRepository
 
     public async Task RemoveAsync(Doctor doctor)
     {
-        var entry = await _doctors.FirstAsync(x => x.Id == doctor.Id);
+        var entry = await _doctors.SingleAsync(x => x.Id == doctor.Id);
         
         _doctors.Remove(entry);
     }
