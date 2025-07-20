@@ -5,16 +5,28 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace HospitalManagementSystem2.Tests.Helpers;
 
-public static class TestAccountHelper
+public static class AccountTestHelper
 {
     public static void AssertHasAccount(ApplicationDbContext context, Guid userId, string roleId)
     {
-        var accountResult = context.Accounts.FirstOrDefault(a => a.UserId == userId);
-        Assert.NotNull(accountResult);
-        Assert.Contains(context.Users, u => u.Id == accountResult.IdentityUserId);
+        var account = context.Accounts.SingleOrDefault(a => a.UserId == userId);
+        Assert.NotNull(account);
+        Assert.Contains(context.Users, u => u.Id == account.IdentityUserId);
         Assert.Contains(context.UserRoles, ur 
-            => ur.UserId == accountResult.IdentityUserId && 
+            => ur.UserId == account.IdentityUserId && 
                ur.RoleId == roleId);
+    }
+    
+    public static void AssertHasNoAccount(ApplicationDbContext context, Account account)
+    {
+        Assert.DoesNotContain(context.Accounts, a => a.UserId == account.UserId);;
+        Assert.DoesNotContain(context.Users, u => u.Id == account.IdentityUserId);
+        Assert.DoesNotContain(context.UserRoles, ur => ur.UserId == account.IdentityUserId);
+    }
+
+    public static Account GetAccount(ApplicationDbContext context, Guid userId)
+    {
+        return context.Accounts.Single(a => a.UserId == userId);
     }
 
     public static void SeedAccount(ApplicationDbContext context, 

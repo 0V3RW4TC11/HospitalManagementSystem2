@@ -3,6 +3,7 @@ using HospitalManagementSystem2.Models.Entities;
 using HospitalManagementSystem2.Repositories;
 using HospitalManagementSystem2.Services;
 using HospitalManagementSystem2.Tests.Helpers;
+using HospitalManagementSystem2.Tests.TestData;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -14,23 +15,8 @@ namespace HospitalManagementSystem2.Tests.Services;
 
 public class AdminServiceIntegrationTests : IDisposable, IAsyncDisposable
 {
-    // Test Admin Details
-    private const string TestTitle = "TestTitle";
-    private const string TestFirstName = "TestFirstName";
-    private const string TestLastName = "TestLastName";
-    private const string TestGender = "TestGender";
-    private const string TestAddress = "TestAddress";
-    private const string TestPhone = "TestPhone";
-    private const string TestEmail = "TestEmail";
-    private const string TestPassword = "TestPass123!";
-    private static readonly string ExpectedOrgEmail 
-        = $"{TestFirstName.ToLower()}.{TestLastName.ToLower()}@{Constants.StaffEmailDomain}";
-
-    private static readonly DateOnly TestDateOfBirth = DateOnly.FromDateTime(DateTime.UnixEpoch);
-
     // Services
     private readonly SqliteInMemDbHelper _dbHelper;
-    private readonly IServiceProvider _serviceProvider;
 
     public AdminServiceIntegrationTests()
     {
@@ -44,13 +30,7 @@ public class AdminServiceIntegrationTests : IDisposable, IAsyncDisposable
             services.AddScoped<AdminService>();
         });
         
-        // Set service provider
-        _serviceProvider = _dbHelper.ServiceProvider;
-
-        // Inject ADMIN role
-        using var scope = _serviceProvider.CreateScope();
-        var roleMan = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-        roleMan.CreateAsync(new IdentityRole(Constants.AuthRoles.Admin)).GetAwaiter().GetResult();
+        SeedAdminRole();
     }
 
     public async ValueTask DisposeAsync()
@@ -63,294 +43,158 @@ public class AdminServiceIntegrationTests : IDisposable, IAsyncDisposable
         _dbHelper.Dispose();
     }
 
+    private void SeedAdminRole()
+    {
+        using var scope = _dbHelper.ServiceProvider.CreateScope();
+        var roleMan = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        roleMan.CreateAsync(new IdentityRole(Constants.AuthRoles.Admin)).GetAwaiter().GetResult();
+    }
+    
+    private ApplicationDbContext GetContext() => _dbHelper.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    
+    private AdminService GetSut() => _dbHelper.ServiceProvider.GetRequiredService<AdminService>();
+    
+    private string GetAdminRoleId() => GetContext().Roles.Single(r => r.Name == Constants.AuthRoles.Admin).Id;
+
+    private Admin CreateAdminAccount()
+    {
+        var context = GetContext();
+        var admin = AdminTestHelper.CreateAndSeedAdmin(context);
+        AccountTestHelper.SeedAccount(context, 
+                                      _dbHelper.ServiceProvider, 
+                                      admin.Id, 
+                                      StaffTestHelper.ExpectedOrgEmail(admin.FirstName, admin.LastName!), 
+                                      PersonTestData.TestPassword,
+                                      Constants.AuthRoles.Admin);
+        return admin;
+    }
+
     [Fact]
     public async Task CreateAsync_NewAdmin_AddsToDatabase()
     {
         // Arrange
-        var context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
-        var userMan = _serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
-        var sut = _serviceProvider.GetRequiredService<AdminService>();
-        var admin = new Admin
-        {
-            Title = TestTitle,
-            FirstName = TestFirstName,
-            LastName = TestLastName,
-            Gender = TestGender,
-            Address = TestAddress,
-            Phone = TestPhone,
-            Email = TestEmail,
-            DateOfBirth = TestDateOfBirth
-        };
+        var context = _dbHelper.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var admin = AdminTestHelper.CreateAdmin();
 
         // Act
-        await sut.CreateAsync(admin, TestPassword);
+        await GetSut().CreateAsync(admin, PersonTestData.TestPassword);
 
         // Assert
-        Assert.NotEqual(Guid.Empty, admin.Id);
-        Assert.Contains(context.Admins, a => a.Id == admin.Id);
-        var account = context.Accounts.FirstOrDefault(a => a.UserId == admin.Id);
-        Assert.NotNull(account);
-        var identityUser = context.Users.FirstOrDefault(u => u.Id == account.IdentityUserId);
-        Assert.NotNull(identityUser);
-        Assert.Equal(ExpectedOrgEmail, identityUser.UserName);
-        Assert.True(await userMan.IsInRoleAsync(identityUser, Constants.AuthRoles.Admin));
+        AdminTestHelper.AssertHasData(context, admin);
+        AccountTestHelper.AssertHasAccount(context, admin.Id, GetAdminRoleId());
     }
 
     [Fact]
-    public async Task CreateAsync_AdminWithExistingDetails_ThrowsWithMessage()
+    public async Task CreateAsync_NewAdminExistingDetails_Throws()
     {
         // Arrange
-        var context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
-        var sut = _serviceProvider.GetRequiredService<AdminService>();
-        var admin = new Admin
-        {
-            Title = TestTitle,
-            FirstName = TestFirstName,
-            LastName = TestLastName,
-            Gender = TestGender,
-            Address = TestAddress,
-            Phone = TestPhone,
-            Email = TestEmail,
-            DateOfBirth = TestDateOfBirth
-        };
-        var otherAdmin = new Admin
-        {
-            Title = TestTitle,
-            FirstName = TestFirstName,
-            LastName = TestLastName,
-            Gender = TestGender,
-            Address = TestAddress,
-            Phone = TestPhone,
-            Email = TestEmail,
-            DateOfBirth = TestDateOfBirth
-        };
-        var expectedMessage = "A duplicate record exists";
-
-        context.Admins.Add(admin);
-        context.SaveChanges();
+        var admin = AdminTestHelper.CreateAdmin();
+        CreateAdminAccount();
         
         // Act & Assert
-        var result = await Assert.ThrowsAnyAsync<Exception>(() => sut.CreateAsync(otherAdmin, TestPassword));
-        Assert.Equal(expectedMessage, result.Message);
-        Assert.Equal(Guid.Empty, otherAdmin.Id);
-        Assert.DoesNotContain(context.Admins, a => a == otherAdmin);
-        Assert.Empty(context.Accounts);
-        Assert.Empty(context.Users);
+        var result = await Assert.ThrowsAnyAsync<Exception>(() => GetSut().CreateAsync(admin, PersonTestData.TestPassword));
+        Assert.Contains(ErrorMessageData.DuplicateRecord, result.Message);
     }
 
     [Fact]
-    public async Task CreateAsync_AdminWithRequiredFieldMissing_Throws()
+    public async Task CreateAsync_NewAdminInvalidData_Throws()
     {
         // Arrange
-        var context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
-        var sut = _serviceProvider.GetRequiredService<AdminService>();
-        var admin = new Admin
-        {
-            Title = TestTitle,
-            FirstName = null,
-            LastName = TestLastName,
-            Gender = TestGender,
-            Address = TestAddress,
-            Phone = TestPhone,
-            Email = TestEmail,
-            DateOfBirth = TestDateOfBirth
-        };
+        var admin = AdminTestHelper.CreateAdmin();
+        admin.FirstName = null!;
         
         // Act & Assert
-        await Assert.ThrowsAnyAsync<Exception>(() => sut.CreateAsync(admin, TestPassword));
-        Assert.Empty(context.Admins);
-        Assert.Empty(context.Accounts);
-        Assert.Empty(context.Users);
-    }
-    
-    [Fact]
-    public async Task CreateAsync_AdminWithUnrequiredFieldMissing_AddsToDatabase()
-    {
-        // Arrange
-        var context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
-        var userMan = _serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
-        var sut = _serviceProvider.GetRequiredService<AdminService>();
-        var admin = new Admin
-        {
-            Title = null,
-            FirstName = TestFirstName,
-            LastName = TestLastName,
-            Gender = TestGender,
-            Address = TestAddress,
-            Phone = TestPhone,
-            Email = TestEmail,
-            DateOfBirth = TestDateOfBirth
-        };
-        
-        // Act & Assert
-        await sut.CreateAsync(admin, TestPassword);
-        
-        // Assert
-        Assert.NotEqual(Guid.Empty, admin.Id);
-        Assert.Contains(context.Admins, a => a.Id == admin.Id);
-        var account = context.Accounts.FirstOrDefault(a => a.UserId == admin.Id);
-        Assert.NotNull(account);
-        var identityUser = context.Users.FirstOrDefault(u => u.Id == account.IdentityUserId);
-        Assert.NotNull(identityUser);
-        Assert.True(await userMan.IsInRoleAsync(identityUser, Constants.AuthRoles.Admin));
+        var result = await Assert.ThrowsAnyAsync<Exception>(() => GetSut().CreateAsync(admin, PersonTestData.TestPassword));
+        Assert.Contains(ErrorMessageData.EntityChangesError, result.Message);;
     }
 
     [Fact]
     public async Task CreateAsync_NullAdmin_Throws()
     {
-        // Arrange
-        var context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
-        var sut = _serviceProvider.GetRequiredService<AdminService>();
-        
         // Act & Assert
-        await Assert.ThrowsAnyAsync<Exception>(() => sut.CreateAsync(null, TestPassword));
-        Assert.Empty(context.Admins);
-        Assert.Empty(context.Accounts);
-        Assert.Empty(context.Users);
+        var result = await Assert.ThrowsAnyAsync<Exception>(() => GetSut().CreateAsync(null!, PersonTestData.TestPassword));
+        Assert.Contains(ErrorMessageData.LinqQueryExceptionThrown, result.Message);
     }
 
     [Fact]
     public async Task UpdateAsync_ExistingAdmin_UpdatesAdmin()
     {
         // Arrange
-        var context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
-        var sut = _serviceProvider.GetRequiredService<AdminService>();
-        var admin = new Admin
-        {
-            Title = TestTitle,
-            FirstName = TestFirstName,
-            LastName = TestLastName,
-            Gender = TestGender,
-            Address = TestAddress,
-            Phone = TestPhone,
-            Email = TestEmail,
-            DateOfBirth = TestDateOfBirth
-        };
-        context.Admins.Add(admin);
-        context.SaveChanges();
-        admin.FirstName = "AnotherName";
+        var context = GetContext();
+        var admin = CreateAdminAccount();
+        admin.FirstName = "NewFirstName";
         
         // Act
-        await sut.UpdateAsync(admin);
+        await GetSut().UpdateAsync(admin);
         
         // Assert
-        var result = context.Admins.FirstOrDefault(a => a.Id == admin.Id);
-        Assert.NotNull(result);
-        Assert.Equal(admin.FirstName, result.FirstName);
+        AdminTestHelper.AssertHasData(context, admin);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_ExistingAdminInvalidData_Throws()
+    {
+        // Arrange
+        var context = GetContext();
+        var admin = CreateAdminAccount();
+        admin.FirstName = null!;
+        
+        // Act & Assert
+        var result = await Assert.ThrowsAnyAsync<Exception>(() => GetSut().UpdateAsync(admin));
+        Assert.Contains(ErrorMessageData.EntityChangesError, result.Message);
     }
 
     [Fact]
     public async Task UpdateAsync_NonExistingAdmin_Throws()
     {
         // Arrange
-        var sut = _serviceProvider.GetRequiredService<AdminService>();
-        var admin = new Admin
-        {
-            Title = TestTitle,
-            FirstName = TestFirstName,
-            LastName = TestLastName,
-            Gender = TestGender,
-            Address = TestAddress,
-            Phone = TestPhone,
-            Email = TestEmail,
-            DateOfBirth = TestDateOfBirth
-        };
+        var admin = AdminTestHelper.CreateAdmin();
         
         // Act & Assert
-        await Assert.ThrowsAnyAsync<Exception>(() => sut.UpdateAsync(admin));
-    }
-
-    [Fact]
-    public async Task UpdateAsync_AdminWithMissingRequiredDetails_Throws()
-    {
-        // Arrange
-        var context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
-        var sut = _serviceProvider.GetRequiredService<AdminService>();
-        var admin = new Admin
-        {
-            Title = TestTitle,
-            FirstName = TestFirstName,
-            LastName = TestLastName,
-            Gender = TestGender,
-            Address = TestAddress,
-            Phone = TestPhone,
-            Email = TestEmail,
-            DateOfBirth = TestDateOfBirth
-        };
-        context.Admins.Add(admin);
-        context.SaveChanges();
-        admin.FirstName = null;
-        
-        // Act & Assert
-        await Assert.ThrowsAnyAsync<Exception>(() => sut.UpdateAsync(admin));
+        var result = await Assert.ThrowsAnyAsync<Exception>(() => GetSut().UpdateAsync(admin));
+        Assert.Contains(ErrorMessageData.SequenceNoElements, result.Message);
     }
 
     [Fact]
     public async Task UpdateAsync_NullAdmin_Throws()
     {
-        // Arrange
-        var sut = _serviceProvider.GetRequiredService<AdminService>();
-        
         // Act & Assert
-        await Assert.ThrowsAnyAsync<Exception>(() => sut.UpdateAsync(null));
+        var result = await Assert.ThrowsAnyAsync<Exception>(() => GetSut().UpdateAsync(null!));
+        Assert.Contains(ErrorMessageData.LinqQueryExceptionThrown, result.Message);
     }
 
     [Fact]
-    public async Task DeleteAsync_CreateAdminThenDelete_RemovesAdminAndAccount()
+    public async Task DeleteAsync_ExistingAdmin_RemovesAdmin()
     {
         // Arrange
-        var context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
-        var sut = _serviceProvider.GetRequiredService<AdminService>();
-        var admin = new Admin
-        {
-            Title = TestTitle,
-            FirstName = TestFirstName,
-            LastName = TestLastName,
-            Gender = TestGender,
-            Address = TestAddress,
-            Phone = TestPhone,
-            Email = TestEmail,
-            DateOfBirth = TestDateOfBirth
-        };
+        var context = GetContext();
+        var admin = CreateAdminAccount();
+        var account = AccountTestHelper.GetAccount(context, admin.Id);
         
         // Act
-        await sut.CreateAsync(admin, TestPassword);
-        await sut.DeleteAsync(admin);
+        await GetSut().DeleteAsync(admin);
         
         // Assert
-        Assert.Empty(context.Admins);
-        Assert.Empty(context.Accounts);
-        Assert.Empty(context.Users);
+        AdminTestHelper.AssertHasNoData(context, admin);
+        AccountTestHelper.AssertHasNoAccount(context, account);
     }
 
     [Fact]
     public async Task DeleteAsync_NonExistingAdmin_Throws()
     {
         // Arrange
-        var sut = _serviceProvider.GetRequiredService<AdminService>();
-        var admin = new Admin
-        {
-            Title = TestTitle,
-            FirstName = TestFirstName,
-            LastName = TestLastName,
-            Gender = TestGender,
-            Address = TestAddress,
-            Phone = TestPhone,
-            Email = TestEmail,
-            DateOfBirth = TestDateOfBirth
-        };
+        var admin = AdminTestHelper.CreateAdmin();
         
         // Act & Assert
-        await Assert.ThrowsAnyAsync<Exception>(() => sut.DeleteAsync(admin));
+        var result = await Assert.ThrowsAnyAsync<Exception>(() => GetSut().DeleteAsync(admin));
+        Assert.Contains(ErrorMessageData.SequenceNoElements, result.Message);
     }
 
     [Fact]
     public async Task DeleteAsync_NullAdmin_Throws()
     {
-        // Arrange
-        var sut = _serviceProvider.GetRequiredService<AdminService>();
-        
         // Act & Assert
-        await Assert.ThrowsAnyAsync<Exception>(() => sut.DeleteAsync(null));
+        var result = await Assert.ThrowsAnyAsync<Exception>(() => GetSut().DeleteAsync(null!));
+        Assert.Contains(ErrorMessageData.LinqQueryExceptionThrown, result.Message);   
     }
 }

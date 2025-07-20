@@ -32,7 +32,7 @@ public class PatientRepositoryUnitTests : IDisposable, IAsyncDisposable
     public async Task AddAsync_NewPatient_AddsToDatabase()
     {
         // Arrange
-        var patient = PatientTestData.CreatePatient();
+        var patient = PatientTestHelper.CreatePatient();
         
         // Act
         await _sut.AddAsync(patient);
@@ -57,7 +57,7 @@ public class PatientRepositoryUnitTests : IDisposable, IAsyncDisposable
     public async Task AddAsync_NewPatientMissingDetails_Throws()
     {
         // Arrange
-        var patient = PatientTestData.CreatePatient();
+        var patient = PatientTestHelper.CreatePatient();
         patient.FirstName = null!;
         patient.LastName = null;
         
@@ -73,8 +73,8 @@ public class PatientRepositoryUnitTests : IDisposable, IAsyncDisposable
     public async Task AddAsync_DuplicatePatient_AddsDuplicateToDatabase()
     {
         // Arrange
-        PatientTestData.CreateAndSeedPatient(_context);
-        var duplicate = PatientTestData.CreatePatient();
+        PatientTestHelper.CreateAndSeedPatient(_context);
+        var duplicate = PatientTestHelper.CreatePatient();
         
         // Act
         await _sut.AddAsync(duplicate);
@@ -99,7 +99,7 @@ public class PatientRepositoryUnitTests : IDisposable, IAsyncDisposable
     public async Task UpdateAsync_ExistingPatient_UpdatesInDatabase()
     {
         // Arrange
-        var patient = PatientTestData.CreateAndSeedPatient(_context);
+        var patient = PatientTestHelper.CreateAndSeedPatient(_context);
         patient.FirstName = "UpdatedFirstName";
         patient.LastName = "UpdatedLastName";
         patient.BloodType = BloodType.OPositive;
@@ -120,7 +120,7 @@ public class PatientRepositoryUnitTests : IDisposable, IAsyncDisposable
     public async Task UpdateAsync_NonExistingPatient_Throws()
     {
         // Arrange
-        var patient = PatientTestData.CreatePatient();
+        var patient = PatientTestHelper.CreatePatient();
         
         // Act & Assert
         var result = await Assert.ThrowsAnyAsync<Exception>(() => _sut.UpdateAsync(patient));
@@ -140,7 +140,7 @@ public class PatientRepositoryUnitTests : IDisposable, IAsyncDisposable
     public async Task RemoveAsync_ExistingPatient_RemovesFromDatabase()
     {
         // Arrange
-        var patient = PatientTestData.CreateAndSeedPatient(_context);
+        var patient = PatientTestHelper.CreateAndSeedPatient(_context);
         
         // Act
         await _sut.RemoveAsync(patient);
@@ -154,7 +154,7 @@ public class PatientRepositoryUnitTests : IDisposable, IAsyncDisposable
     public async Task RemoveAsync_NonExistingPatient_Throws()
     {
         // Arrange
-        var patient = PatientTestData.CreatePatient();
+        var patient = PatientTestHelper.CreatePatient();
         
         // Act & Assert
         var result = await Assert.ThrowsAnyAsync<Exception>(() => _sut.RemoveAsync(patient));

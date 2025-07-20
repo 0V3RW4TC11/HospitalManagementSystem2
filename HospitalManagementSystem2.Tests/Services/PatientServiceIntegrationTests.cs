@@ -53,15 +53,15 @@ public class PatientServiceIntegrationTests : IDisposable, IAsyncDisposable
         return context.Roles.First(r => r.Name == Constants.AuthRoles.Patient).Id;
     }
 
-    private Patient CreateAndSeedPatientAccount()
+    private Patient CreatePatientAccount()
     {
         var context = GetContext();
-        var patient = PatientTestData.CreateAndSeedPatient(context);
-        TestAccountHelper.SeedAccount(context, 
+        var patient = PatientTestHelper.CreateAndSeedPatient(context);
+        AccountTestHelper.SeedAccount(context, 
                                       _dbHelper.ServiceProvider, 
                                       patient.Id, 
                                       patient.Email, 
-                                      PatientTestData.TestPassword, 
+                                      PersonTestData.TestPassword, 
                                       Constants.AuthRoles.Patient);
 
         return patient;
@@ -72,70 +72,59 @@ public class PatientServiceIntegrationTests : IDisposable, IAsyncDisposable
     {
         // Arrange
         var context = GetContext();
-        var patient = PatientTestData.CreatePatient();
+        var patient = PatientTestHelper.CreatePatient();
         
         // Act
-        await GetSut().CreateAsync(patient, PatientTestData.TestPassword);
+        await GetSut().CreateAsync(patient, PersonTestData.TestPassword);
         
         // Assert
-        var patientResult = context.Patients.FirstOrDefault(p => p.Id == patient.Id);
-        Assert.NotNull(patientResult);
-        Assert.Equal(PatientTestData.Title, patientResult.Title);
-        Assert.Equal(PatientTestData.FirstName, patientResult.FirstName);
-        Assert.Equal(PatientTestData.LastName, patientResult.LastName);
-        Assert.Equal(PatientTestData.Gender, patientResult.Gender);
-        Assert.Equal(PatientTestData.Address, patientResult.Address);
-        Assert.Equal(PatientTestData.Phone, patientResult.Phone);
-        Assert.Equal(PatientTestData.Email, patientResult.Email);
-        Assert.Equal(PatientTestData.DateOfBirth, patientResult.DateOfBirth);
-        Assert.Equal(PatientTestData.BloodType, patientResult.BloodType);
-        
-        TestAccountHelper.AssertHasAccount(context, patient.Id, GetPatientRoleId());
+        PatientTestHelper.AssertHasData(context, patient);
+        AccountTestHelper.AssertHasAccount(context, patient.Id, GetPatientRoleId());
     }
     
     [Fact]
     public async Task CreateAsync_NewPatientInvalidData_Throws()
     {
         // Arrange
-        var patient = PatientTestData.CreatePatient();
+        var patient = PatientTestHelper.CreatePatient();
         patient.FirstName = null!;
         
         // Act & Assert
-        var result = await Assert.ThrowsAnyAsync<Exception>(() 
-            => GetSut().CreateAsync(patient, PatientTestData.TestPassword));
-        Assert.Contains(ErrorMessageHelper.EntityChangesError, result.Message);
+        var result = await Assert.ThrowsAnyAsync<Exception>(() => GetSut().CreateAsync(patient, PersonTestData.TestPassword));
+        Assert.Contains(ErrorMessageData.EntityChangesError, result.Message);
     }
     
     [Fact]
-    public async Task CreateAsync_ExistingPatient_Throws()
+    public async Task CreateAsync_NewPatientExistingData_Throws()
     {
         // Arrange
-        var patient = PatientTestData.CreateAndSeedPatient(GetContext());
+        var patient = PatientTestHelper.CreateAndSeedPatient(GetContext());
         
         // Act & Assert
-        var result = await Assert.ThrowsAnyAsync<Exception>(() => GetSut().CreateAsync(patient, PatientTestData.TestPassword));
-        Assert.Contains(ErrorMessageHelper.DuplicateRecord, result.Message);
+        var result = await Assert.ThrowsAnyAsync<Exception>(() => GetSut().CreateAsync(patient, PersonTestData.TestPassword));
+        Assert.Contains(ErrorMessageData.DuplicateRecord, result.Message);
     }
     
     [Fact]
     public async Task CreateAsync_NullPatient_Throws()
     {
         // Act & Assert
-        var result = await Assert.ThrowsAnyAsync<Exception>(() => GetSut().CreateAsync(null, PatientTestData.TestPassword));
-        Assert.Contains(ErrorMessageHelper.LinqQueryExceptionThrown, result.Message);
+        var result = await Assert.ThrowsAnyAsync<Exception>(() => GetSut().CreateAsync(null, PersonTestData.TestPassword));
+        Assert.Contains(ErrorMessageData.LinqQueryExceptionThrown, result.Message);
     }
     
     [Fact]
     public async Task FindByIdAsync_ExistingPatient_ReturnsPatient()
     {
         // Arrange
-        var patient = CreateAndSeedPatientAccount();
+        var patient = CreatePatientAccount();
         
         // Act
         var result = await GetSut().FindByIdAsync(patient.Id);
         
         // Assert
         Assert.NotNull(result);
+        Assert.Equivalent(patient, result, true);
     }
     
     [Fact]
@@ -163,7 +152,7 @@ public class PatientServiceIntegrationTests : IDisposable, IAsyncDisposable
     {
         // Arrange
         var context = GetContext();
-        var patient = CreateAndSeedPatientAccount();
+        var patient = CreatePatientAccount();
         patient.FirstName = "NewFirstName";
         patient.BloodType = BloodType.OPositive;
         
@@ -171,33 +160,30 @@ public class PatientServiceIntegrationTests : IDisposable, IAsyncDisposable
         await GetSut().UpdateAsync(patient);
         
         // Assert
-        var patientResult = context.Patients.FirstOrDefault(p => p.Id == patient.Id);
-        Assert.NotNull(patientResult);
-        Assert.Equal(patient.FirstName, patientResult.FirstName);
-        Assert.Equal(patient.BloodType, patientResult.BloodType);
+        PatientTestHelper.AssertHasData(context, patient);
     }
     
     [Fact]
     public async Task UpdateAsync_ExistingPatientInvalidData_UpdatesPatient()
     {
         // Arrange
-        var patient = CreateAndSeedPatientAccount();
+        var patient = CreatePatientAccount();
         patient.FirstName = null!;
         
         // Act & Assert
         var result = await Assert.ThrowsAnyAsync<Exception>(() => GetSut().UpdateAsync(patient));
-        Assert.Contains(ErrorMessageHelper.EntityChangesError, result.Message);
+        Assert.Contains(ErrorMessageData.EntityChangesError, result.Message);
     }
     
     [Fact]
     public async Task UpdateAsync_NewPatient_Throws()
     {
         // Arrange
-        var patient = PatientTestData.CreatePatient();
+        var patient = PatientTestHelper.CreatePatient();
         
         // Act & Assert
         var result = await Assert.ThrowsAnyAsync<Exception>(() => GetSut().UpdateAsync(patient));
-        Assert.Contains(ErrorMessageHelper.SequenceNoElements, result.Message);
+        Assert.Contains(ErrorMessageData.SequenceNoElements, result.Message);
     }
     
     [Fact]
@@ -205,7 +191,7 @@ public class PatientServiceIntegrationTests : IDisposable, IAsyncDisposable
     {
         // Act & Assert
         var result = await Assert.ThrowsAnyAsync<Exception>(() => GetSut().UpdateAsync(null!));
-        Assert.Contains(ErrorMessageHelper.LinqQueryExceptionThrown, result.Message);
+        Assert.Contains(ErrorMessageData.LinqQueryExceptionThrown, result.Message);
     }
     
     [Fact]
@@ -213,27 +199,26 @@ public class PatientServiceIntegrationTests : IDisposable, IAsyncDisposable
     {
         // Arrange
         var context = GetContext();
-        var patient = CreateAndSeedPatientAccount();
+        var patient = CreatePatientAccount();
+        var account = AccountTestHelper.GetAccount(context, patient.Id);
         
         // Act
         await GetSut().DeleteAsync(patient);
         
         // Assert
-        Assert.Empty(context.Patients);
-        Assert.Empty(context.Accounts);
-        Assert.Empty(context.Users);
-        Assert.Empty(context.UserRoles);
+        PatientTestHelper.AssertHasNoData(context, patient);
+        AccountTestHelper.AssertHasNoAccount(context, account);
     }
     
     [Fact]
     public async Task DeleteAsync_NewPatient_Throws()
     {
         // Arrange
-        var patient = PatientTestData.CreatePatient();
+        var patient = PatientTestHelper.CreatePatient();
         
         // Act & Assert
         var result = await Assert.ThrowsAnyAsync<Exception>(() => GetSut().DeleteAsync(patient));
-        Assert.Contains(ErrorMessageHelper.SequenceNoElements, result.Message);
+        Assert.Contains(ErrorMessageData.SequenceNoElements, result.Message);
     }
     
     [Fact]
@@ -241,6 +226,6 @@ public class PatientServiceIntegrationTests : IDisposable, IAsyncDisposable
     {
         // Act & Assert
         var result = await Assert.ThrowsAnyAsync<Exception>(() => GetSut().DeleteAsync(null!));
-        Assert.Contains(ErrorMessageHelper.LinqQueryExceptionThrown, result.Message);
+        Assert.Contains(ErrorMessageData.LinqQueryExceptionThrown, result.Message);
     }
 }

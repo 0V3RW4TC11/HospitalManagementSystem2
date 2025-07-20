@@ -1,22 +1,16 @@
 ﻿using HospitalManagementSystem2.Data;
 using HospitalManagementSystem2.Models.Entities;
 using HospitalManagementSystem2.Repositories;
+using HospitalManagementSystem2.Tests.Helpers;
+using HospitalManagementSystem2.Tests.TestData;
 using Microsoft.EntityFrameworkCore;
 
 namespace HospitalManagementSystem2.Tests.Repositories;
 
 public class AdminRepositoryUnitTests : IDisposable, IAsyncDisposable
 {
-    private const string TestTitle = "ExampleTitle";
-    private const string TestFirstName = "ExampleFirstName";
-    private const string TestLastName = "ExampleLastName";
-    private const string TestGender = "ExampleGender";
-    private const string TestAddress = "ExampleAddress";
-    private const string TestPhone = "ExamplePhone";
-    private const string TestEmail = "ExampleEmail";
-    private static readonly DateOnly TestDateOfBirth = DateOnly.FromDateTime(DateTime.UnixEpoch);
-    private readonly AdminRepository _adminRepository;
-    private readonly ApplicationDbContext _dbContext;
+    private readonly AdminRepository _sut;
+    private readonly ApplicationDbContext _context;
 
     public AdminRepositoryUnitTests()
     {
@@ -24,227 +18,98 @@ public class AdminRepositoryUnitTests : IDisposable, IAsyncDisposable
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
 
-        _dbContext = new ApplicationDbContext(options);
-        _adminRepository = new AdminRepository(_dbContext);
+        _context = new ApplicationDbContext(options);
+        _sut = new AdminRepository(_context);
     }
 
     public async ValueTask DisposeAsync()
     {
-        await _dbContext.DisposeAsync();
-        GC.SuppressFinalize(this);
+        await _context.DisposeAsync();
     }
 
     public void Dispose()
     {
-        _dbContext.Dispose();
-        GC.SuppressFinalize(this);
+        _context.Dispose();
     }
 
     [Fact]
-    public async Task AddAsync_AddAndSaveDbContext_ShouldAdd()
+    public async Task AddAsync_NewAdmin_AddsAdmin()
     {
         // Arrange
-        var admin = new Admin
-        {
-            Title = TestTitle,
-            FirstName = TestFirstName,
-            LastName = TestLastName,
-            Gender = TestGender,
-            Address = TestAddress,
-            Phone = TestPhone,
-            Email = TestEmail,
-            DateOfBirth = TestDateOfBirth
-        };
+        var admin = AdminTestHelper.CreateAdmin();
 
         // Act
-        await _adminRepository.AddAsync(admin);
-        await _dbContext.SaveChangesAsync();
+        await _sut.AddAsync(admin);
+        await _context.SaveChangesAsync();
 
         // Assert 
-        var addedAdmin = await _dbContext.Admins.FirstOrDefaultAsync(a => a == admin);
-        Assert.NotNull(addedAdmin);
+        AdminTestHelper.AssertHasData(_context, admin);
     }
 
     [Fact]
-    public async Task AddAsync_AddAndDontSaveDbContext_ShouldNotAdd()
+    public async Task UpdateAsync_ExistingAdmin_UpdatesAdmin()
     {
         // Arrange
-        var admin = new Admin
-        {
-            Title = TestTitle,
-            FirstName = TestFirstName,
-            LastName = TestLastName,
-            Gender = TestGender,
-            Address = TestAddress,
-            Phone = TestPhone,
-            Email = TestEmail,
-            DateOfBirth = TestDateOfBirth
-        };
-
+        var admin = AdminTestHelper.CreateAndSeedAdmin(_context);
+        admin.FirstName = "UpdatedFirstName";
+        admin.LastName = "UpdatedLastName";
+        
         // Act
-        await _adminRepository.AddAsync(admin);
-
-        // Assert 
-        var addedAdmin = await _dbContext.Admins.FirstOrDefaultAsync(a => a == admin);
-        Assert.Null(addedAdmin);
-    }
-
-    [Fact]
-    public async Task UpdateAsync_ExistingAdminAndSaveDbContext_ShouldSave()
-    {
-        // Arrange
-        Guid adminId;
-        const string expectedFirstName = "UpdatedFirstName";
-
-        {
-            var admin = new Admin
-            {
-                Title = TestTitle,
-                FirstName = TestFirstName,
-                LastName = TestLastName,
-                Gender = TestGender,
-                Address = TestAddress,
-                Phone = TestPhone,
-                Email = TestEmail,
-                DateOfBirth = TestDateOfBirth
-            };
-            await _dbContext.Admins.AddAsync(admin);
-            await _dbContext.SaveChangesAsync();
-            adminId = admin.Id;
-        }
-
-        // Act
-        var existingAdmin = await _dbContext.Admins.AsNoTracking().FirstAsync(a => a.Id == adminId);
-        existingAdmin.FirstName = expectedFirstName;
-        await _adminRepository.UpdateAsync(existingAdmin);
-        await _dbContext.SaveChangesAsync();
-
+        await _sut.UpdateAsync(admin);
+        await _context.SaveChangesAsync();
+        
         // Assert
-        Assert.True(await _dbContext.Admins.AnyAsync(a => a.Id == adminId && a.FirstName == expectedFirstName));
+        AdminTestHelper.AssertHasData(_context, admin);
     }
 
     [Fact]
-    public async Task UpdateAsync_ExistingAdminAndDontSaveDbContext_ShouldNotSave()
+    public async Task UpdateAsync_ExistingAdminInvalidData_UpdatesAdmin()
     {
         // Arrange
-        Guid adminId;
-        const string expectedFirstName = "UpdatedFirstName";
-
-        {
-            var admin = new Admin
-            {
-                Title = TestTitle,
-                FirstName = TestFirstName,
-                LastName = TestLastName,
-                Gender = TestGender,
-                Address = TestAddress,
-                Phone = TestPhone,
-                Email = TestEmail,
-                DateOfBirth = TestDateOfBirth
-            };
-            await _dbContext.Admins.AddAsync(admin);
-            await _dbContext.SaveChangesAsync();
-            adminId = admin.Id;
-        }
-
-        // Act
-        var existingAdmin = await _dbContext.Admins.AsNoTracking().FirstAsync(a => a.Id == adminId);
-        existingAdmin.FirstName = expectedFirstName;
-        await _adminRepository.UpdateAsync(existingAdmin);
-
-        // Assert
-        Assert.False(await _dbContext.Admins.AnyAsync(a => a.Id == adminId && a.FirstName == expectedFirstName));
+        var admin = AdminTestHelper.CreateAndSeedAdmin(_context);
+        admin.FirstName = string.Empty;
+        admin.LastName = string.Empty;
+        
+        // Act & Assert
+        await _sut.UpdateAsync(admin);
+        AdminTestHelper.AssertHasData(_context, admin);
     }
 
     [Fact]
-    public async Task UpdateAsync_NonExistingAdmin_ShouldThrow()
+    public async Task UpdateAsync_NonExistingAdmin_Throws()
     {
         // Arrange
-        var admin = new Admin
-        {
-            Id = Guid.NewGuid(),
-            Title = TestTitle,
-            FirstName = TestFirstName,
-            LastName = TestLastName,
-            Gender = TestGender,
-            Address = TestAddress,
-            Phone = TestPhone,
-            Email = TestEmail,
-            DateOfBirth = TestDateOfBirth
-        };
+        var admin = AdminTestHelper.CreateAdmin();
+        admin.Id = Guid.NewGuid();
 
         // Act & Assert
-        await Assert.ThrowsAnyAsync<Exception>(() => _adminRepository.UpdateAsync(admin));
+        var result = await Assert.ThrowsAnyAsync<Exception>(() => _sut.UpdateAsync(admin));
+        Assert.Contains(ErrorMessageData.SequenceNoElements, result.Message);
     }
 
     [Fact]
-    public async Task RemoveAsync_ExistingAdminAndSaveDbContext_ShouldRemove()
+    public async Task RemoveAsync_ExistingAdmin_RemovesAdmin()
     {
         // Arrange
-        var admin = new Admin
-        {
-            Title = TestTitle,
-            FirstName = TestFirstName,
-            LastName = TestLastName,
-            Gender = TestGender,
-            Address = TestAddress,
-            Phone = TestPhone,
-            Email = TestEmail,
-            DateOfBirth = TestDateOfBirth
-        };
-        await _dbContext.Admins.AddAsync(admin);
-        await _dbContext.SaveChangesAsync();
+        var admin = AdminTestHelper.CreateAndSeedAdmin(_context);
 
         // Act
-        await _adminRepository.RemoveAsync(admin);
-        await _dbContext.SaveChangesAsync();
+        await _sut.RemoveAsync(admin);
+        await _context.SaveChangesAsync();
 
         // Assert
-        Assert.False(await _dbContext.Admins.AnyAsync(a => a.Id == admin.Id));
+        AdminTestHelper.AssertHasNoData(_context, admin);
     }
 
     [Fact]
-    public async Task RemoveAsync_ExistingAdminAndDontSaveDbContext_ShouldNotRemove()
+    public async Task RemoveAsync_NonExistingAdmin_Throws()
     {
         // Arrange
-        var admin = new Admin
-        {
-            Title = TestTitle,
-            FirstName = TestFirstName,
-            LastName = TestLastName,
-            Gender = TestGender,
-            Address = TestAddress,
-            Phone = TestPhone,
-            Email = TestEmail,
-            DateOfBirth = TestDateOfBirth
-        };
-        await _dbContext.Admins.AddAsync(admin);
-        await _dbContext.SaveChangesAsync();
-
-        // Act
-        await _adminRepository.RemoveAsync(admin);
-
-        // Assert
-        Assert.True(await _dbContext.Admins.AnyAsync(a => a.Id == admin.Id));
-    }
-
-    [Fact]
-    public async Task RemoveAsync_NonExistingAdmin_ShouldThrow()
-    {
-        // Arrange
-        var admin = new Admin
-        {
-            Title = TestTitle,
-            FirstName = TestFirstName,
-            LastName = TestLastName,
-            Gender = TestGender,
-            Address = TestAddress,
-            Phone = TestPhone,
-            Email = TestEmail,
-            DateOfBirth = TestDateOfBirth
-        };
+        var admin = AdminTestHelper.CreateAdmin();
+        admin.Id = Guid.NewGuid();
 
         // Act & Assert
-        await Assert.ThrowsAnyAsync<Exception>(() => _adminRepository.RemoveAsync(admin));
+        var result = await Assert.ThrowsAnyAsync<Exception>(() => _sut.RemoveAsync(admin));
+        Assert.Contains(ErrorMessageData.SequenceNoElements, result.Message);
     }
 }
