@@ -23,7 +23,7 @@ public class AdminRepository : IAdminRepository
     
     public async Task UpdateAsync(Admin admin)
     {
-        var entity = await _admins.FirstAsync(x => x.Id == admin.Id);
+        var entity = await _admins.SingleAsync(x => x.Id == admin.Id);
         
         entity.Title = admin.Title;
         entity.FirstName = admin.FirstName;
@@ -39,7 +39,7 @@ public class AdminRepository : IAdminRepository
 
     public async Task RemoveAsync(Admin admin)
     {
-        var entity = await _admins.FirstAsync(x => x.Id == admin.Id);
+        var entity = await _admins.SingleAsync(x => x.Id == admin.Id);
         _admins.Remove(entity);
     }
 }

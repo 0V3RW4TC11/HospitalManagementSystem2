@@ -22,14 +22,14 @@ public class SpecializationRepository : ISpecializationRepository
 
     public async Task UpdateAsync(Specialization specialization)
     {
-        var entry = await _specializations.FirstAsync(s => s.Id == specialization.Id);
+        var entry = await _specializations.SingleAsync(s => s.Id == specialization.Id);
         entry.Name = specialization.Name;
         _specializations.Update(entry);
     }
 
     public async Task RemoveAsync(Specialization specialization)
     {
-        var entry = await _specializations.FirstAsync(s => s.Id == specialization.Id);
+        var entry = await _specializations.SingleAsync(s => s.Id == specialization.Id);
         _specializations.Remove(entry);
     }
 }
