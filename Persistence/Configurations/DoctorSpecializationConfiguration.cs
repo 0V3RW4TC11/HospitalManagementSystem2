@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Persistence.Configurations;
 
-public class DoctorSpecializationConfiguration : IEntityTypeConfiguration<DoctorSpecialization>
+internal sealed class DoctorSpecializationConfiguration : IEntityTypeConfiguration<DoctorSpecialization>
 {
     public void Configure(EntityTypeBuilder<DoctorSpecialization> builder)
     {

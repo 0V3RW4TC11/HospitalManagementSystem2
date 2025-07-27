@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Persistence.Repositories;
 
-public class AttendanceRepository : IAttendanceRepository
+internal sealed class AttendanceRepository : IAttendanceRepository
 {
     private readonly RepositoryDbContext _context;
 

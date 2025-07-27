@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Persistence.Repositories;
 
-public class AdminRepository : IAdminRepository
+internal sealed class AdminRepository : IAdminRepository
 {
     private readonly RepositoryDbContext _context;
 

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Persistence.Repositories;
 
-public class AccountRepository : IAccountRepository
+internal sealed class AccountRepository : IAccountRepository
 {
     private readonly RepositoryDbContext _context;
 

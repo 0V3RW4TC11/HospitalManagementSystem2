@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Persistence.Repositories;
 
-public class DoctorSpecializationRepository : IDoctorSpecializationRepository
+internal sealed class DoctorSpecializationRepository : IDoctorSpecializationRepository
 {
     private readonly RepositoryDbContext _context;
 
