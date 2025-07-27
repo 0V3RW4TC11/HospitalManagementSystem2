@@ -4,7 +4,7 @@ namespace Domain.Repositories;
 
 public interface IDoctorSpecializationRepository
 {
-    Task<ISet<Guid>> GetSpecIdsByDoctorIdAsync(Guid doctorId);
+    Task<IEnumerable<Guid>> GetSpecIdsByDoctorIdAsync(Guid doctorId);
     
-    void Update(Guid doctorId, IEnumerable<Guid> specializationIds);
+    Task UpdateAsync(Guid doctorId, IEnumerable<Guid> specializationIds);
 }

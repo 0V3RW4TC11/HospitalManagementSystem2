@@ -15,7 +15,6 @@ public static class TransactionHelper
         catch (Exception e)
         {
             await unitOfWork.RollbackTransactionAsync();
-            // use exception handler
             throw;
         }
     }

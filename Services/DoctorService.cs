@@ -33,7 +33,7 @@ internal sealed class DoctorService : IDoctorService
             _unitOfWork.DoctorRepository.Add(doctor);
             await _unitOfWork.SaveChangesAsync();
             
-            _unitOfWork.DoctorSpecializationRepository.Update(doctor.Id, doctorCreateDto.SpecializationIds);
+            await _unitOfWork.DoctorSpecializationRepository.UpdateAsync(doctor.Id, doctorCreateDto.SpecializationIds);
             await _unitOfWork.SaveChangesAsync();
             
             var username = await _staffEmailService.CreateStaffEmailAsync(doctorCreateDto.FirstName, doctorCreateDto.LastName);
@@ -51,7 +51,7 @@ internal sealed class DoctorService : IDoctorService
         var specIds = await _unitOfWork.DoctorSpecializationRepository
             .GetSpecIdsByDoctorIdAsync(doctor.Id);
         
-        var specs = await _unitOfWork.SpecializationRepository.GetFromIdSetAsync(specIds);
+        var specs = await _unitOfWork.SpecializationRepository.GetFromIdsAsync(specIds);
         
         doctorDto.Specializations = specs.Adapt<IEnumerable<SpecializationDto>>();
         
@@ -72,7 +72,7 @@ internal sealed class DoctorService : IDoctorService
         doctor.Email = doctorUpdateDto.Email;
         doctor.DateOfBirth = doctorUpdateDto.DateOfBirth;
 
-        _unitOfWork.DoctorSpecializationRepository.Update(doctor.Id, doctorUpdateDto.SpecializationIds);
+        await _unitOfWork.DoctorSpecializationRepository.UpdateAsync(doctor.Id, doctorUpdateDto.SpecializationIds);
         
         await _unitOfWork.SaveChangesAsync();
     }
@@ -125,15 +125,16 @@ internal sealed class DoctorService : IDoctorService
 
     private async Task ValidateSpecializations(IEnumerable<Guid> specializationIds)
     {
-        var specArray = specializationIds.ToHashSet();
+        var specSet = specializationIds.ToHashSet();
 
-        if (specArray.Count == 0)
+        if (specSet.Count == 0)
             throw new Exception("Specializations are required.");
-        
-        var success = await _unitOfWork.SpecializationRepository
-            .ContainsSetAsync(specArray, out var notFound);
-        
-        if (!success)
-            throw new SpecNotFoundException(notFound.ToString());
+
+        foreach (var specId in specSet)
+        {
+            var isExisting = await _unitOfWork.SpecializationRepository.ContainsAsync(specId);
+            if (!isExisting)
+                throw new SpecNotFoundException(specId.ToString());
+        }
     }
 }

@@ -6,11 +6,11 @@ public interface ISpecializationRepository
 {
     Task<IEnumerable<Specialization>> GetAllAsync();
     
-    Task<IEnumerable<Specialization>> GetFromIdSetAsync(ISet<Guid> ids);
+    Task<IEnumerable<Specialization>> GetFromIdsAsync(IEnumerable<Guid> ids);
     
     Task<Specialization?> FindByIdAsync(Guid id);
 
-    Task<bool> ContainsSetAsync(ISet<Guid> ids, out Guid notFound);
+    Task<bool> ContainsAsync(Guid id);
     
     void Add(Specialization specialization);
     

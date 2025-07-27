@@ -4,7 +4,7 @@ namespace Domain.Repositories;
 
 public interface IAccountRepository
 {
-    Task<Account?> FindByUserIdAsync(Guid UserId);
+    Task<Account?> FindByUserIdAsync(Guid userId);
     
     Task<Account?> FindByIdentityIdAsync(string identityId);
 
