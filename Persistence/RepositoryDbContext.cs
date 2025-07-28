@@ -24,7 +24,13 @@ public sealed class RepositoryDbContext : IdentityDbContext<IdentityUser>
     public DbSet<DoctorSpecialization> DoctorSpecializations { get; set; }
 
     public DbSet<Account> Accounts { get; set; }
-    
-    protected override void OnModelCreating(ModelBuilder builder) => 
+
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        // Configure Identity services
+        base.OnModelCreating(builder);
+        
+        // Configure Db schema from configuration classes
         builder.ApplyConfigurationsFromAssembly(typeof(RepositoryDbContext).Assembly);
+    }
 }

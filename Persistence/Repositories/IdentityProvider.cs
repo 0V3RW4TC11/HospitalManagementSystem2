@@ -16,7 +16,7 @@ public class IdentityProvider : IIdentityProvider
     public async Task<string> CreateAsync(string username, string password)
     {
         var user = new IdentityUser { UserName = username };
-        var result = await _userManager.CreateAsync(user);
+        var result = await _userManager.CreateAsync(user, password);
         
         IdentityResultThrowOnFail(result);
         
