@@ -4,21 +4,24 @@ using Domain;
 using Domain.Constants;
 using Domain.Entities;
 using Domain.Exceptions;
+using Domain.Repositories;
 using Mapster;
 using Services.Abstractions;
-using Services.Helpers;
 
 namespace Services;
 
 internal sealed class DoctorService : IDoctorService
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IRepositoryManager _repositoryManager;
     private readonly IAccountService _accountService;
     private readonly IStaffEmailService _staffEmailService;
 
-    public DoctorService(IUnitOfWork unitOfWork, IAccountService accountService, IStaffEmailService staffEmailService)
+    public DoctorService(
+        IRepositoryManager repositoryManager, 
+        IAccountService accountService, 
+        IStaffEmailService staffEmailService)
     {
-        _unitOfWork = unitOfWork;
+        _repositoryManager = repositoryManager;
         _accountService = accountService;
         _staffEmailService = staffEmailService;
     }
@@ -27,14 +30,14 @@ internal sealed class DoctorService : IDoctorService
     {
         await ValidateDoctorCreateDto(doctorCreateDto);
         
-        await TransactionHelper.ExecuteInTransactionAsync(_unitOfWork, async () =>
+        await _repositoryManager.UnitOfWork.ExecuteInTransactionAsync(async () =>
         {
             var doctor = doctorCreateDto.Adapt<Doctor>();
-            _unitOfWork.DoctorRepository.Add(doctor);
-            await _unitOfWork.SaveChangesAsync();
+            _repositoryManager.DoctorRepository.Add(doctor);
+            await _repositoryManager.UnitOfWork.SaveChangesAsync();
             
-            await _unitOfWork.DoctorSpecializationRepository.UpdateAsync(doctor.Id, doctorCreateDto.SpecializationIds);
-            await _unitOfWork.SaveChangesAsync();
+            await _repositoryManager.DoctorSpecializationRepository.UpdateAsync(doctor.Id, doctorCreateDto.SpecializationIds);
+            await _repositoryManager.UnitOfWork.SaveChangesAsync();
             
             var username = await _staffEmailService.CreateStaffEmailAsync(doctorCreateDto.FirstName, doctorCreateDto.LastName);
 
@@ -48,10 +51,10 @@ internal sealed class DoctorService : IDoctorService
         
         var doctorDto = doctor.Adapt<DoctorDto>();
         
-        var specIds = await _unitOfWork.DoctorSpecializationRepository
+        var specIds = await _repositoryManager.DoctorSpecializationRepository
             .GetSpecIdsByDoctorIdAsync(doctor.Id);
         
-        var specs = await _unitOfWork.SpecializationRepository.GetFromIdsAsync(specIds);
+        var specs = await _repositoryManager.SpecializationRepository.GetFromIdsAsync(specIds);
         
         doctorDto.Specializations = specs.Adapt<IEnumerable<SpecializationDto>>();
         
@@ -72,26 +75,26 @@ internal sealed class DoctorService : IDoctorService
         doctor.Email = doctorUpdateDto.Email;
         doctor.DateOfBirth = doctorUpdateDto.DateOfBirth;
 
-        await _unitOfWork.DoctorSpecializationRepository.UpdateAsync(doctor.Id, doctorUpdateDto.SpecializationIds);
+        await _repositoryManager.DoctorSpecializationRepository.UpdateAsync(doctor.Id, doctorUpdateDto.SpecializationIds);
         
-        await _unitOfWork.SaveChangesAsync();
+        await _repositoryManager.UnitOfWork.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var doctor = await GetDoctorFromIdAsync(id);
 
-        await TransactionHelper.ExecuteInTransactionAsync(_unitOfWork, async () =>
+        await _repositoryManager.UnitOfWork.ExecuteInTransactionAsync(async () =>
         {
-            _unitOfWork.DoctorRepository.Remove(doctor);
-            await _unitOfWork.SaveChangesAsync();
+            _repositoryManager.DoctorRepository.Remove(doctor);
+            await _repositoryManager.UnitOfWork.SaveChangesAsync();
             await _accountService.DeleteByUserIdAsync(doctor.Id);
         });
     }
 
     private async Task<Doctor> GetDoctorFromIdAsync(Guid id)
     {
-        var doctor = await _unitOfWork.DoctorRepository.FindByIdAsync(id);
+        var doctor = await _repositoryManager.DoctorRepository.FindByIdAsync(id);
         if (doctor is null)
             throw new DoctorNotFoundException(id.ToString());
         return doctor;
@@ -132,7 +135,7 @@ internal sealed class DoctorService : IDoctorService
 
         foreach (var specId in specSet)
         {
-            var isExisting = await _unitOfWork.SpecializationRepository.ContainsAsync(specId);
+            var isExisting = await _repositoryManager.SpecializationRepository.ContainsAsync(specId);
             if (!isExisting)
                 throw new SpecNotFoundException(specId.ToString());
         }

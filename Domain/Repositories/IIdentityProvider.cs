@@ -1,4 +1,4 @@
-﻿namespace Domain.Providers;
+﻿namespace Domain.Repositories;
 
 public interface IIdentityProvider
 {
@@ -8,7 +8,5 @@ public interface IIdentityProvider
     
     Task AddToRoleAsync(string identityId, string role);
 
-    Task AddRolesAsync(string[] roles);
-    
     Task<bool> EmailExistsAsync(string email);
 }

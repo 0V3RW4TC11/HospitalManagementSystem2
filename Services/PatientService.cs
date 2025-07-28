@@ -3,20 +3,20 @@ using Domain;
 using Domain.Constants;
 using Domain.Entities;
 using Domain.Exceptions;
+using Domain.Repositories;
 using Mapster;
 using Services.Abstractions;
-using Services.Helpers;
 
 namespace Services;
 
 internal sealed class PatientService : IPatientService
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IRepositoryManager _repositoryManager;
     private readonly IAccountService _accountService;
 
-    public PatientService(IUnitOfWork unitOfWork, IAccountService accountService)
+    public PatientService(IRepositoryManager repositoryManager, IAccountService accountService)
     {
-        _unitOfWork = unitOfWork;
+        _repositoryManager = repositoryManager;
         _accountService = accountService;
     }
     
@@ -24,11 +24,11 @@ internal sealed class PatientService : IPatientService
     {
         ValidatePatientCreateDto(patientCreateDto);
         
-        await TransactionHelper.ExecuteInTransactionAsync(_unitOfWork, async () =>
+        await _repositoryManager.UnitOfWork.ExecuteInTransactionAsync(async () =>
         {
             var patient = patientCreateDto.Adapt<Patient>();
-            _unitOfWork.PatientRepository.Add(patient);
-            await _unitOfWork.SaveChangesAsync();
+            _repositoryManager.PatientRepository.Add(patient);
+            await _repositoryManager.UnitOfWork.SaveChangesAsync();
 
             await _accountService.CreateAsync(
                 patient.Id,
@@ -58,17 +58,17 @@ internal sealed class PatientService : IPatientService
         patient.Phone = patientDto.Phone;
         patient.Email = patientDto.Email;
         
-        await _unitOfWork.SaveChangesAsync();
+        await _repositoryManager.UnitOfWork.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var patient = await GetPatientByIdAsync(id);
 
-        await TransactionHelper.ExecuteInTransactionAsync(_unitOfWork, async () =>
+        await _repositoryManager.UnitOfWork.ExecuteInTransactionAsync(async () =>
         {
-            _unitOfWork.PatientRepository.Remove(patient);
-            await _unitOfWork.SaveChangesAsync();
+            _repositoryManager.PatientRepository.Remove(patient);
+            await _repositoryManager.UnitOfWork.SaveChangesAsync();
             
             await _accountService.DeleteByUserIdAsync(patient.Id);
         });
@@ -76,7 +76,7 @@ internal sealed class PatientService : IPatientService
 
     private async Task<Patient> GetPatientByIdAsync(Guid id)
     {
-        var patient = await _unitOfWork.PatientRepository.FindByIdAsync(id);
+        var patient = await _repositoryManager.PatientRepository.FindByIdAsync(id);
         if (patient is null)
             throw new PatientNotFoundException(id.ToString());
 

@@ -1,33 +1,34 @@
 ﻿using Domain;
+using Domain.Repositories;
 using Services.Abstractions;
 
 namespace Services;
 
-public class ServiceManager : IServiceManager
+public sealed class ServiceManager : IServiceManager
 {
-    public ServiceManager(IUnitOfWork unitOfWork)
+    public ServiceManager(IRepositoryManager repositoryManager)
     {
-        var lazyAccountService = new Lazy<IAccountService>(() => new AccountService(unitOfWork));
+        var lazyAccountService = new Lazy<IAccountService>(() => new AccountService(repositoryManager));
         
-        var lazyStaffEmailService = new Lazy<IStaffEmailService>(() => new StaffEmailService(unitOfWork.IdentityProvider));
+        var lazyStaffEmailService = new Lazy<IStaffEmailService>(() => new StaffEmailService(repositoryManager.IdentityProvider));
         
         var lazyAdminService = new Lazy<IAdminService>(() => new AdminService(
-            unitOfWork, 
+            repositoryManager, 
             lazyAccountService.Value, 
             lazyStaffEmailService.Value));
         
         var lazyDoctorService = new Lazy<IDoctorService>(() => new DoctorService(
-            unitOfWork,
+            repositoryManager,
             lazyAccountService.Value,
             lazyStaffEmailService.Value));
         
         var lazyPatientService = new Lazy<IPatientService>(() => new PatientService(
-            unitOfWork,
+            repositoryManager,
             lazyAccountService.Value));
         
-        var lazySpecializationService = new Lazy<ISpecializationService>(() => new SpecializationService(unitOfWork));
+        var lazySpecializationService = new Lazy<ISpecializationService>(() => new SpecializationService(repositoryManager));
         
-        var lazyAttendanceService = new Lazy<IAttendanceService>(() => new AttendanceService(unitOfWork));
+        var lazyAttendanceService = new Lazy<IAttendanceService>(() => new AttendanceService(repositoryManager));
         
         AdminService = lazyAdminService.Value;
         PatientService = lazyPatientService.Value;

@@ -1,9 +1,6 @@
-﻿using Domain.Providers;
-using Domain.Repositories;
+﻿namespace Domain.Repositories;
 
-namespace Domain;
-
-public interface IUnitOfWork
+public interface IRepositoryManager
 {
     IAccountRepository AccountRepository { get; }
     
@@ -21,11 +18,5 @@ public interface IUnitOfWork
     
     IIdentityProvider IdentityProvider { get; }
     
-    Task BeginTransactionAsync();
-    
-    Task CommitTransactionAsync();
-    
-    Task RollbackTransactionAsync();
-    
-    Task SaveChangesAsync();
+    IUnitOfWork UnitOfWork { get; }
 }

@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using Domain;
 using Domain.Constants;
-using Domain.Providers;
+using Domain.Repositories;
 using Services.Abstractions;
 
 namespace Services;

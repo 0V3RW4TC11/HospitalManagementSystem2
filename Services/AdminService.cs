@@ -6,22 +6,21 @@ using Domain.Exceptions;
 using Domain.Repositories;
 using Mapster;
 using Services.Abstractions;
-using Services.Helpers;
 
 namespace Services;
 
 internal sealed class AdminService : IAdminService
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IRepositoryManager _repositoryManager;
     private readonly IAccountService _accountService;
     private readonly IStaffEmailService _staffEmailService;
 
     public AdminService(
-        IUnitOfWork unitOfWork, 
+        IRepositoryManager repositoryManager, 
         IAccountService accountService,
         IStaffEmailService staffEmailService)
     {
-        _unitOfWork = unitOfWork;
+        _repositoryManager = repositoryManager;
         _accountService = accountService;
         _staffEmailService = staffEmailService;
     }
@@ -30,11 +29,11 @@ internal sealed class AdminService : IAdminService
     {
         ValidateAdminCreateDto(adminCreateDto);
         
-        await TransactionHelper.ExecuteInTransactionAsync(_unitOfWork, async () =>
+        await _repositoryManager.UnitOfWork.ExecuteInTransactionAsync(async () =>
         {
             var admin = adminCreateDto.Adapt<Admin>();
-            _unitOfWork.AdminRepository.Add(admin);
-            await _unitOfWork.SaveChangesAsync();
+            _repositoryManager.AdminRepository.Add(admin);
+            await _repositoryManager.UnitOfWork.SaveChangesAsync();
             
             var username = await _staffEmailService.CreateStaffEmailAsync(adminCreateDto.FirstName, adminCreateDto.LastName);
             
@@ -63,24 +62,24 @@ internal sealed class AdminService : IAdminService
         admin.Email = adminDto.Email;
         admin.DateOfBirth = adminDto.DateOfBirth;
         
-        await _unitOfWork.SaveChangesAsync();
+        await _repositoryManager.UnitOfWork.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var admin = await GetAdminByIdAsync(id);
-        
-        await TransactionHelper.ExecuteInTransactionAsync(_unitOfWork, async () =>
+
+        await _repositoryManager.UnitOfWork.ExecuteInTransactionAsync(async () =>
         {
-            _unitOfWork.AdminRepository.Remove(admin);
-            await _unitOfWork.SaveChangesAsync();
+            _repositoryManager.AdminRepository.Remove(admin);
+            await _repositoryManager.UnitOfWork.SaveChangesAsync();
             await _accountService.DeleteByUserIdAsync(admin.Id);
         });
     }
 
     private async Task<Admin> GetAdminByIdAsync(Guid id)
     {
-        var admin = await _unitOfWork.AdminRepository.FindByIdAsync(id);
+        var admin = await _repositoryManager.AdminRepository.FindByIdAsync(id);
         if (admin is null)
             throw new AdminNotFoundException(id.ToString());
         

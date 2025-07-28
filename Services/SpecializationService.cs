@@ -2,6 +2,7 @@
 using Domain;
 using Domain.Entities;
 using Domain.Exceptions;
+using Domain.Repositories;
 using Mapster;
 using Services.Abstractions;
 
@@ -9,11 +10,11 @@ namespace Services;
 
 internal sealed class SpecializationService : ISpecializationService
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IRepositoryManager _repositoryManager;
 
-    public SpecializationService(IUnitOfWork unitOfWork)
+    public SpecializationService(IRepositoryManager repositoryManager)
     {
-        _unitOfWork = unitOfWork;
+        _repositoryManager = repositoryManager;
     }
 
     public async Task CreateAsync(SpecializationCreateDto specializationCreateDto, CancellationToken cancellationToken = default)
@@ -22,14 +23,14 @@ internal sealed class SpecializationService : ISpecializationService
         
         var specialization = specializationCreateDto.Adapt<Specialization>();
 
-        _unitOfWork.SpecializationRepository.Add(specialization);
+        _repositoryManager.SpecializationRepository.Add(specialization);
         
-        await _unitOfWork.SaveChangesAsync();
+        await _repositoryManager.UnitOfWork.SaveChangesAsync();
     }
 
     public async Task<IEnumerable<SpecializationDto>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var specializations = await _unitOfWork.SpecializationRepository.GetAllAsync();
+        var specializations = await _repositoryManager.SpecializationRepository.GetAllAsync();
         
         return specializations.Adapt<IEnumerable<SpecializationDto>>();
     }
@@ -42,21 +43,21 @@ internal sealed class SpecializationService : ISpecializationService
         
         spec.Name = specializationDto.Name;
         
-        await _unitOfWork.SaveChangesAsync();
+        await _repositoryManager.UnitOfWork.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var spec = await GetSpecializationFromIdAsync(id);
         
-        _unitOfWork.SpecializationRepository.Remove(spec);
+        _repositoryManager.SpecializationRepository.Remove(spec);
         
-        await _unitOfWork.SaveChangesAsync();
+        await _repositoryManager.UnitOfWork.SaveChangesAsync();
     }
 
     private async Task<Specialization> GetSpecializationFromIdAsync(Guid id)
     {
-        var specialization = await _unitOfWork.SpecializationRepository.FindByIdAsync(id) 
+        var specialization = await _repositoryManager.SpecializationRepository.FindByIdAsync(id) 
             ?? throw new SpecNotFoundException(id.ToString());
         
         return specialization;
