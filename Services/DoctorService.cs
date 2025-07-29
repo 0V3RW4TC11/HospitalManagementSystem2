@@ -28,7 +28,7 @@ internal sealed class DoctorService : IDoctorService
 
     public async Task CreateAsync(DoctorCreateDto doctorCreateDto, CancellationToken cancellationToken = default)
     {
-        await ValidateDoctorCreateDto(doctorCreateDto);
+        await ValidateDoctorCreateDtoAsync(doctorCreateDto);
         
         await _repositoryManager.UnitOfWork.ExecuteInTransactionAsync(async () =>
         {
@@ -61,7 +61,7 @@ internal sealed class DoctorService : IDoctorService
     {
         var doctor = await GetDoctorFromIdAsync(doctorDto.Id);
         
-        await ValidateDoctorUpdateDto(doctorDto);
+        await ValidateDoctorDtoAsync(doctorDto);
         
         doctor.FirstName = doctorDto.FirstName;
         doctor.LastName = doctorDto.LastName;
@@ -95,24 +95,17 @@ internal sealed class DoctorService : IDoctorService
             throw new DoctorNotFoundException(id.ToString());
         return doctor;
     }
-
-    private static void ValidateDoctorBaseDto(DoctorBaseDto baseDto)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(baseDto.FirstName, nameof(baseDto.FirstName));
-        ArgumentException.ThrowIfNullOrWhiteSpace(baseDto.LastName, nameof(baseDto.LastName));
-        ArgumentException.ThrowIfNullOrWhiteSpace(baseDto.Gender, nameof(baseDto.Gender));
-        ArgumentException.ThrowIfNullOrWhiteSpace(baseDto.Address, nameof(baseDto.Address));
-        ArgumentException.ThrowIfNullOrWhiteSpace(baseDto.Phone, nameof(baseDto.Phone));
-        ArgumentException.ThrowIfNullOrWhiteSpace(baseDto.Email, nameof(baseDto.Email));
-    }
     
-    private async Task ValidateDoctorCreateDto(DoctorCreateDto doctorCreateDto)
+    private async Task ValidateDoctorCreateDtoAsync(DoctorCreateDto doctorCreateDto)
     {
+        if (await IsExistingAsync(doctorCreateDto))
+            throw new DoctorBadRequest("A doctor with the same email already exists.");
+        
         try
         {
             ValidateDoctorBaseDto(doctorCreateDto);
             ArgumentException.ThrowIfNullOrWhiteSpace(doctorCreateDto.Password, nameof(doctorCreateDto.Password));
-            await ValidateSpecializations(doctorCreateDto.SpecializationIds);
+            await ValidateSpecializationsAsync(doctorCreateDto.SpecializationIds);
         }
         catch (Exception e)
         {
@@ -120,12 +113,12 @@ internal sealed class DoctorService : IDoctorService
         }
     }
     
-    private async Task ValidateDoctorUpdateDto(DoctorDto doctorDto)
+    private async Task ValidateDoctorDtoAsync(DoctorDto doctorDto)
     {
         try
         {
             ValidateDoctorBaseDto(doctorDto);
-            await ValidateSpecializations(doctorDto.SpecializationIds);
+            await ValidateSpecializationsAsync(doctorDto.SpecializationIds);
         }
         catch (Exception e)
         {
@@ -133,7 +126,7 @@ internal sealed class DoctorService : IDoctorService
         }
     }
 
-    private async Task ValidateSpecializations(IEnumerable<Guid> specializationIds)
+    private async Task ValidateSpecializationsAsync(IEnumerable<Guid> specializationIds)
     {
         var specSet = specializationIds.ToHashSet();
 
@@ -146,5 +139,21 @@ internal sealed class DoctorService : IDoctorService
             if (!isExisting)
                 throw new SpecNotFoundException(specId.ToString());
         }
+    }
+    
+    private async Task<bool> IsExistingAsync(DoctorCreateDto doctorCreateDto)
+    {
+        return await _repositoryManager.DoctorRepository.ExistsAsync(d =>
+            d.Email.ToLower() == doctorCreateDto.Email.ToLower());
+    }
+
+    private static void ValidateDoctorBaseDto(DoctorBaseDto baseDto)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(baseDto.FirstName, nameof(baseDto.FirstName));
+        ArgumentException.ThrowIfNullOrWhiteSpace(baseDto.LastName, nameof(baseDto.LastName));
+        ArgumentException.ThrowIfNullOrWhiteSpace(baseDto.Gender, nameof(baseDto.Gender));
+        ArgumentException.ThrowIfNullOrWhiteSpace(baseDto.Address, nameof(baseDto.Address));
+        ArgumentException.ThrowIfNullOrWhiteSpace(baseDto.Phone, nameof(baseDto.Phone));
+        ArgumentException.ThrowIfNullOrWhiteSpace(baseDto.Email, nameof(baseDto.Email));
     }
 }

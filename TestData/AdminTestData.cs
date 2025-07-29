@@ -28,14 +28,14 @@ public static class AdminTestData
 
     public static async Task<AdminDto> SeedAdmin(RepositoryDbContext context, UserManager<IdentityUser> userManager)
     {
-        var adminDto = CreateDto();
-        var admin = adminDto.Adapt<Admin>();
+        var adminCreateDto = CreateDto();
+        var admin = adminCreateDto.Adapt<Admin>();
         
         context.Admins.Add(admin);
         await context.SaveChangesAsync();
         
         var identity = new IdentityUser {UserName = ExpectedUsername};
-        await userManager.CreateAsync(identity, adminDto.Password);
+        await userManager.CreateAsync(identity, adminCreateDto.Password);
         await userManager.AddToRoleAsync(identity, AuthRoles.Admin);
         
         context.Accounts.Add(new Account {UserId = admin.Id, IdentityUserId = identity.Id});

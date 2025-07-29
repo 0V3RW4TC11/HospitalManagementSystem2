@@ -50,6 +50,9 @@ public static class DoctorTestData
         context.Accounts.Add(new Account {UserId = doctor.Id, IdentityUserId = identity.Id});
         await context.SaveChangesAsync();
         
-        return doctor.Adapt<DoctorDto>();
+        var seededDoctorDto = doctor.Adapt<DoctorDto>();
+        seededDoctorDto.SpecializationIds = specializationIds;
+        
+        return seededDoctorDto;
     }
 }
