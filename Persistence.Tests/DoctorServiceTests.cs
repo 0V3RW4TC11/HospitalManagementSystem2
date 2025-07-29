@@ -47,19 +47,19 @@ internal sealed class DoctorServiceTests : PersistenceTestBase
         
         // Has unique DocSpecs record
         Assert.That(context.DoctorSpecializations
-            .Where(ds => ds.DoctorId == doctor!.Id)
+            .Where(ds => ds.DoctorId == doctor.Id)
             .All(ds => specIds.Contains(ds.SpecializationId)));
         
         // Has unique Account record
-        var account = context.Accounts.Single(a => a.UserId == doctor!.Id);
+        var account = context.Accounts.Single(a => a.UserId == doctor.Id);
         
         // Has unique Identity record
-        var identityUser = context.Users.Single(a => a.Id == account!.IdentityUserId);
+        var identityUser = context.Users.Single(a => a.Id == account.IdentityUserId);
         
         // Has expected username
-        Assert.That(identityUser!.UserName, Is.EqualTo(DoctorTestData.ExpectedUsername));
+        Assert.That(identityUser.UserName, Is.EqualTo(DoctorTestData.ExpectedUsername));
         
-        // Has expected role
+        // Has expected AuthRole
         var doctorRoleId = context.Roles.Single(r => r.Name == AuthRoles.Doctor).Id;
         Assert.That(context.UserRoles.Any(r => r.UserId == identityUser.Id && r.RoleId == doctorRoleId));
     }
@@ -169,7 +169,7 @@ internal sealed class DoctorServiceTests : PersistenceTestBase
         // Arrange
         var context = GetDbContext();
         var seededDoctorDto = await DoctorTestData.SeedDoctor(context, GetIdentityUserManager(), 
-            new HashSet<Guid>());;
+            new HashSet<Guid>());
         
         seededDoctorDto.FirstName = "";
         seededDoctorDto.LastName = "";

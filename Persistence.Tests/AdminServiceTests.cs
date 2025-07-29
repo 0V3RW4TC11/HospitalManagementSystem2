@@ -60,7 +60,7 @@ internal sealed class AdminServiceTests : PersistenceTestBase
         // Has expected username
         Assert.That(identityUser!.UserName, Is.EqualTo(AdminTestData.ExpectedUsername));
         
-        // Has expected role
+        // Has expected AuthRole
         var adminRoleId = GetDbContext().Roles.Single(r => r.Name == AuthRoles.Admin).Id;
         Assert.That(GetDbContext().UserRoles.Any(r => r.UserId == identityUser.Id && r.RoleId == adminRoleId));
     }
