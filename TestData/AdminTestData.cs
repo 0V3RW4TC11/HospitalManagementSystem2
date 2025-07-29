@@ -1,5 +1,9 @@
 ﻿using DataTransfer.Admin;
 using Domain.Constants;
+using Domain.Entities;
+using Mapster;
+using Microsoft.AspNetCore.Identity;
+using Persistence;
 
 namespace TestData;
 
@@ -7,25 +11,36 @@ public static class AdminTestData
 {
     private const string FirstName = "TestAdminFirstName";
     private const string LastName = "TestAdminLastName";
-    private const string Gender = "Male";
-    private const string Address = "123 Main St";
-    private const string Phone = "123-456-7890";
-    private const string Email = "testAdmin@example.com";
-    private const string Password = "Password123!";
-    private static readonly DateOnly DateOfBirth = DateOnly.FromDateTime(new DateTime(1990, 1, 1));
+    public static readonly string ExpectedUsername =
+        $"{FirstName.ToLower()}.{LastName.ToLower()}@{DomainNames.Organization}";
 
     public static AdminCreateDto CreateDto() => new()
     {
         FirstName = FirstName,
         LastName = LastName,
-        Gender = Gender,
-        Address = Address,
-        Phone = Phone,
-        Email = Email,
-        DateOfBirth = DateOfBirth,
-        Password = Password
+        Gender = "Male",
+        Address = "123 Main St",
+        Phone = "123-456-7890",
+        Email = "testAdmin@example.com",
+        DateOfBirth = DateOnly.FromDateTime(new DateTime(1990, 1, 1)),
+        Password = "Password123!"
     };
 
-    public static readonly string ExpectedUsername =
-        $"{FirstName.ToLower()}.{LastName.ToLower()}@{DomainNames.Organization}";
+    public static async Task<AdminDto> SeedAdmin(RepositoryDbContext context, UserManager<IdentityUser> userManager)
+    {
+        var adminDto = CreateDto();
+        var admin = adminDto.Adapt<Admin>();
+        
+        context.Admins.Add(admin);
+        await context.SaveChangesAsync();
+        
+        var identity = new IdentityUser {UserName = ExpectedUsername};
+        await userManager.CreateAsync(identity, adminDto.Password);
+        await userManager.AddToRoleAsync(identity, AuthRoles.Admin);
+        
+        context.Accounts.Add(new Account {UserId = admin.Id, IdentityUserId = identity.Id});
+        await context.SaveChangesAsync();
+        
+        return admin.Adapt<AdminDto>();
+    }
 }

@@ -8,6 +8,11 @@
 
     <ItemGroup>
       <ProjectReference Include="..\DataTransfer\DataTransfer.csproj" />
+      <ProjectReference Include="..\Persistence\Persistence.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Mapster" Version="7.4.0" />
     </ItemGroup>
 
 </Project>

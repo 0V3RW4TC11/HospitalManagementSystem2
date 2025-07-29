@@ -16,16 +16,8 @@ using TestData;
 
 namespace Persistence.Tests;
 
-internal class AdminServiceTests : PersistenceTestBase
+internal sealed class AdminServiceTests : PersistenceTestBase
 {
-    public AdminServiceTests() : base(services =>
-    {
-        services.AddScoped<IRepositoryManager, AdminTestRepoManager>();
-        services.AddScoped<IServiceManager, AdminTestServiceManager>();
-    })
-    {
-    }
-    
     [SetUp]
     public override void SetUp()
     {
@@ -38,26 +30,7 @@ internal class AdminServiceTests : PersistenceTestBase
         var roleManager = GetServiceProvider().GetRequiredService<RoleManager<IdentityRole>>();
         roleManager.CreateAsync(new IdentityRole(AuthRoles.Admin)).GetAwaiter().GetResult();
     }
-
-    private async Task<AdminDto> SeedAdmin()
-    {
-        var adminDto = AdminTestData.CreateDto();
-        var context = GetDbContext();
-        var admin = adminDto.Adapt<Admin>();
-        
-        context.Admins.Add(admin);
-        await context.SaveChangesAsync();
-        
-        var identity = new IdentityUser {UserName = AdminTestData.ExpectedUsername};
-        await GetServiceProvider().GetRequiredService<UserManager<IdentityUser>>()
-            .CreateAsync(identity, adminDto.Password);
-        
-        context.Accounts.Add(new Account {UserId = admin.Id, IdentityUserId = identity.Id});
-        await context.SaveChangesAsync();
-        
-        return admin.Adapt<AdminDto>();
-    }
-
+    
     [Test]
     public async Task CreateAdmin_AdminWithValidData_CreatesAdminAndAccount()
     {
@@ -106,10 +79,10 @@ internal class AdminServiceTests : PersistenceTestBase
     }
     
     [Test]
-    public async Task CreateAsync_DuplicateAdmin_Throws()
+    public async Task CreateAsync_AdminWithDuplicateData_Throws()
     {
         // Arrange
-        await SeedAdmin();
+        await AdminTestData.SeedAdmin(GetDbContext(), GetIdentityUserManager());
         var dto = AdminTestData.CreateDto();
         
         // Act & Assert
@@ -120,7 +93,7 @@ internal class AdminServiceTests : PersistenceTestBase
     public async Task GetByIdAsync_ExistingAdmin_ReturnsAdmin()
     {
         // Arrange
-        var seededAdminDto = await SeedAdmin();
+        var seededAdminDto = await AdminTestData.SeedAdmin(GetDbContext(), GetIdentityUserManager());
         
         // Act
         var dto = await GetServiceManager().AdminService.GetByIdAsync(seededAdminDto.Id);
@@ -150,7 +123,7 @@ internal class AdminServiceTests : PersistenceTestBase
     public async Task UpdateAsync_ExistingAdminWithValidData_UpdatesAdmin()
     {
         // Arrange
-        var seededAdminDto = await SeedAdmin();
+        var seededAdminDto = await AdminTestData.SeedAdmin(GetDbContext(), GetIdentityUserManager());
         seededAdminDto.FirstName = "UpdatedFirstName";
         seededAdminDto.Email = "updatedEmail@example.com";
         
@@ -170,7 +143,7 @@ internal class AdminServiceTests : PersistenceTestBase
     public async Task UpdateAsync_ExistingAdminWithInvalidData_Throws()
     {
         // Arrange
-        var seededAdminDto = await SeedAdmin();
+        var seededAdminDto = await AdminTestData.SeedAdmin(GetDbContext(), GetIdentityUserManager());
         seededAdminDto.FirstName = "";
         seededAdminDto.Email = "";
         
@@ -193,7 +166,8 @@ internal class AdminServiceTests : PersistenceTestBase
     public async Task DeleteAsync_ExistingAdmin_DeletesAdminAndAccount()
     {
         // Arrange
-        var seededAdminDto = await SeedAdmin();
+        var seededAdminDto = await AdminTestData.SeedAdmin(GetDbContext(), GetIdentityUserManager());
+        var context = GetDbContext();
         
         // Act
         await GetServiceManager().AdminService.DeleteAsync(seededAdminDto.Id);
@@ -201,10 +175,10 @@ internal class AdminServiceTests : PersistenceTestBase
         // Assert
         Assert.Multiple(() =>
         {
-            Assert.That(GetDbContext().Admins, Is.Empty);
-            Assert.That(GetDbContext().Accounts, Is.Empty);
-            Assert.That(GetDbContext().Users, Is.Empty);
-            Assert.That(GetDbContext().UserRoles, Is.Empty);
+            Assert.That(context.Admins, Is.Empty);
+            Assert.That(context.Accounts, Is.Empty);
+            Assert.That(context.Users, Is.Empty);
+            Assert.That(context.UserRoles, Is.Empty);
         });
     }
     
@@ -217,62 +191,4 @@ internal class AdminServiceTests : PersistenceTestBase
         // Act & Assert
         Assert.ThrowsAsync<AdminNotFoundException>(() => GetServiceManager().AdminService.DeleteAsync(id));
     }
-}
-
-internal class AdminTestRepoManager : IRepositoryManager
-{
-    public AdminTestRepoManager(RepositoryDbContext context, UserManager<IdentityUser> userManager)
-    {
-        var lazyAccountRepository = new Lazy<IAccountRepository>(() => new AccountRepository(context));
-        var lazyAdminRepository = new Lazy<IAdminRepository>(() => new AdminRepository(context));
-        var lazyIdentityProvider = new Lazy<IIdentityProvider>(() => new IdentityProvider(userManager));
-        var lazyUnitOfWork = new Lazy<IUnitOfWork>(() => new UnitOfWork(context));
-        
-        AccountRepository = lazyAccountRepository.Value;
-        AdminRepository = lazyAdminRepository.Value;
-        AttendanceRepository = null!;
-        DoctorRepository = null!;
-        DoctorSpecializationRepository = null!;
-        PatientRepository = null!;
-        SpecializationRepository = null!;
-        IdentityProvider = lazyIdentityProvider.Value;
-        UnitOfWork = lazyUnitOfWork.Value;
-    }
-    
-    public IAccountRepository AccountRepository { get; }
-    public IAdminRepository AdminRepository { get; }
-    public IAttendanceRepository AttendanceRepository { get; }
-    public IDoctorRepository DoctorRepository { get; }
-    public IDoctorSpecializationRepository DoctorSpecializationRepository { get; }
-    public IPatientRepository PatientRepository { get; }
-    public ISpecializationRepository SpecializationRepository { get; }
-    public IIdentityProvider IdentityProvider { get; }
-    public IUnitOfWork UnitOfWork { get; }
-}
-
-internal class AdminTestServiceManager : IServiceManager
-{
-    public AdminTestServiceManager(IRepositoryManager repositoryManager)
-    {
-        var lazyAccountService = new Lazy<IAccountService>(() => new AccountService(repositoryManager));
-    
-        var lazyStaffEmailService = new Lazy<IStaffEmailService>(() => new StaffEmailService(repositoryManager.IdentityProvider));
-    
-        var lazyAdminService = new Lazy<IAdminService>(() => new AdminService(
-            repositoryManager, 
-            lazyAccountService.Value,
-            lazyStaffEmailService.Value));
-    
-        AdminService = lazyAdminService.Value;
-        PatientService = null!;
-        DoctorService = null!;
-        SpecializationService = null!;
-        AttendanceService = null!;
-    }
-
-    public IAdminService AdminService { get; }
-    public IPatientService PatientService { get; }
-    public IDoctorService DoctorService { get; }
-    public ISpecializationService SpecializationService { get; }
-    public IAttendanceService AttendanceService { get; }
 }
