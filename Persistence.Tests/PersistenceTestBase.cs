@@ -1,8 +1,11 @@
 ﻿using Domain.Repositories;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Persistence;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Persistence.Repositories;
-using Persistence.Tests.Helpers;
 using Services;
 using Services.Abstractions;
 
@@ -10,29 +13,61 @@ namespace Persistence.Tests;
 
 internal abstract class PersistenceTestBase
 {
-    private SqliteInMemDbHelper _dbHelper;
-    private readonly Action<ServiceCollection>? _serviceConfig;
-
-    protected PersistenceTestBase(Action<ServiceCollection>? serviceConfig)
-    {
-        _serviceConfig = serviceConfig;
-    }
+    private ServiceProvider _serviceProvider;
+    private SqliteConnection _connection;
 
     [SetUp]
     public virtual void SetUp()
     {
-        _dbHelper = new SqliteInMemDbHelper(_serviceConfig);
+        _connection = new SqliteConnection("DataSource=:memory:");
+        _connection.Open();
+        
+        // Set up a service collection
+        var services = new ServiceCollection();
+
+        // Add null logging
+        services.AddLogging(builder =>
+        {
+            builder.ClearProviders();
+            builder.AddProvider(NullLoggerProvider.Instance);
+        });
+        
+        // Configure ApplicationDbContext with SQLite in-memory
+        services.AddDbContext<RepositoryDbContext>(options =>
+            options.UseSqlite(_connection));
+
+        // Add Identity services for UserManager<IdentityUser>
+        services.AddIdentity<IdentityUser, IdentityRole>()
+            .AddEntityFrameworkStores<RepositoryDbContext>()
+            .AddDefaultTokenProviders();
+        
+        // Add services
+        services.AddScoped<IRepositoryManager, RepositoryManager>();
+        services.AddScoped<IServiceManager, ServiceManager>();
+        
+        // Build service provider
+        _serviceProvider = services.BuildServiceProvider();
+
+        // Ensure the database schema is created (including Identity tables)
+        using var scope = _serviceProvider.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<RepositoryDbContext>();
+        context.Database.EnsureCreated();
     }
     
     [TearDown]
     public virtual void TearDown()
     {
-        _dbHelper.Dispose();
+        _serviceProvider.Dispose();
+        _connection.Close();
+        _connection.Dispose();
     }
 
-    protected IServiceProvider GetServiceProvider() => _dbHelper.ServiceProvider;
+    protected IServiceProvider GetServiceProvider() => _serviceProvider;
     
-    protected RepositoryDbContext GetDbContext() => _dbHelper.ServiceProvider.GetRequiredService<RepositoryDbContext>();
+    protected RepositoryDbContext GetDbContext() => _serviceProvider.GetRequiredService<RepositoryDbContext>();
     
-    protected IServiceManager GetServiceManager() => _dbHelper.ServiceProvider.GetRequiredService<IServiceManager>();
+    protected UserManager<IdentityUser> GetIdentityUserManager() => 
+        GetServiceProvider().GetRequiredService<UserManager<IdentityUser>>();
+    
+    protected IServiceManager GetServiceManager() => _serviceProvider.GetRequiredService<IServiceManager>();
 }

@@ -51,31 +51,27 @@ internal sealed class DoctorService : IDoctorService
         
         var doctorDto = doctor.Adapt<DoctorDto>();
         
-        var specIds = await _repositoryManager.DoctorSpecializationRepository
+        doctorDto.SpecializationIds = await _repositoryManager.DoctorSpecializationRepository
             .GetSpecIdsByDoctorIdAsync(doctor.Id);
-        
-        var specs = await _repositoryManager.SpecializationRepository.GetFromIdsAsync(specIds);
-        
-        doctorDto.Specializations = specs.Adapt<IEnumerable<SpecializationDto>>();
         
         return doctorDto;
     }
     
-    public async Task UpdateAsync(DoctorUpdateDto doctorUpdateDto, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(DoctorDto doctorDto, CancellationToken cancellationToken = default)
     {
-        var doctor = await GetDoctorFromIdAsync(doctorUpdateDto.Id);
+        var doctor = await GetDoctorFromIdAsync(doctorDto.Id);
         
-        await ValidateDoctorUpdateDto(doctorUpdateDto);
+        await ValidateDoctorUpdateDto(doctorDto);
         
-        doctor.FirstName = doctorUpdateDto.FirstName;
-        doctor.LastName = doctorUpdateDto.LastName;
-        doctor.Gender = doctorUpdateDto.Gender;
-        doctor.Address = doctorUpdateDto.Address;
-        doctor.Phone = doctorUpdateDto.Phone;
-        doctor.Email = doctorUpdateDto.Email;
-        doctor.DateOfBirth = doctorUpdateDto.DateOfBirth;
+        doctor.FirstName = doctorDto.FirstName;
+        doctor.LastName = doctorDto.LastName;
+        doctor.Gender = doctorDto.Gender;
+        doctor.Address = doctorDto.Address;
+        doctor.Phone = doctorDto.Phone;
+        doctor.Email = doctorDto.Email;
+        doctor.DateOfBirth = doctorDto.DateOfBirth;
 
-        await _repositoryManager.DoctorSpecializationRepository.UpdateAsync(doctor.Id, doctorUpdateDto.SpecializationIds);
+        await _repositoryManager.DoctorSpecializationRepository.UpdateAsync(doctor.Id, doctorDto.SpecializationIds);
         
         await _repositoryManager.UnitOfWork.SaveChangesAsync();
     }
@@ -112,18 +108,29 @@ internal sealed class DoctorService : IDoctorService
     
     private async Task ValidateDoctorCreateDto(DoctorCreateDto doctorCreateDto)
     {
-        ValidateDoctorBaseDto(doctorCreateDto);
-        
-        ArgumentException.ThrowIfNullOrWhiteSpace(doctorCreateDto.Password, nameof(doctorCreateDto.Password));
-
-        await ValidateSpecializations(doctorCreateDto.SpecializationIds);
+        try
+        {
+            ValidateDoctorBaseDto(doctorCreateDto);
+            ArgumentException.ThrowIfNullOrWhiteSpace(doctorCreateDto.Password, nameof(doctorCreateDto.Password));
+            await ValidateSpecializations(doctorCreateDto.SpecializationIds);
+        }
+        catch (Exception e)
+        {
+            throw new DoctorBadRequest(e.Message);
+        }
     }
     
-    private async Task ValidateDoctorUpdateDto(DoctorUpdateDto doctorUpdateDto)
+    private async Task ValidateDoctorUpdateDto(DoctorDto doctorDto)
     {
-        ValidateDoctorBaseDto(doctorUpdateDto);
-        
-        await ValidateSpecializations(doctorUpdateDto.SpecializationIds);
+        try
+        {
+            ValidateDoctorBaseDto(doctorDto);
+            await ValidateSpecializations(doctorDto.SpecializationIds);
+        }
+        catch (Exception e)
+        {
+            throw new DoctorBadRequest(e.Message);
+        }
     }
 
     private async Task ValidateSpecializations(IEnumerable<Guid> specializationIds)
