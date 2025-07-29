@@ -5,8 +5,6 @@ namespace Persistence.Repositories;
 
 public sealed class RepositoryManager : IRepositoryManager
 {
-    private readonly RepositoryDbContext _context;
-    
     public RepositoryManager(RepositoryDbContext context, UserManager<IdentityUser> userManager)
     {
         var lazyAccountRepository = new Lazy<IAccountRepository>(() => new AccountRepository(context));
@@ -19,7 +17,6 @@ public sealed class RepositoryManager : IRepositoryManager
         var lazyIdentityProvider = new Lazy<IIdentityProvider>(() => new IdentityProvider(userManager));
         var lazyUnitOfWork = new Lazy<IUnitOfWork>(() => new UnitOfWork(context));
         
-        _context = context;
         AccountRepository = lazyAccountRepository.Value;
         AdminRepository = lazyAdminRepository.Value;
         AttendanceRepository = lazyAttendanceRepository.Value;

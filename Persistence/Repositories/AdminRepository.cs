@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using System.Linq.Expressions;
+using Domain.Entities;
 using Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,6 +17,11 @@ internal sealed class AdminRepository : IAdminRepository
     public async Task<Admin?> FindByIdAsync(Guid id)
     {
         return await _context.Admins.SingleOrDefaultAsync(a => a.Id == id);
+    }
+
+    public async Task<bool> ExistsAsync(Expression<Func<Admin, bool>> predicate)
+    {
+        return await _context.Admins.AnyAsync(predicate);
     }
 
     public void Add(Admin admin)
