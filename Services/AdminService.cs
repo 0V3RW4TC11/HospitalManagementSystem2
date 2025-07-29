@@ -27,7 +27,7 @@ internal sealed class AdminService : IAdminService
     
     public async Task CreateAsync(AdminCreateDto adminCreateDto, CancellationToken cancellationToken = default)
     {
-        await ValidateAdminCreateDto(adminCreateDto);
+        await ValidateAdminCreateDtoAsync(adminCreateDto);
         
         await _repositoryManager.UnitOfWork.ExecuteInTransactionAsync(async () =>
         {
@@ -52,7 +52,7 @@ internal sealed class AdminService : IAdminService
     {
         var admin = await GetAdminByIdAsync(adminDto.Id);
         
-        ValidateAdminBaseDto(adminDto);
+        ValidateAdminDto(adminDto);
         
         admin.FirstName = adminDto.FirstName;
         admin.LastName = adminDto.LastName;
@@ -85,27 +85,10 @@ internal sealed class AdminService : IAdminService
         
         return admin;
     }
-
-    private static void ValidateAdminBaseDto(AdminBaseDto baseDto)
-    {
-        try
-        {
-            ArgumentException.ThrowIfNullOrWhiteSpace(baseDto.FirstName, nameof(baseDto.FirstName));
-            ArgumentException.ThrowIfNullOrWhiteSpace(baseDto.Phone, nameof(baseDto.Phone));
-            ArgumentException.ThrowIfNullOrWhiteSpace(baseDto.Email, nameof(baseDto.Email));
-        }
-        catch (Exception e)
-        {
-            throw new AdminBadRequest(e.Message);
-        }
-    }
     
-    private async Task ValidateAdminCreateDto(AdminCreateDto adminCreateDto)
+    private async Task ValidateAdminCreateDtoAsync(AdminCreateDto adminCreateDto)
     {
-        var isExisting = await _repositoryManager.AdminRepository.ExistsAsync(a =>
-            a.Email.ToLower() == adminCreateDto.Email.ToLower());
-        
-        if (isExisting)
+        if (await IsExistingAsync(adminCreateDto))
             throw new AdminBadRequest("An admin with the same email already exists.");
         
         try
@@ -117,5 +100,30 @@ internal sealed class AdminService : IAdminService
         {
             throw new AdminBadRequest(e.Message);
         }
+    }
+    
+    private static void ValidateAdminDto(AdminDto adminDto)
+    {
+        try
+        {
+            ValidateAdminBaseDto(adminDto);
+        }
+        catch (Exception e)
+        {
+            throw new AdminBadRequest(e.Message);
+        }
+    }
+
+    private async Task<bool> IsExistingAsync(AdminCreateDto adminCreateDto)
+    {
+        return await _repositoryManager.AdminRepository.ExistsAsync(a =>
+            a.Email.ToLower() == adminCreateDto.Email.ToLower());
+    }
+
+    private static void ValidateAdminBaseDto(AdminBaseDto baseDto)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(baseDto.FirstName, nameof(baseDto.FirstName));
+        ArgumentException.ThrowIfNullOrWhiteSpace(baseDto.Phone, nameof(baseDto.Phone));
+        ArgumentException.ThrowIfNullOrWhiteSpace(baseDto.Email, nameof(baseDto.Email));
     }
 }

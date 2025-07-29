@@ -79,6 +79,20 @@ internal sealed class DoctorServiceTests : PersistenceTestBase
     }
     
     [Test]
+    public async Task CreateAsync_DoctorWithDuplicateData_Throws()
+    {
+        // Arrange
+        var context = GetDbContext();
+        var specIds = (await SpecializationTestData.SeedSpecializationsAsync(context)).ToHashSet();
+        await DoctorTestData.SeedDoctor(context, GetIdentityUserManager(), specIds);
+        var doctorCreateDto = DoctorTestData.CreateDto(specIds);
+        
+        // Act & Assert
+        Assert.ThrowsAsync<DoctorBadRequest>(() => 
+            GetServiceManager().DoctorService.CreateAsync(doctorCreateDto));
+    }
+    
+    [Test]
     public void CreateAsync_DoctorWithNoSpecs_Throws()
     {
         // Arrange

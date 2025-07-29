@@ -35,47 +35,48 @@ internal sealed class AdminServiceTests : PersistenceTestBase
     public async Task CreateAdmin_AdminWithValidData_CreatesAdminAndAccount()
     {
         // Arrange
-        var dto = AdminTestData.CreateDto();
+        var context = GetDbContext();
+        var adminCreateDto = AdminTestData.CreateDto();
         
         // Act
-        await GetServiceManager().AdminService.CreateAsync(dto);
+        await GetServiceManager().AdminService.CreateAsync(adminCreateDto);
 
         // Assert
         // Has unique Admin record
-        var admin = GetDbContext().Admins.Single(a => 
-            a.FirstName == dto.FirstName &&
-            a.LastName == dto.LastName &&
-            a.Gender == dto.Gender &&
-            a.Address == dto.Address &&
-            a.Phone == dto.Phone &&
-            a.Email == dto.Email &&
-            a.DateOfBirth == dto.DateOfBirth);
+        var admin = context.Admins.Single(a => 
+            a.FirstName == adminCreateDto.FirstName &&
+            a.LastName == adminCreateDto.LastName &&
+            a.Gender == adminCreateDto.Gender &&
+            a.Address == adminCreateDto.Address &&
+            a.Phone == adminCreateDto.Phone &&
+            a.Email == adminCreateDto.Email &&
+            a.DateOfBirth == adminCreateDto.DateOfBirth);
 
         // Has unique Account record
-        var account = GetDbContext().Accounts.Single(a => a.UserId == admin!.Id);
+        var account = context.Accounts.Single(a => a.UserId == admin.Id);
 
         // Has unique Identity record
-        var identityUser = GetDbContext().Users.Single(a => a.Id == account!.IdentityUserId);
+        var identityUser = context.Users.Single(a => a.Id == account.IdentityUserId);
 
         // Has expected username
-        Assert.That(identityUser!.UserName, Is.EqualTo(AdminTestData.ExpectedUsername));
+        Assert.That(identityUser.UserName, Is.EqualTo(AdminTestData.ExpectedUsername));
         
         // Has expected AuthRole
-        var adminRoleId = GetDbContext().Roles.Single(r => r.Name == AuthRoles.Admin).Id;
-        Assert.That(GetDbContext().UserRoles.Any(r => r.UserId == identityUser.Id && r.RoleId == adminRoleId));
+        var adminRoleId = context.Roles.Single(r => r.Name == AuthRoles.Admin).Id;
+        Assert.That(context.UserRoles.Any(r => r.UserId == identityUser.Id && r.RoleId == adminRoleId));
     }
 
     [Test]
     public void CreateAsync_AdminWithInvalidData_Throws()
     {
         // Arrange
-        var dto = AdminTestData.CreateDto();
-        dto.FirstName = string.Empty;
-        dto.Phone = string.Empty;
-        dto.Email = string.Empty;
+        var adminCreateDto = AdminTestData.CreateDto();
+        adminCreateDto.FirstName = string.Empty;
+        adminCreateDto.Phone = string.Empty;
+        adminCreateDto.Email = string.Empty;
         
         // Act & Assert
-        Assert.ThrowsAsync<AdminBadRequest>(async () => await GetServiceManager().AdminService.CreateAsync(dto));
+        Assert.ThrowsAsync<AdminBadRequest>(async () => await GetServiceManager().AdminService.CreateAsync(adminCreateDto));
     }
     
     [Test]
@@ -83,10 +84,10 @@ internal sealed class AdminServiceTests : PersistenceTestBase
     {
         // Arrange
         await AdminTestData.SeedAdmin(GetDbContext(), GetIdentityUserManager());
-        var dto = AdminTestData.CreateDto();
+        var adminCreateDto = AdminTestData.CreateDto();
         
         // Act & Assert
-        Assert.ThrowsAsync<AdminBadRequest>(async () => await GetServiceManager().AdminService.CreateAsync(dto));
+        Assert.ThrowsAsync<AdminBadRequest>(() => GetServiceManager().AdminService.CreateAsync(adminCreateDto));
     }
     
     [Test]
@@ -123,7 +124,8 @@ internal sealed class AdminServiceTests : PersistenceTestBase
     public async Task UpdateAsync_ExistingAdminWithValidData_UpdatesAdmin()
     {
         // Arrange
-        var seededAdminDto = await AdminTestData.SeedAdmin(GetDbContext(), GetIdentityUserManager());
+        var context = GetDbContext();
+        var seededAdminDto = await AdminTestData.SeedAdmin(context, GetIdentityUserManager());
         seededAdminDto.FirstName = "UpdatedFirstName";
         seededAdminDto.Email = "updatedEmail@example.com";
         
@@ -131,7 +133,7 @@ internal sealed class AdminServiceTests : PersistenceTestBase
         await GetServiceManager().AdminService.UpdateAsync(seededAdminDto);
         
         // Assert
-        var result = GetDbContext().Admins.Single(a => a.Id == seededAdminDto.Id);
+        var result = context.Admins.Single(a => a.Id == seededAdminDto.Id);
         Assert.Multiple(() =>
         {
             Assert.That(result!.FirstName, Is.EqualTo(seededAdminDto.FirstName));
@@ -166,8 +168,8 @@ internal sealed class AdminServiceTests : PersistenceTestBase
     public async Task DeleteAsync_ExistingAdmin_DeletesAdminAndAccount()
     {
         // Arrange
-        var seededAdminDto = await AdminTestData.SeedAdmin(GetDbContext(), GetIdentityUserManager());
         var context = GetDbContext();
+        var seededAdminDto = await AdminTestData.SeedAdmin(context, GetIdentityUserManager());
         
         // Act
         await GetServiceManager().AdminService.DeleteAsync(seededAdminDto.Id);
@@ -185,10 +187,8 @@ internal sealed class AdminServiceTests : PersistenceTestBase
     [Test]
     public void DeleteAsync_NonExistingAdmin_Throws()
     {
-        // Arrange
-        var id = Guid.NewGuid();
-        
         // Act & Assert
-        Assert.ThrowsAsync<AdminNotFoundException>(() => GetServiceManager().AdminService.DeleteAsync(id));
+        Assert.ThrowsAsync<AdminNotFoundException>(() => 
+            GetServiceManager().AdminService.DeleteAsync(Guid.NewGuid()));
     }
 }

@@ -49,7 +49,7 @@ internal sealed class PatientService : IPatientService
     {
         var patient = await GetPatientByIdAsync(patientDto.Id);
         
-        ValidatePatientBaseDto(patientDto);
+        ValidatePatientDto(patientDto);
         
         patient.FirstName = patientDto.FirstName;
         patient.LastName = patientDto.LastName;
@@ -82,17 +82,36 @@ internal sealed class PatientService : IPatientService
 
         return patient;
     }
+    
+    private static void ValidatePatientCreateDto(PatientCreateDto patientCreateDto)
+    {
+        try
+        {
+            ValidatePatientBaseDto(patientCreateDto);
+            ArgumentException.ThrowIfNullOrWhiteSpace(patientCreateDto.Password, nameof(patientCreateDto.Password));
+        }
+        catch (Exception e)
+        {
+            throw new PatientBadRequest(e.Message);
+        }
+    }
+
+    private static void ValidatePatientDto(PatientDto patientDto)
+    {
+        try
+        {
+            ValidatePatientBaseDto(patientDto);
+        }
+        catch (Exception e)
+        {
+            throw new PatientBadRequest(e.Message);
+        }
+    }
 
     private static void ValidatePatientBaseDto(PatientBaseDto baseDto)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(baseDto.FirstName, nameof(baseDto.FirstName));
         ArgumentException.ThrowIfNullOrWhiteSpace(baseDto.Gender, nameof(baseDto.Gender));
         ArgumentException.ThrowIfNullOrWhiteSpace(baseDto.Email, nameof(baseDto.Email));
-    }
-    
-    private static void ValidatePatientCreateDto(PatientCreateDto patientCreateDto)
-    {
-        ValidatePatientBaseDto(patientCreateDto);
-        ArgumentException.ThrowIfNullOrWhiteSpace(patientCreateDto.Password, nameof(patientCreateDto.Password));
     }
 }
