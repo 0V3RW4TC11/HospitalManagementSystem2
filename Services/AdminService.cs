@@ -27,7 +27,7 @@ internal sealed class AdminService : IAdminService
     
     public async Task CreateAsync(AdminCreateDto adminCreateDto, CancellationToken cancellationToken = default)
     {
-        ValidateAdminCreateDto(adminCreateDto);
+        await ValidateAdminCreateDto(adminCreateDto);
         
         await _repositoryManager.UnitOfWork.ExecuteInTransactionAsync(async () =>
         {
@@ -88,14 +88,34 @@ internal sealed class AdminService : IAdminService
 
     private static void ValidateAdminBaseDto(AdminBaseDto baseDto)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(baseDto.FirstName, nameof(baseDto.FirstName));
-        ArgumentException.ThrowIfNullOrWhiteSpace(baseDto.Phone, nameof(baseDto.Phone));
-        ArgumentException.ThrowIfNullOrWhiteSpace(baseDto.Email, nameof(baseDto.Email));
+        try
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(baseDto.FirstName, nameof(baseDto.FirstName));
+            ArgumentException.ThrowIfNullOrWhiteSpace(baseDto.Phone, nameof(baseDto.Phone));
+            ArgumentException.ThrowIfNullOrWhiteSpace(baseDto.Email, nameof(baseDto.Email));
+        }
+        catch (Exception e)
+        {
+            throw new AdminBadRequest(e.Message);
+        }
     }
     
-    private static void ValidateAdminCreateDto(AdminCreateDto adminCreateDto)
+    private async Task ValidateAdminCreateDto(AdminCreateDto adminCreateDto)
     {
-        ValidateAdminBaseDto(adminCreateDto);
-        ArgumentException.ThrowIfNullOrWhiteSpace(adminCreateDto.Password, nameof(adminCreateDto.Password));
+        var isExisting = await _repositoryManager.AdminRepository.ExistsAsync(a =>
+            a.Email.ToLower() == adminCreateDto.Email.ToLower());
+        
+        if (isExisting)
+            throw new AdminBadRequest("An admin with the same email already exists.");
+        
+        try
+        {
+            ValidateAdminBaseDto(adminCreateDto);
+            ArgumentException.ThrowIfNullOrWhiteSpace(adminCreateDto.Password, nameof(adminCreateDto.Password));
+        }
+        catch (Exception e)
+        {
+            throw new AdminBadRequest(e.Message);
+        }
     }
 }

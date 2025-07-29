@@ -19,9 +19,4 @@ public class Admin : Entity
     public string Email { get; set; }
 
     public DateOnly? DateOfBirth { get; set; }
-    
-    public static Expression<Func<Admin, bool>> Matches(Admin admin)
-    {
-        return x => x.Email.ToLower() == admin.Email.ToLower();
-    }
 }

@@ -6,14 +6,14 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Persistence;
 
-namespace IntegrationTests.Helpers;
+namespace Persistence.Tests.Helpers;
 
 public class SqliteInMemDbHelper : IDisposable, IAsyncDisposable
 {
     public readonly IServiceProvider ServiceProvider;
     private readonly SqliteConnection _connection;
 
-    public SqliteInMemDbHelper(Action<ServiceCollection> serviceConfig)
+    public SqliteInMemDbHelper(Action<ServiceCollection>? serviceConfig = null)
     {
         _connection = new SqliteConnection("DataSource=:memory:");
         _connection.Open();
@@ -38,7 +38,7 @@ public class SqliteInMemDbHelper : IDisposable, IAsyncDisposable
             .AddDefaultTokenProviders();
         
         // Add services
-        serviceConfig.Invoke(services);
+        serviceConfig?.Invoke(services);
         
         // Build service provider
         ServiceProvider = services.BuildServiceProvider();
