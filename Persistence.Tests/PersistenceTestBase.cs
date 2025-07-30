@@ -67,7 +67,7 @@ internal abstract class PersistenceTestBase
     protected RepositoryDbContext GetDbContext() => _serviceProvider.GetRequiredService<RepositoryDbContext>();
     
     protected UserManager<IdentityUser> GetIdentityUserManager() => 
-        GetServiceProvider().GetRequiredService<UserManager<IdentityUser>>();
+        _serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
     
     protected IServiceManager GetServiceManager() => _serviceProvider.GetRequiredService<IServiceManager>();
 }
