@@ -18,7 +18,8 @@ public class PatientTestData
         Phone = "123-456-7890",
         Email = "testPatient@example.com",
         DateOfBirth = DateOnly.FromDateTime(new DateTime(1990, 1, 1)),
-        Password = "Password123!"
+        Password = "Password123!",
+        BloodType = BloodType.AbPositive
     };
 
     public static async Task<PatientDto> SeedPatient(RepositoryDbContext context, UserManager<IdentityUser> userManager)

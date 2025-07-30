@@ -30,24 +30,24 @@ internal sealed class AttendanceService : IAttendanceService
 
     public async Task<IEnumerable<AttendanceShortDto>> GetAllByPatientIdAsync(Guid id)
     {
-        var attendances = 
-            await _repositoryManager.AttendanceRepository.FindShortAttendancesByPatientIdAsync(id);
-        
-        if (!attendances.Any())
+        var attendances =
+            (await _repositoryManager.AttendanceRepository.FindAttendanceInfoByPatientIdAsync(id)).ToArray();
+
+        if (attendances.Length == 0)
             throw new AttendanceNotFoundForPatientException(id.ToString());
 
-        return attendances;
+        return AdaptAttendanceInfos(attendances);
     }
 
     public async Task<IEnumerable<AttendanceShortDto>> GetAllByDoctorIdAsync(Guid id)
     {
-        var attendances = 
-            await _repositoryManager.AttendanceRepository.FindShortAttendancesByDoctorIdAsync(id);
-        
-        if (!attendances.Any())
+        var attendances =
+            (await _repositoryManager.AttendanceRepository.FindAttendanceInfoByDoctorIdAsync(id)).ToArray();
+
+        if (attendances.Length == 0)
             throw new AttendanceNotFoundForDoctorException(id.ToString());
 
-        return attendances;
+        return AdaptAttendanceInfos(attendances);
     }
     
     public async Task<AttendanceDto> GetByIdAsync(Guid id)
@@ -80,6 +80,17 @@ internal sealed class AttendanceService : IAttendanceService
         _repositoryManager.AttendanceRepository.Remove(attendance);
         
         await _repositoryManager.UnitOfWork.SaveChangesAsync();
+    }
+
+    private static IEnumerable<AttendanceShortDto> AdaptAttendanceInfos(
+        IEnumerable<(Guid Id, Guid UserId, DateTime DateTime)> attendances)
+    {
+        return attendances.Select(a => new AttendanceShortDto
+        {
+            Id = a.Id,
+            UserId = a.UserId,
+            DateTime = a.DateTime
+        });
     }
 
     private async Task<Attendance> GetAttendanceFromIdAsync(Guid id)
