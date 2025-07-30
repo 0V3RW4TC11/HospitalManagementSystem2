@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using System.Linq.Expressions;
+using Domain.Entities;
 using Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,6 +17,11 @@ internal sealed class PatientRepository : IPatientRepository
     public async Task<Patient?> FindByIdAsync(Guid id)
     {
         return await _context.Patients.SingleOrDefaultAsync(p => p.Id == id);
+    }
+
+    public async Task<bool> ExistsAsync(Expression<Func<Patient, bool>> predicate)
+    {
+        return await _context.Patients.AnyAsync(predicate);
     }
 
     public void Add(Patient patient)

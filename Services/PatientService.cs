@@ -92,7 +92,7 @@ internal sealed class PatientService : IPatientService
         }
         catch (Exception e)
         {
-            throw new PatientBadRequest(e.Message);
+            throw new PatientBadRequestException(e.Message);
         }
     }
 
@@ -104,7 +104,7 @@ internal sealed class PatientService : IPatientService
         }
         catch (Exception e)
         {
-            throw new PatientBadRequest(e.Message);
+            throw new PatientBadRequestException(e.Message);
         }
     }
 

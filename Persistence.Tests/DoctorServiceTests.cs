@@ -75,7 +75,7 @@ internal sealed class DoctorServiceTests : PersistenceTestBase
         doctorCreateDto.Email = string.Empty;
         
         // Act & Assert
-        Assert.ThrowsAsync<DoctorBadRequest>(() => GetServiceManager().DoctorService.CreateAsync(doctorCreateDto));
+        Assert.ThrowsAsync<DoctorBadRequestException>(() => GetServiceManager().DoctorService.CreateAsync(doctorCreateDto));
     }
     
     [Test]
@@ -88,7 +88,7 @@ internal sealed class DoctorServiceTests : PersistenceTestBase
         var doctorCreateDto = DoctorTestData.CreateDto(specIds);
         
         // Act & Assert
-        Assert.ThrowsAsync<DoctorBadRequest>(() => 
+        Assert.ThrowsAsync<DoctorBadRequestException>(() => 
             GetServiceManager().DoctorService.CreateAsync(doctorCreateDto));
     }
     
@@ -99,7 +99,7 @@ internal sealed class DoctorServiceTests : PersistenceTestBase
         var doctorCreateDto = DoctorTestData.CreateDto(new HashSet<Guid>());
         
         // Act & Assert
-        Assert.ThrowsAsync<DoctorBadRequest>(() => GetServiceManager().DoctorService.CreateAsync(doctorCreateDto));
+        Assert.ThrowsAsync<DoctorBadRequestException>(() => GetServiceManager().DoctorService.CreateAsync(doctorCreateDto));
     }
     
     [Test]
@@ -174,7 +174,7 @@ internal sealed class DoctorServiceTests : PersistenceTestBase
         seededDoctorDto.LastName = "";
 
         // Act & Assert
-        Assert.ThrowsAsync<DoctorBadRequest>(() => GetServiceManager().DoctorService.UpdateAsync(seededDoctorDto));
+        Assert.ThrowsAsync<DoctorBadRequestException>(() => GetServiceManager().DoctorService.UpdateAsync(seededDoctorDto));
     }
     
     [Test]
@@ -189,7 +189,7 @@ internal sealed class DoctorServiceTests : PersistenceTestBase
         seededDoctorDto.LastName = "";
 
         // Act & Assert
-        Assert.ThrowsAsync<DoctorBadRequest>(() => GetServiceManager().DoctorService.UpdateAsync(seededDoctorDto));
+        Assert.ThrowsAsync<DoctorBadRequestException>(() => GetServiceManager().DoctorService.UpdateAsync(seededDoctorDto));
     }
     
     [Test]

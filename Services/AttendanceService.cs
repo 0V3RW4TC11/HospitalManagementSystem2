@@ -19,7 +19,7 @@ internal sealed class AttendanceService : IAttendanceService
 
     public async Task CreateAsync(AttendanceCreateDto attendanceCreateDto)
     {
-        ValidateAttendanceCreateDto(attendanceCreateDto);
+        await ValidateAttendanceCreateDto(attendanceCreateDto);
         
         var attendance = attendanceCreateDto.Adapt<Attendance>();
         
@@ -28,18 +28,26 @@ internal sealed class AttendanceService : IAttendanceService
         await _repositoryManager.UnitOfWork.SaveChangesAsync();
     }
 
-    public async Task<IEnumerable<AttendanceDto>> GetAllByPatientIdAsync(Guid id)
+    public async Task<IEnumerable<AttendanceShortDto>> GetAllByPatientIdAsync(Guid id)
     {
-        var attendances = await _repositoryManager.AttendanceRepository.GetAllByPatientIdAsync(id);
+        var attendances = 
+            await _repositoryManager.AttendanceRepository.FindShortAttendancesByPatientIdAsync(id);
         
-        return attendances.Adapt<IEnumerable<AttendanceDto>>();
+        if (!attendances.Any())
+            throw new AttendanceNotFoundForPatientException(id.ToString());
+
+        return attendances;
     }
 
-    public async Task<IEnumerable<AttendanceDto>> GetAllByDoctorIdAsync(Guid id)
+    public async Task<IEnumerable<AttendanceShortDto>> GetAllByDoctorIdAsync(Guid id)
     {
-        var attendances = await _repositoryManager.AttendanceRepository.GetAllByDoctorIdAsync(id);
+        var attendances = 
+            await _repositoryManager.AttendanceRepository.FindShortAttendancesByDoctorIdAsync(id);
         
-        return attendances.Adapt<IEnumerable<AttendanceDto>>();
+        if (!attendances.Any())
+            throw new AttendanceNotFoundForDoctorException(id.ToString());
+
+        return attendances;
     }
     
     public async Task<AttendanceDto> GetByIdAsync(Guid id)
@@ -53,7 +61,7 @@ internal sealed class AttendanceService : IAttendanceService
     {
         var attendance = await GetAttendanceFromIdAsync(attendanceDto.Id);
         
-        ValidateAttendanceCreateDto(attendanceDto);
+        await ValidateAttendanceCreateDto(attendanceDto);
         
         attendance.Diagnosis = attendanceDto.Diagnosis;
         attendance.Remarks = attendanceDto.Remarks;
@@ -83,12 +91,62 @@ internal sealed class AttendanceService : IAttendanceService
         return attendance;
     }
 
-    private static void ValidateAttendanceCreateDto(AttendanceCreateDto dto)
+    private async Task ValidateAttendanceCreateDto(AttendanceCreateDto dto)
     {
-        if (dto.PatientId == Guid.Empty)
-            throw new ArgumentException("Patient Id cannot be empty");
-        if (dto.DoctorId == Guid.Empty)
-            throw new ArgumentException("Doctor Id cannot be empty");
+        try
+        {
+            ValidateAttendanceDetails(dto);
+            await ValidateNotDuplicateAsync(dto);
+            await ValidateDoctorIdAsync(dto.DoctorId);
+            await ValidatePatientIdAsync(dto.PatientId);
+        }
+        catch (Exception e)
+        {
+            throw new AttendanceBadRequestException(e.Message);
+        }
+    }
+
+    private async Task ValidateAttendanceDto(AttendanceDto dto)
+    {
+        try
+        {
+            ValidateAttendanceDetails(dto);
+            await ValidateDoctorIdAsync(dto.DoctorId);
+            await ValidatePatientIdAsync(dto.PatientId);
+        }
+        catch (Exception e)
+        {
+            throw new AttendanceBadRequestException(e.Message);
+        }
+    }
+
+    private async Task ValidateNotDuplicateAsync(AttendanceCreateDto dto)
+    {
+        var exists = await _repositoryManager.AttendanceRepository.ExistsAsync(a =>
+            a.DateTime == dto.DateTime && 
+            a.DoctorId == dto.DoctorId && 
+            a.PatientId == dto.PatientId);
+        
+        if (exists)
+            throw new Exception("An Attendance with the same details already exists.");
+    }
+    
+    private async Task ValidateDoctorIdAsync(Guid id)
+    {
+        var exists = await _repositoryManager.DoctorRepository.ExistsAsync(d => d.Id == id);
+        if (!exists)
+            throw new DoctorNotFoundException(id.ToString());
+    }
+
+    private async Task ValidatePatientIdAsync(Guid id)
+    {
+        var exists = await _repositoryManager.PatientRepository.ExistsAsync(p => p.Id == id);
+        if (!exists)
+            throw new PatientNotFoundException(id.ToString());
+    }
+
+    private static void ValidateAttendanceDetails(AttendanceCreateDto dto)
+    {
         if (dto.DateTime < DateTime.Now)
             throw new ArgumentException("DateTime cannot be in the past");
         

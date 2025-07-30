@@ -89,7 +89,7 @@ internal sealed class AdminService : IAdminService
     private async Task ValidateAdminCreateDtoAsync(AdminCreateDto adminCreateDto)
     {
         if (await IsExistingAsync(adminCreateDto))
-            throw new AdminBadRequest("An admin with the same email already exists.");
+            throw new AdminBadRequestException("An admin with the same email already exists.");
         
         try
         {
@@ -98,7 +98,7 @@ internal sealed class AdminService : IAdminService
         }
         catch (Exception e)
         {
-            throw new AdminBadRequest(e.Message);
+            throw new AdminBadRequestException(e.Message);
         }
     }
     
@@ -110,7 +110,7 @@ internal sealed class AdminService : IAdminService
         }
         catch (Exception e)
         {
-            throw new AdminBadRequest(e.Message);
+            throw new AdminBadRequestException(e.Message);
         }
     }
 
