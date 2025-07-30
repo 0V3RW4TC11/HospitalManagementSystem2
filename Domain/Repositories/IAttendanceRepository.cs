@@ -1,6 +1,4 @@
 ﻿using System.Linq.Expressions;
-using System.Runtime.InteropServices;
-using DataTransfer.Attendance;
 using Domain.Entities;
 
 namespace Domain.Repositories;
@@ -9,9 +7,9 @@ public interface IAttendanceRepository
 {
     Task<Attendance?> FindByIdAsync(Guid id);
     
-    Task<IEnumerable<AttendanceShortDto>> FindShortAttendancesByPatientIdAsync(Guid id);
+    Task<IEnumerable<(Guid Id, Guid UserId, DateTime DateTime)>> FindAttendanceInfoByPatientIdAsync(Guid id);
     
-    Task<IEnumerable<AttendanceShortDto>> FindShortAttendancesByDoctorIdAsync(Guid id);
+    Task<IEnumerable<(Guid Id, Guid UserId, DateTime DateTime)>> FindAttendanceInfoByDoctorIdAsync(Guid id);
     
     Task<bool> ExistsAsync(Expression<Func<Attendance, bool>> predicate);
     

@@ -1,5 +1,4 @@
 ﻿using System.Linq.Expressions;
-using DataTransfer.Attendance;
 using Domain.Entities;
 using Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -20,19 +19,19 @@ internal sealed class AttendanceRepository : IAttendanceRepository
         return await _context.Attendances.SingleOrDefaultAsync(a => a.Id == id);
     }
 
-    public async Task<IEnumerable<AttendanceShortDto>> FindShortAttendancesByPatientIdAsync(Guid id)
+    public async Task<IEnumerable<(Guid Id, Guid UserId, DateTime DateTime)>> FindAttendanceInfoByPatientIdAsync(Guid id)
     {
         return await _context.Attendances
             .Where(a => a.PatientId == id)
-            .Select(a => new AttendanceShortDto{ Id = a.Id, UserId = a.DoctorId, DateTime = a.DateTime })
+            .Select(a => new ValueTuple<Guid, Guid, DateTime>(a.Id, a.DoctorId, a.DateTime))
             .ToArrayAsync();
     }
 
-    public async Task<IEnumerable<AttendanceShortDto>> FindShortAttendancesByDoctorIdAsync(Guid id)
+    public async Task<IEnumerable<(Guid Id, Guid UserId, DateTime DateTime)>> FindAttendanceInfoByDoctorIdAsync(Guid id)
     {
         return await _context.Attendances
             .Where(a => a.DoctorId == id)
-            .Select(a => new AttendanceShortDto{ Id = a.Id, UserId = a.PatientId, DateTime = a.DateTime })
+            .Select(a => new ValueTuple<Guid, Guid, DateTime>(a.Id, a.PatientId, a.DateTime))
             .ToArrayAsync();
     }
 

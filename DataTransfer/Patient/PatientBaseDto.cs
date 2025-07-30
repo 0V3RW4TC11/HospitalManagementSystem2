@@ -1,4 +1,6 @@
-﻿namespace DataTransfer.Patient;
+﻿using Domain.Entities;
+
+namespace DataTransfer.Patient;
 
 public abstract class PatientBaseDto
 {
@@ -16,7 +18,7 @@ public abstract class PatientBaseDto
 
     public string Email { get; set; }
     
-    public int BloodType { get; set; }
+    public BloodType BloodType { get; set; }
 
     public DateOnly DateOfBirth { get; set; }
 }

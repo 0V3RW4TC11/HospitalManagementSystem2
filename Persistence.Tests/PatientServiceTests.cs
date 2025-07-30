@@ -42,7 +42,8 @@ internal sealed class PatientServiceTests : PersistenceTestBase
             p.Address == patientCreateDto.Address &&
             p.Phone == patientCreateDto.Phone &&
             p.Email == patientCreateDto.Email &&
-            p.DateOfBirth == patientCreateDto.DateOfBirth);
+            p.DateOfBirth == patientCreateDto.DateOfBirth &&
+            p.BloodType == patientCreateDto.BloodType);
         
         // Has unique Account record
         var account = context.Accounts.Single(a => a.UserId == patient.Id);
@@ -108,6 +109,7 @@ internal sealed class PatientServiceTests : PersistenceTestBase
             Assert.That(patientDto.Phone, Is.EqualTo(seededPatientDto.Phone));
             Assert.That(patientDto.Email, Is.EqualTo(seededPatientDto.Email));
             Assert.That(patientDto.DateOfBirth, Is.EqualTo(seededPatientDto.DateOfBirth));
+            Assert.That(patientDto.BloodType, Is.EqualTo(seededPatientDto.BloodType));
         });
     }
     
