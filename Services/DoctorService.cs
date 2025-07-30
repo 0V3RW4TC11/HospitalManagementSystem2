@@ -135,7 +135,7 @@ internal sealed class DoctorService : IDoctorService
 
         foreach (var specId in specSet)
         {
-            var isExisting = await _repositoryManager.SpecializationRepository.ContainsAsync(specId);
+            var isExisting = await _repositoryManager.SpecializationRepository.ExistsAsync(specId);
             if (!isExisting)
                 throw new SpecNotFoundException(specId.ToString());
         }

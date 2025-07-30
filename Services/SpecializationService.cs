@@ -19,7 +19,7 @@ internal sealed class SpecializationService : ISpecializationService
 
     public async Task CreateAsync(SpecializationCreateDto specializationCreateDto, CancellationToken cancellationToken = default)
     {
-        ValidateSpecializationCreateDto(specializationCreateDto);
+        await ValidateSpecializationDto(specializationCreateDto);
         
         var specialization = specializationCreateDto.Adapt<Specialization>();
 
@@ -39,7 +39,7 @@ internal sealed class SpecializationService : ISpecializationService
     {
         var spec = await GetSpecializationFromIdAsync(specializationDto.Id);
         
-        ValidateSpecializationCreateDto(specializationDto);
+        await ValidateSpecializationDto(specializationDto);
         
         spec.Name = specializationDto.Name;
         
@@ -63,8 +63,24 @@ internal sealed class SpecializationService : ISpecializationService
         return specialization;
     }
 
-    private static void ValidateSpecializationCreateDto(SpecializationCreateDto dto)
+    private async Task ValidateSpecializationDto(SpecializationCreateDto dto)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(dto.Name, nameof(dto.Name));
+        try
+        {
+            await IsExistingAsync(dto);
+            ArgumentException.ThrowIfNullOrWhiteSpace(dto.Name, nameof(dto.Name));
+        }
+        catch (Exception e)
+        {
+            throw new SpecializationBadRequestException(e.Message);
+        }
+    }
+
+    private async Task IsExistingAsync(SpecializationCreateDto dto)
+    {
+        var exists = await _repositoryManager.SpecializationRepository.ExistsAsync(dto.Name);
+        
+        if (exists)
+            throw new Exception("A specialization with the same name already exists.");
     }
 }
