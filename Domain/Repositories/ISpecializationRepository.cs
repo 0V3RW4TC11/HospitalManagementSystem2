@@ -10,7 +10,9 @@ public interface ISpecializationRepository
     
     Task<Specialization?> FindByIdAsync(Guid id);
 
-    Task<bool> ContainsAsync(Guid id);
+    Task<bool> ExistsAsync(Guid id);
+    
+    Task<bool> ExistsAsync(string name);
     
     void Add(Specialization specialization);
     

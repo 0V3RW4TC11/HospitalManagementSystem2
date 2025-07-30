@@ -28,9 +28,14 @@ internal sealed class SpecializationRepository : ISpecializationRepository
         return await _context.Specializations.SingleOrDefaultAsync(s => s.Id == id);
     }
 
-    public async Task<bool> ContainsAsync(Guid id)
+    public async Task<bool> ExistsAsync(Guid id)
     {
         return await _context.Specializations.AnyAsync(s => s.Id == id);
+    }
+
+    public async Task<bool> ExistsAsync(string name)
+    {
+        return await _context.Specializations.AnyAsync(s => s.Name == name);
     }
 
     public void Add(Specialization specialization)

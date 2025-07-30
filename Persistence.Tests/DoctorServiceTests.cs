@@ -1,4 +1,5 @@
 ﻿using DataTransfer.Doctor;
+using DataTransfer.Specialization;
 using Domain.Constants;
 using Domain.Exceptions;
 using Mapster;
@@ -23,12 +24,22 @@ internal sealed class DoctorServiceTests : PersistenceTestBase
         roleManager.CreateAsync(new IdentityRole(AuthRoles.Doctor)).GetAwaiter().GetResult();
     }
 
+    private async Task<HashSet<Guid>> SeedSpecsAndReturnGuidSet(params SpecializationCreateDto[] specializations)
+    {
+        var result = 
+            await SpecializationTestData.SeedSpecializationsAsync(GetDbContext(), specializations);
+        
+        return result.Select(s => s.Id).ToHashSet();
+    }
+
     [Test]
     public async Task CreateAsync_DoctorWithValidData_CreatesDoctorAndDocSpecsAndAccount()
     {
         // Arrange
         var context = GetDbContext();
-        var specIds = (await SpecializationTestData.SeedSpecializationsAsync(context)).ToHashSet();
+        var spec1Dto = SpecializationTestData.CreateSpec1Dto();
+        var spec2Dto = SpecializationTestData.CreateSpec2Dto();
+        var specIds = await SeedSpecsAndReturnGuidSet(spec1Dto, spec2Dto);
         var doctorCreateDto = DoctorTestData.CreateDto(specIds);
         
         // Act
@@ -68,14 +79,15 @@ internal sealed class DoctorServiceTests : PersistenceTestBase
     public async Task CreateAsync_DoctorWithInvalidData_Throws()
     {
         // Arrange
-        var context = GetDbContext();
-        var specIds = (await SpecializationTestData.SeedSpecializationsAsync(context)).ToHashSet();
+        var spec1Dto = SpecializationTestData.CreateSpec1Dto();
+        var specIds = await SeedSpecsAndReturnGuidSet(spec1Dto);
         var doctorCreateDto = DoctorTestData.CreateDto(specIds);
         doctorCreateDto.FirstName = string.Empty;
         doctorCreateDto.Email = string.Empty;
         
         // Act & Assert
-        Assert.ThrowsAsync<DoctorBadRequestException>(() => GetServiceManager().DoctorService.CreateAsync(doctorCreateDto));
+        Assert.ThrowsAsync<DoctorBadRequestException>(() => 
+            GetServiceManager().DoctorService.CreateAsync(doctorCreateDto));
     }
     
     [Test]
@@ -83,7 +95,8 @@ internal sealed class DoctorServiceTests : PersistenceTestBase
     {
         // Arrange
         var context = GetDbContext();
-        var specIds = (await SpecializationTestData.SeedSpecializationsAsync(context)).ToHashSet();
+        var spec1Dto = SpecializationTestData.CreateSpec1Dto();
+        var specIds = await SeedSpecsAndReturnGuidSet(spec1Dto);
         await DoctorTestData.SeedDoctor(context, GetIdentityUserManager(), specIds);
         var doctorCreateDto = DoctorTestData.CreateDto(specIds);
         
@@ -107,7 +120,8 @@ internal sealed class DoctorServiceTests : PersistenceTestBase
     {
         // Arrange
         var context = GetDbContext();
-        var specIds = (await SpecializationTestData.SeedSpecializationsAsync(context)).ToHashSet();
+        var spec1Dto = SpecializationTestData.CreateSpec1Dto();
+        var specIds = await SeedSpecsAndReturnGuidSet(spec1Dto);
         var seededDoctorDto = await DoctorTestData.SeedDoctor(context, GetIdentityUserManager(), specIds);
         
         // Act
@@ -142,9 +156,11 @@ internal sealed class DoctorServiceTests : PersistenceTestBase
     {
         // Arrange
         var context = GetDbContext();
-        var specIds = (await SpecializationTestData.SeedSpecializationsAsync(context)).ToArray();
-        var seededDoctorDto = await DoctorTestData.SeedDoctor(context, GetIdentityUserManager(), 
-            new HashSet<Guid>{specIds[0]});
+        var spec1Dto = SpecializationTestData.CreateSpec1Dto();
+        var spec2Dto = SpecializationTestData.CreateSpec2Dto();
+        var specIds = await SeedSpecsAndReturnGuidSet(spec1Dto, spec2Dto);
+        var specIdsSubset = new HashSet<Guid> {specIds.First()};
+        var seededDoctorDto = await DoctorTestData.SeedDoctor(context, GetIdentityUserManager(), specIdsSubset);
         
         seededDoctorDto.FirstName = "UpdatedFirstName";
         seededDoctorDto.SpecializationIds = specIds;
@@ -156,9 +172,9 @@ internal sealed class DoctorServiceTests : PersistenceTestBase
         Assert.Multiple(() =>
         {
             Assert.That(context.Doctors.Any(d => d.Id == seededDoctorDto.Id && d.FirstName == "UpdatedFirstName"));
-            Assert.That(context.DoctorSpecializations.Any(ds =>
-                ds.DoctorId == seededDoctorDto.Id &&
-                ds.SpecializationId == specIds[1]));
+            Assert.That(context.DoctorSpecializations
+                .Where(ds => ds.DoctorId == seededDoctorDto.Id)
+                .All(ds => specIds.Contains(ds.SpecializationId)));
         });
     }
     
@@ -167,7 +183,8 @@ internal sealed class DoctorServiceTests : PersistenceTestBase
     {
         // Arrange
         var context = GetDbContext();
-        var specIds = (await SpecializationTestData.SeedSpecializationsAsync(context)).ToHashSet();
+        var spec1Dto = SpecializationTestData.CreateSpec1Dto();
+        var specIds = await SeedSpecsAndReturnGuidSet(spec1Dto);
         var seededDoctorDto = await DoctorTestData.SeedDoctor(context, GetIdentityUserManager(), specIds);
         
         seededDoctorDto.FirstName = "";
@@ -184,9 +201,6 @@ internal sealed class DoctorServiceTests : PersistenceTestBase
         var context = GetDbContext();
         var seededDoctorDto = await DoctorTestData.SeedDoctor(context, GetIdentityUserManager(), 
             new HashSet<Guid>());
-        
-        seededDoctorDto.FirstName = "";
-        seededDoctorDto.LastName = "";
 
         // Act & Assert
         Assert.ThrowsAsync<DoctorBadRequestException>(() => GetServiceManager().DoctorService.UpdateAsync(seededDoctorDto));
@@ -197,7 +211,8 @@ internal sealed class DoctorServiceTests : PersistenceTestBase
     {
         // Arrange
         var context = GetDbContext();
-        var specIds = (await SpecializationTestData.SeedSpecializationsAsync(context)).ToHashSet();
+        var spec1Dto = SpecializationTestData.CreateSpec1Dto();
+        var specIds = await SeedSpecsAndReturnGuidSet(spec1Dto);
         var doctorDto = DoctorTestData.CreateDto(specIds).Adapt<DoctorDto>();
         doctorDto.Id = Guid.NewGuid();
 
@@ -210,7 +225,8 @@ internal sealed class DoctorServiceTests : PersistenceTestBase
     {
         // Arrange
         var context = GetDbContext();
-        var specIds = (await SpecializationTestData.SeedSpecializationsAsync(context)).ToHashSet();
+        var spec1Dto = SpecializationTestData.CreateSpec1Dto();
+        var specIds = await SeedSpecsAndReturnGuidSet(spec1Dto);
         var seededDoctorDto = await DoctorTestData.SeedDoctor(context, GetIdentityUserManager(), specIds);
         
         // Act
@@ -231,9 +247,9 @@ internal sealed class DoctorServiceTests : PersistenceTestBase
     public async Task DeleteAsync_NonExistingDoctor_Throws()
     {
         // Arrange
-        // Arrange
         var context = GetDbContext();
-        var specIds = (await SpecializationTestData.SeedSpecializationsAsync(context)).ToHashSet();
+        var spec1Dto = SpecializationTestData.CreateSpec1Dto();
+        var specIds = await SeedSpecsAndReturnGuidSet(spec1Dto);
         var doctorDto = DoctorTestData.CreateDto(specIds).Adapt<DoctorDto>();
         doctorDto.Id = Guid.NewGuid();
         

@@ -17,20 +17,14 @@ public static class SpecializationTestData
     {
         Name = "Test Specialization 2"
     };
-    
-    public static SpecializationCreateDto CreateSpec3Dto() => new()
-    {
-        Name = "Test Specialization 3"
-    };
 
-    public static async Task<IEnumerable<Guid>> SeedSpecializationsAsync(RepositoryDbContext context)
+    public static async Task<IEnumerable<SpecializationDto>> SeedSpecializationsAsync(
+        RepositoryDbContext context,
+        params SpecializationCreateDto[] createDtos)
     {
-        var spec1 = CreateSpec1Dto().Adapt<Specialization>();
-        var spec2 = CreateSpec2Dto().Adapt<Specialization>();
-        
-        context.Specializations.AddRange(spec1, spec2);
+        context.Specializations.AddRange(createDtos.Adapt<IEnumerable<Specialization>>());
         await context.SaveChangesAsync();
         
-        return await context.Specializations.Select(s => s.Id).ToArrayAsync();
+        return await context.Specializations.Select(s => s.Adapt<SpecializationDto>()).ToArrayAsync();
     }
 }
