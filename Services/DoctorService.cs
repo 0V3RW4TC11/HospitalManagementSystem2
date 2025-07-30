@@ -99,7 +99,7 @@ internal sealed class DoctorService : IDoctorService
     private async Task ValidateDoctorCreateDtoAsync(DoctorCreateDto doctorCreateDto)
     {
         if (await IsExistingAsync(doctorCreateDto))
-            throw new DoctorBadRequest("A doctor with the same email already exists.");
+            throw new DoctorBadRequestException("A doctor with the same email already exists.");
         
         try
         {
@@ -109,7 +109,7 @@ internal sealed class DoctorService : IDoctorService
         }
         catch (Exception e)
         {
-            throw new DoctorBadRequest(e.Message);
+            throw new DoctorBadRequestException(e.Message);
         }
     }
     
@@ -122,7 +122,7 @@ internal sealed class DoctorService : IDoctorService
         }
         catch (Exception e)
         {
-            throw new DoctorBadRequest(e.Message);
+            throw new DoctorBadRequestException(e.Message);
         }
     }
 

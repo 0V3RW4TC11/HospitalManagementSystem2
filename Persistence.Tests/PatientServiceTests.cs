@@ -70,7 +70,7 @@ internal sealed class PatientServiceTests : PersistenceTestBase
         patientCreateDto.Email = string.Empty;
         
         // Act & Assert
-        Assert.ThrowsAsync<PatientBadRequest>(async () => 
+        Assert.ThrowsAsync<PatientBadRequestException>(async () => 
             await GetServiceManager().PatientService.CreateAsync(patientCreateDto));
     }
     
@@ -149,7 +149,7 @@ internal sealed class PatientServiceTests : PersistenceTestBase
         seededPatientDto.Email = "";
         
         // Act & Assert
-        Assert.ThrowsAsync<PatientBadRequest>(() => GetServiceManager().PatientService.UpdateAsync(seededPatientDto));
+        Assert.ThrowsAsync<PatientBadRequestException>(() => GetServiceManager().PatientService.UpdateAsync(seededPatientDto));
     }
     
     [Test]

@@ -6,9 +6,11 @@ public interface IAttendanceService
 {
     Task CreateAsync(AttendanceCreateDto attendanceCreateDto);
     
-    Task<IEnumerable<AttendanceDto>> GetAllByPatientIdAsync(Guid id);
+    Task<IEnumerable<AttendanceShortDto>> GetAllByPatientIdAsync(Guid id);
     
-    Task<IEnumerable<AttendanceDto>> GetAllByDoctorIdAsync(Guid id);
+    Task<IEnumerable<AttendanceShortDto>> GetAllByDoctorIdAsync(Guid id);
+    
+    Task<AttendanceDto> GetByIdAsync(Guid id);
     
     Task UpdateAsync(AttendanceDto attendanceDto);
     
