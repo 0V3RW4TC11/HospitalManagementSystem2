@@ -1,5 +1,4 @@
 ﻿using DataTransfer.Admin;
-using Domain;
 using Domain.Constants;
 using Domain.Entities;
 using Domain.Exceptions;
@@ -81,7 +80,7 @@ internal sealed class AdminService : IAdminService
     {
         var admin = await _repositoryManager.AdminRepository.FindByIdAsync(id);
         if (admin is null)
-            throw new AdminNotFoundException(id.ToString());
+            throw new AdminNotFoundException();
         
         return admin;
     }
@@ -89,29 +88,15 @@ internal sealed class AdminService : IAdminService
     private async Task ValidateAdminCreateDtoAsync(AdminCreateDto adminCreateDto)
     {
         if (await IsExistingAsync(adminCreateDto))
-            throw new AdminBadRequestException("An admin with the same email already exists.");
-        
-        try
-        {
-            ValidateAdminBaseDto(adminCreateDto);
-            ArgumentException.ThrowIfNullOrWhiteSpace(adminCreateDto.Password, nameof(adminCreateDto.Password));
-        }
-        catch (Exception e)
-        {
-            throw new AdminBadRequestException(e.Message);
-        }
+            throw new Exception($"Email {adminCreateDto.Email} is used by another Admin.");
+
+        ValidateAdminBaseDto(adminCreateDto);
+        ArgumentException.ThrowIfNullOrWhiteSpace(adminCreateDto.Password, nameof(adminCreateDto.Password));
     }
     
     private static void ValidateAdminDto(AdminDto adminDto)
     {
-        try
-        {
-            ValidateAdminBaseDto(adminDto);
-        }
-        catch (Exception e)
-        {
-            throw new AdminBadRequestException(e.Message);
-        }
+        ValidateAdminBaseDto(adminDto);
     }
 
     private async Task<bool> IsExistingAsync(AdminCreateDto adminCreateDto)

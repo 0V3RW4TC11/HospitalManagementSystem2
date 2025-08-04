@@ -1,6 +1,4 @@
-﻿using Domain;
-using Domain.Entities;
-using Domain.Exceptions;
+﻿using Domain.Entities;
 using Domain.Repositories;
 using Services.Abstractions;
 
@@ -29,25 +27,19 @@ internal sealed class AccountService : IAccountService
 
     public async Task<Guid> FindUserIdByIdentityIdAsync(string identityId)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(identityId, nameof(identityId));
-        
         var account = await _repositoryManager.AccountRepository.FindByIdentityIdAsync(identityId);
-        if (account is null)
-            throw AccountNotFoundException.ForIdentityId(identityId);
         
-        return account.UserId;
+        return account!.UserId;
     }
 
     public async Task DeleteByUserIdAsync(Guid userId)
     {
         var account = await _repositoryManager.AccountRepository.FindByUserIdAsync(userId);
-        if (account is null)
-            throw AccountNotFoundException.ForUserId(userId);
         
-        _repositoryManager.AccountRepository.Remove(account);
+        _repositoryManager.AccountRepository.Remove(account!);
         
         await _repositoryManager.UnitOfWork.SaveChangesAsync();
         
-        await _repositoryManager.IdentityProvider.RemoveAsync(account.IdentityUserId);
+        await _repositoryManager.IdentityProvider.RemoveAsync(account!.IdentityUserId);
     }
 }

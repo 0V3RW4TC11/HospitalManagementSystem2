@@ -1,8 +1,15 @@
-﻿namespace Domain.Exceptions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-public class AdminNotFoundException : NotFoundException
+namespace Domain.Exceptions
 {
-    public AdminNotFoundException(string id) : base($"Admin not found for Id: {id}.")
+    public class AdminNotFoundException : Exception
     {
+        public AdminNotFoundException() : base("Admin not found.")
+        {
+        }
     }
 }

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Domain.Exceptions
 {
-    public class AttendanceNotFoundException : Exception
+    public class SpecializationNotFoundException : Exception
     {
-        public AttendanceNotFoundException() : base("Attendance not found.")
+        public SpecializationNotFoundException() : base("Specialization not found.")
         {
         }
     }

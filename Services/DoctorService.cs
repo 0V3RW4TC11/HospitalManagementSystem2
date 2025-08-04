@@ -1,4 +1,5 @@
-﻿using DataTransfer.Doctor;
+﻿using DataTransfer.Admin;
+using DataTransfer.Doctor;
 using DataTransfer.Specialization;
 using Domain;
 using Domain.Constants;
@@ -61,7 +62,7 @@ internal sealed class DoctorService : IDoctorService
     {
         var doctor = await GetDoctorFromIdAsync(doctorDto.Id);
         
-        await ValidateDoctorDtoAsync(doctorDto);
+        ValidateDoctorDto(doctorDto);
         
         doctor.FirstName = doctorDto.FirstName;
         doctor.LastName = doctorDto.LastName;
@@ -91,60 +92,23 @@ internal sealed class DoctorService : IDoctorService
     private async Task<Doctor> GetDoctorFromIdAsync(Guid id)
     {
         var doctor = await _repositoryManager.DoctorRepository.FindByIdAsync(id);
-        if (doctor is null)
-            throw new DoctorNotFoundException(id.ToString());
-        return doctor;
-    }
-    
-    private async Task ValidateDoctorCreateDtoAsync(DoctorCreateDto doctorCreateDto)
-    {
-        if (await IsExistingAsync(doctorCreateDto))
-            throw new DoctorBadRequestException("A doctor with the same email already exists.");
         
-        try
-        {
-            ValidateDoctorBaseDto(doctorCreateDto);
-            ArgumentException.ThrowIfNullOrWhiteSpace(doctorCreateDto.Password, nameof(doctorCreateDto.Password));
-            await ValidateSpecializationsAsync(doctorCreateDto.SpecializationIds);
-        }
-        catch (Exception e)
-        {
-            throw new DoctorBadRequestException(e.Message);
-        }
+        return doctor ?? throw new DoctorNotFoundException();
+    }
+
+    private async Task ValidateDoctorCreateDtoAsync(DoctorCreateDto dto)
+    {
+        if (await IsExistingAsync(dto))
+            throw new Exception($"Email {dto.Email} is used by another Doctor.");
+        ArgumentException.ThrowIfNullOrWhiteSpace(dto.Password, nameof(dto.Password));
+        ValidateDoctorBaseDto(dto);
+        ValidateSpecializations(dto.SpecializationIds);
     }
     
-    private async Task ValidateDoctorDtoAsync(DoctorDto doctorDto)
+    private static void ValidateDoctorDto(DoctorDto dto)
     {
-        try
-        {
-            ValidateDoctorBaseDto(doctorDto);
-            await ValidateSpecializationsAsync(doctorDto.SpecializationIds);
-        }
-        catch (Exception e)
-        {
-            throw new DoctorBadRequestException(e.Message);
-        }
-    }
-
-    private async Task ValidateSpecializationsAsync(IEnumerable<Guid> specializationIds)
-    {
-        var specSet = specializationIds.ToHashSet();
-
-        if (specSet.Count == 0)
-            throw new Exception("Specializations are required.");
-
-        foreach (var specId in specSet)
-        {
-            var isExisting = await _repositoryManager.SpecializationRepository.ExistsAsync(specId);
-            if (!isExisting)
-                throw new SpecNotFoundException(specId.ToString());
-        }
-    }
-    
-    private async Task<bool> IsExistingAsync(DoctorCreateDto doctorCreateDto)
-    {
-        return await _repositoryManager.DoctorRepository.ExistsAsync(d =>
-            d.Email.ToLower() == doctorCreateDto.Email.ToLower());
+        ValidateDoctorBaseDto(dto);
+        ValidateSpecializations(dto.SpecializationIds);
     }
 
     private static void ValidateDoctorBaseDto(DoctorBaseDto baseDto)
@@ -155,5 +119,17 @@ internal sealed class DoctorService : IDoctorService
         ArgumentException.ThrowIfNullOrWhiteSpace(baseDto.Address, nameof(baseDto.Address));
         ArgumentException.ThrowIfNullOrWhiteSpace(baseDto.Phone, nameof(baseDto.Phone));
         ArgumentException.ThrowIfNullOrWhiteSpace(baseDto.Email, nameof(baseDto.Email));
+    }
+
+    private static void ValidateSpecializations(IEnumerable<Guid> specializationIds)
+    {
+        if (!specializationIds.Any())
+            throw new Exception("Doctor must have at least one specialization.");
+    }
+    
+    private async Task<bool> IsExistingAsync(DoctorCreateDto doctorCreateDto)
+    {
+        return await _repositoryManager.DoctorRepository.ExistsAsync(d =>
+            d.Email.ToLower() == doctorCreateDto.Email.ToLower());
     }
 }

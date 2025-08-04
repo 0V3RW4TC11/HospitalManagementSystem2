@@ -48,8 +48,8 @@ internal sealed class PatientService : IPatientService
     public async Task UpdateAsync(PatientDto patientDto, CancellationToken cancellationToken = default)
     {
         var patient = await GetPatientByIdAsync(patientDto.Id);
-        
-        ValidatePatientDto(patientDto);
+
+        ValidatePatientBaseDto(patientDto);
         
         patient.FirstName = patientDto.FirstName;
         patient.LastName = patientDto.LastName;
@@ -78,34 +78,15 @@ internal sealed class PatientService : IPatientService
     {
         var patient = await _repositoryManager.PatientRepository.FindByIdAsync(id);
         if (patient is null)
-            throw new PatientNotFoundException(id.ToString());
+            throw new PatientNotFoundException();
 
         return patient;
     }
     
     private static void ValidatePatientCreateDto(PatientCreateDto patientCreateDto)
     {
-        try
-        {
-            ValidatePatientBaseDto(patientCreateDto);
-            ArgumentException.ThrowIfNullOrWhiteSpace(patientCreateDto.Password, nameof(patientCreateDto.Password));
-        }
-        catch (Exception e)
-        {
-            throw new PatientBadRequestException(e.Message);
-        }
-    }
-
-    private static void ValidatePatientDto(PatientDto patientDto)
-    {
-        try
-        {
-            ValidatePatientBaseDto(patientDto);
-        }
-        catch (Exception e)
-        {
-            throw new PatientBadRequestException(e.Message);
-        }
+        ValidatePatientBaseDto(patientCreateDto);
+        ArgumentException.ThrowIfNullOrWhiteSpace(patientCreateDto.Password, nameof(patientCreateDto.Password));
     }
 
     private static void ValidatePatientBaseDto(PatientBaseDto baseDto)
