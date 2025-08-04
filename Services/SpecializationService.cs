@@ -58,22 +58,15 @@ internal sealed class SpecializationService : ISpecializationService
     private async Task<Specialization> GetSpecializationFromIdAsync(Guid id)
     {
         var specialization = await _repositoryManager.SpecializationRepository.FindByIdAsync(id) 
-            ?? throw new SpecNotFoundException(id.ToString());
+            ?? throw new SpecializationNotFoundException();
         
         return specialization;
     }
 
     private async Task ValidateSpecializationDto(SpecializationCreateDto dto)
     {
-        try
-        {
-            await IsExistingAsync(dto);
-            ArgumentException.ThrowIfNullOrWhiteSpace(dto.Name, nameof(dto.Name));
-        }
-        catch (Exception e)
-        {
-            throw new SpecializationBadRequestException(e.Message);
-        }
+        await IsExistingAsync(dto);
+        ArgumentException.ThrowIfNullOrWhiteSpace(dto.Name, nameof(dto.Name));
     }
 
     private async Task IsExistingAsync(SpecializationCreateDto dto)

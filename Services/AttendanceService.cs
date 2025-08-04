@@ -34,7 +34,7 @@ internal sealed class AttendanceService : IAttendanceService
             (await _repositoryManager.AttendanceRepository.FindAttendanceInfoByPatientIdAsync(id)).ToArray();
 
         if (attendances.Length == 0)
-            throw new AttendanceNotFoundForPatientException(id.ToString());
+            throw new PatientNotFoundException();
 
         return AdaptAttendanceInfos(attendances);
     }
@@ -45,7 +45,7 @@ internal sealed class AttendanceService : IAttendanceService
             (await _repositoryManager.AttendanceRepository.FindAttendanceInfoByDoctorIdAsync(id)).ToArray();
 
         if (attendances.Length == 0)
-            throw new AttendanceNotFoundForDoctorException(id.ToString());
+            throw new DoctorNotFoundException();
 
         return AdaptAttendanceInfos(attendances);
     }
@@ -97,38 +97,22 @@ internal sealed class AttendanceService : IAttendanceService
     {
         var attendance = await _repositoryManager.AttendanceRepository.FindByIdAsync(id);
         if (attendance is null)
-            throw new AttendanceNotFoundException(id.ToString());
+            throw new AttendanceNotFoundException();
         
         return attendance;
     }
 
     private async Task ValidateAttendanceCreateDto(AttendanceCreateDto dto)
     {
-        try
-        {
-            ValidateAttendanceDetails(dto);
-            await ValidateNotDuplicateAsync(dto);
-            await ValidateDoctorIdAsync(dto.DoctorId);
-            await ValidatePatientIdAsync(dto.PatientId);
-        }
-        catch (Exception e)
-        {
-            throw new AttendanceBadRequestException(e.Message);
-        }
+        await ValidateNotDuplicateAsync(dto);
+        await ValidateAttendanceDto(dto);
     }
 
-    private async Task ValidateAttendanceDto(AttendanceDto dto)
+    private async Task ValidateAttendanceDto(AttendanceCreateDto dto)
     {
-        try
-        {
-            ValidateAttendanceDetails(dto);
-            await ValidateDoctorIdAsync(dto.DoctorId);
-            await ValidatePatientIdAsync(dto.PatientId);
-        }
-        catch (Exception e)
-        {
-            throw new AttendanceBadRequestException(e.Message);
-        }
+        ValidateAttendanceDetails(dto);
+        await ValidateDoctorIdAsync(dto.DoctorId);
+        await ValidatePatientIdAsync(dto.PatientId);
     }
 
     private async Task ValidateNotDuplicateAsync(AttendanceCreateDto dto)
@@ -146,14 +130,14 @@ internal sealed class AttendanceService : IAttendanceService
     {
         var exists = await _repositoryManager.DoctorRepository.ExistsAsync(d => d.Id == id);
         if (!exists)
-            throw new DoctorNotFoundException(id.ToString());
+            throw new DoctorNotFoundException();
     }
 
     private async Task ValidatePatientIdAsync(Guid id)
     {
         var exists = await _repositoryManager.PatientRepository.ExistsAsync(p => p.Id == id);
         if (!exists)
-            throw new PatientNotFoundException(id.ToString());
+            throw new PatientNotFoundException();
     }
 
     private static void ValidateAttendanceDetails(AttendanceCreateDto dto)

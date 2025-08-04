@@ -1,8 +1,12 @@
-﻿namespace Domain.Exceptions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-public class DoctorNotFoundException : NotFoundException
+namespace Domain.Exceptions
 {
-    public DoctorNotFoundException(string id) : base($"Doctor not found for Id: {id}.")
+    public class DoctorNotFoundException() : Exception("Doctor not found.")
     {
     }
 }
