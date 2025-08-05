@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Exceptions
 {
-    public class DoctorNotFoundException() : Exception("Doctor not found.")
+    public class DoctorNotFoundException() : NotFoundException("Doctor not found.")
     {
     }
 }

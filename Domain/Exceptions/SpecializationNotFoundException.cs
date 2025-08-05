@@ -6,10 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Exceptions
 {
-    public class SpecializationNotFoundException : Exception
+    public class SpecializationNotFoundException() : NotFoundException("Specialization not found.")
     {
-        public SpecializationNotFoundException() : base("Specialization not found.")
-        {
-        }
     }
 }

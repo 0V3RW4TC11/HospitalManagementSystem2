@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Exceptions
 {
-    public class AttendanceNotFoundException() : NotFoundException("Attendance not found.")
+    public abstract class NotFoundException(string? message) : Exception(message)
     {
     }
 }
