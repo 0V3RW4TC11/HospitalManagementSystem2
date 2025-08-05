@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Exceptions
 {
-    public class AdminNotFoundException() : NotFoundException("Admin not found.")
+    public class AdminNotFoundException() : NotFoundException("Admin not found.") 
     {
     }
 }
