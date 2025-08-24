@@ -12,6 +12,7 @@ namespace Presentation.Models
     {
         [Required]
         [EmailAddress]
+        [DisplayName("Username")]
         public string UserName { get; set; }
 
         [Required]

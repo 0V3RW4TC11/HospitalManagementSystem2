@@ -15,7 +15,7 @@ internal sealed class AdminService : IAdminService
     private readonly IStaffEmailService _staffEmailService;
 
     public AdminService(
-        IRepositoryManager repositoryManager, 
+        IRepositoryManager repositoryManager,
         IAccountService accountService,
         IStaffEmailService staffEmailService)
     {
@@ -88,7 +88,7 @@ internal sealed class AdminService : IAdminService
     private async Task ValidateAdminCreateDtoAsync(AdminCreateDto adminCreateDto)
     {
         if (await IsExistingAsync(adminCreateDto))
-            throw new Exception($"Email {adminCreateDto.Email} is used by another Admin.");
+            throw new AdminDuplicationException($"Email {adminCreateDto.Email} is used by another Admin.");
 
         ValidateAdminBaseDto(adminCreateDto);
         ArgumentException.ThrowIfNullOrWhiteSpace(adminCreateDto.Password, nameof(adminCreateDto.Password));

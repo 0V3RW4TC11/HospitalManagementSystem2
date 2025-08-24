@@ -1,7 +1,10 @@
+using Domain.Repositories;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
+using Persistence.Repositories;
+using Services;
+using Services.Abstractions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +22,8 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
 builder.Services.AddControllersWithViews()
     .AddApplicationPart(typeof(Presentation.AssemblyReference).Assembly);
 
-//builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
+builder.Services.AddScoped<IServiceManager, ServiceManager>();
 
 var app = builder.Build();
 
@@ -46,5 +50,14 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var serviceManager = scope.ServiceProvider.GetRequiredService<IServiceManager>();
+
+    await SeedData.SeedAuthRoles(roleManager);
+    await SeedData.SeedAdmin(serviceManager.AdminService);
+}
 
 app.Run();

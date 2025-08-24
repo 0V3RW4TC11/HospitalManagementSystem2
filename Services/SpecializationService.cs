@@ -74,6 +74,6 @@ internal sealed class SpecializationService : ISpecializationService
         var exists = await _repositoryManager.SpecializationRepository.ExistsAsync(dto.Name);
         
         if (exists)
-            throw new Exception("A specialization with the same name already exists.");
+            throw new SpecializationDuplicationException("A specialization with the same name already exists.");
     }
 }

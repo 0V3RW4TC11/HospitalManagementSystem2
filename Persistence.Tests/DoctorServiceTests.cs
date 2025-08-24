@@ -101,7 +101,7 @@ internal sealed class DoctorServiceTests : PersistenceTestBase
         var doctorCreateDto = DoctorTestData.CreateDto(specIds);
         
         // Act & Assert
-        Assert.ThrowsAsync<Exception>(() => 
+        Assert.ThrowsAsync<DoctorDuplicationException>(() => 
             GetServiceManager().DoctorService.CreateAsync(doctorCreateDto));
     }
     

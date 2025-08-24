@@ -99,7 +99,8 @@ internal sealed class DoctorService : IDoctorService
     private async Task ValidateDoctorCreateDtoAsync(DoctorCreateDto dto)
     {
         if (await IsExistingAsync(dto))
-            throw new Exception($"Email {dto.Email} is used by another Doctor.");
+            throw new DoctorDuplicationException($"Email {dto.Email} is used by another Doctor.");
+        
         ArgumentException.ThrowIfNullOrWhiteSpace(dto.Password, nameof(dto.Password));
         ValidateDoctorBaseDto(dto);
         ValidateSpecializations(dto.SpecializationIds);

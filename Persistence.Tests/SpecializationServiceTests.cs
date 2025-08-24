@@ -42,7 +42,7 @@ internal sealed class SpecializationServiceTests : PersistenceTestBase
         await SpecializationTestData.SeedSpecializationsAsync(GetDbContext(), spec1Dto);
         
         // Act & Assert
-        Assert.ThrowsAsync<Exception>(() =>
+        Assert.ThrowsAsync<SpecializationDuplicationException>(() =>
             GetServiceManager().SpecializationService.CreateAsync(spec1Dto));
     }
     
