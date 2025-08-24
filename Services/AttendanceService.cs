@@ -123,7 +123,7 @@ internal sealed class AttendanceService : IAttendanceService
             a.PatientId == dto.PatientId);
         
         if (exists)
-            throw new Exception("An Attendance with the same details already exists.");
+            throw new AttendanceDuplicationException("An Attendance with the same details already exists.");
     }
     
     private async Task ValidateDoctorIdAsync(Guid id)

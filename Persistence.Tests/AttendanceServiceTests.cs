@@ -74,7 +74,7 @@ internal class AttendanceServiceTests : PersistenceTestBase
             await AttendanceTestData.SeedAttendance(GetDbContext(), patientId, doctorId);
         
         // Act & Assert
-        Assert.ThrowsAsync<Exception>(() => 
+        Assert.ThrowsAsync<AttendanceDuplicationException>(() => 
             GetServiceManager().AttendanceService.CreateAsync(seededAttendanceDto));
     }
     

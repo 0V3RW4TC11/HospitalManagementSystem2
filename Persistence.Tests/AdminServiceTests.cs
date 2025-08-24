@@ -87,7 +87,7 @@ internal sealed class AdminServiceTests : PersistenceTestBase
         var adminCreateDto = AdminTestData.CreateDto();
         
         // Act & Assert
-        Assert.ThrowsAsync<Exception>(() => GetServiceManager().AdminService.CreateAsync(adminCreateDto));
+        Assert.ThrowsAsync<AdminDuplicationException>(() => GetServiceManager().AdminService.CreateAsync(adminCreateDto));
     }
     
     [Test]

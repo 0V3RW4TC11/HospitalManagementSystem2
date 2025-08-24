@@ -1,0 +1,14 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+<ul class="navbar-nav">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <partial name="_ProfileMenu" />
+    }
+    else
+    {
+        <partial name="_RegisterAndLogin" />
+    }
+</ul>
