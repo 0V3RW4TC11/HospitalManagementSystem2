@@ -4,7 +4,7 @@ using Domain.Exceptions;
 using Microsoft.AspNetCore.Identity;
 using Services.Abstractions;
 
-namespace DatabaseSeeder
+namespace Seeding
 {
     public static class SeedData
     {

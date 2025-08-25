@@ -25,7 +25,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestData", "TestData\TestDa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web", "Web\Web.csproj", "{D52D2DFF-DFE4-4CFE-BFED-D1D14A8E653F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseSeeder", "DatabaseSeeder\DatabaseSeeder.csproj", "{8D929DA4-2C7A-4416-8EAE-FBDDF95A751B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Seeding", "DatabaseSeeder\Seeding.csproj", "{8D929DA4-2C7A-4416-8EAE-FBDDF95A751B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

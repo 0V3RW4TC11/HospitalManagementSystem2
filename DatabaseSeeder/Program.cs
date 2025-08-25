@@ -1,5 +1,4 @@
-﻿using DatabaseSeeder;
-using Domain.Repositories;
+﻿using Domain.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -8,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Persistence;
 using Persistence.Repositories;
+using Seeding;
 using Services;
 using Services.Abstractions;
 
@@ -52,9 +52,6 @@ catch (Exception ex)
         Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
     }
 }
-
-Console.WriteLine("Press any key to exit ...");
-Console.ReadKey();
 
 void Configure(ServiceCollection services, IConfiguration config)
 {
