@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Presentation.Controllers
 {
-    public class LoginController(SignInManager<IdentityUser> signInManager) : Controller
+    public class AccountController(SignInManager<IdentityUser> signInManager) : Controller
     {
         private readonly SignInManager<IdentityUser> _signInManager = signInManager;
 

@@ -1,0 +1,46 @@
+﻿@model X.PagedList.IPagedList<Presentation.Models.AdminListItemViewModel>
+
+@{
+    ViewData["Title"] = "Administrators";
+}
+
+<h1>Administrators</h1>
+<br />
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(m => m.First().FirstName)</th>
+            <th>@Html.DisplayNameFor(m => m.First().LastName)</th>
+            <th>@Html.DisplayNameFor(m => m.First().Email)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var admin in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(item => admin.FirstName)</td>
+                <td>@Html.DisplayFor(item => admin.LastName)</td>
+                <td>@Html.DisplayFor(item => admin.Email)</td>
+                <td>
+                    <form asp-action="Delete" asp-route-id="@admin.Id" method="post">
+                        <a asp-action="Details" asp-route-id="@admin.Id" class="btn btn-secondary deleteSpan_@admin.Id">Details</a>
+                        <a asp-action="ChangePassword" asp-controller="Account" asp-route-userId="@admin.Id" asp-route-returnUrl="@Context.Request.Path" class="btn btn-secondary deleteSpan_@admin.Id">Change Password</a>
+                        <span class="deleteSpan_@admin.Id">
+                            <a href="#" class="btn btn-danger" onclick="confirmDelete('@admin.Id', true)">Delete</a>
+                        </span>
+                        <span class="confirmDeleteSpan_@admin.Id" style="display:none">
+                            <span>Confirm delete?</span>
+                            <button type="submit" class="btn btn-danger">Yes</button>
+                            <a href="#" class="btn btn-secondary" onclick="confirmDelete('@admin.Id', false)">No</a>
+                        </span>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script src="~/js/confirm-delete.js"></script>

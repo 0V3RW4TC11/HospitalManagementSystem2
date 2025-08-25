@@ -8,25 +8,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="Controllers\**" />
-      <Compile Remove="Data\**" />
-      <Compile Remove="Models\**" />
-      <Compile Remove="Views\**" />
-      <Content Remove="Controllers\**" />
-      <Content Remove="Data\**" />
-      <Content Remove="Models\**" />
-      <Content Remove="Views\**" />
-      <EmbeddedResource Remove="Controllers\**" />
-      <EmbeddedResource Remove="Data\**" />
-      <EmbeddedResource Remove="Models\**" />
-      <EmbeddedResource Remove="Views\**" />
-      <None Remove="Controllers\**" />
-      <None Remove="Data\**" />
-      <None Remove="Models\**" />
-      <None Remove="Views\**" />
-    </ItemGroup>
-
-    <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.19" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.19" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.19" />

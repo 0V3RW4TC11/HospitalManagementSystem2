@@ -1,0 +1,12 @@
+﻿@{
+    ViewData["Title"] = "Administration";
+}
+
+<h1>Administration</h1>
+<br />
+<div class="d-flex flex-column align-items-baseline mt-4" style="min-height: 100vh;">
+    <a asp-controller="Specializations" asp-action="Index" class="btn btn-primary mb-2">Manage Specializations</a>
+    <a asp-controller="Admins" asp-action="Index" class="btn btn-primary mb-2">Manage Administrators</a>
+    <a asp-controller="Doctors" asp-action="Index" class="btn btn-primary mb-2">Manage Doctors</a>
+    <a asp-controller="Patients" asp-action="Index" class="btn btn-primary mb-2">Manage Patients</a>
+</div>
