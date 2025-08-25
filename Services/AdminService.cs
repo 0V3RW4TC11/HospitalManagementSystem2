@@ -23,7 +23,7 @@ internal sealed class AdminService : IAdminService
         _accountService = accountService;
         _staffEmailService = staffEmailService;
     }
-    
+
     public async Task CreateAsync(AdminCreateDto adminCreateDto, CancellationToken cancellationToken = default)
     {
         await ValidateAdminCreateDtoAsync(adminCreateDto);

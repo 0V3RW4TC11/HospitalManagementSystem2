@@ -14,6 +14,13 @@ internal sealed class AdminRepository : IAdminRepository
         _context = context;
     }
 
+    public async Task<IEnumerable<(Guid Id, string FirstName, string? LastName, string Email)>> GetAdminListAsync()
+    {
+        return await _context.Admins
+            .Select(a => new ValueTuple<Guid, string, string?, string>(a.Id, a.FirstName, a.LastName, a.Email))
+            .ToArrayAsync();
+    }
+
     public async Task<Admin?> FindByIdAsync(Guid id)
     {
         return await _context.Admins.SingleOrDefaultAsync(a => a.Id == id);

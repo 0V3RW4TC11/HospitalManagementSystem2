@@ -5,10 +5,10 @@
 <ul class="navbar-nav">
     @if (SignInManager.IsSignedIn(User))
     {
-        <partial name="_ProfileMenu" />
+        <partial name="_UserMenuPartial" />
     }
     else
     {
-        <partial name="_RegisterAndLogin" />
+        <partial name="_LoginAndRegisterPartial" />
     }
 </ul>
