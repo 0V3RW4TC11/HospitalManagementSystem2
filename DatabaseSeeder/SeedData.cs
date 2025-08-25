@@ -1,17 +1,10 @@
-﻿using Azure.Core;
-using DataTransfer.Admin;
+﻿using DataTransfer.Admin;
 using Domain.Constants;
 using Domain.Exceptions;
-using Domain.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Services.Abstractions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Persistence
+namespace DatabaseSeeder
 {
     public static class SeedData
     {
