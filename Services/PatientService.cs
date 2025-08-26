@@ -19,7 +19,18 @@ internal sealed class PatientService : IPatientService
         _repositoryManager = repositoryManager;
         _accountService = accountService;
     }
-    
+
+    public async Task<(PatientDto[] List, int TotalCount)> Patients(int pageNumber, int pageSize)
+    {
+        var patients = await _repositoryManager.PatientRepository.Patients(pageNumber, pageSize);
+        var dtos = patients
+            .Select(p => p.Adapt<PatientDto>())
+            .ToArray();
+        var totalCount = await _repositoryManager.PatientRepository.GetTotalCount();
+
+        return (List: dtos, TotalCount: totalCount);
+    }
+
     public async Task CreateAsync(PatientCreateDto patientCreateDto, CancellationToken cancellationToken = default)
     {
         ValidatePatientCreateDto(patientCreateDto);

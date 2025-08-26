@@ -2,6 +2,7 @@
 using Domain.Entities;
 using Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Persistence.Helpers;
 
 namespace Persistence.Repositories;
 
@@ -12,6 +13,20 @@ internal sealed class DoctorRepository : IDoctorRepository
     public DoctorRepository(RepositoryDbContext context)
     {
         _context = context;
+    }
+
+    public async Task<IEnumerable<Doctor>> Doctors(int pageNumber, int pageSize)
+    {
+        return await PagedListHelper.GetPagedList(
+            _context.Doctors,
+            d => d.Id,
+            pageNumber,
+            pageSize);
+    }
+
+    public async Task<int> GetTotalCount()
+    {
+        return await _context.Doctors.CountAsync();
     }
 
     public async Task<Doctor?> FindByIdAsync(Guid id)

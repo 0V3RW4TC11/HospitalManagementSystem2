@@ -1,4 +1,5 @@
-﻿@model X.PagedList.IPagedList<Presentation.Models.AdminListItemViewModel>
+﻿@using X.PagedList.Mvc.Core
+@model X.PagedList.IPagedList<Presentation.Models.AdminListItemViewModel>
 
 @{
     ViewData["Title"] = "Administrators";
@@ -42,5 +43,20 @@
         }
     </tbody>
 </table>
+
+<!-- Pagination controls -->
+<div>
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page }),
+    new PagedListRenderOptions
+    {
+        LiElementClasses = new[] { "page-item" },
+        PageClasses = new[] { "page-link" }
+    })
+</div>
+
+<!-- Page information -->
+<p>
+    Showing @Model.FirstItemOnPage to @Model.LastItemOnPage of @Model.TotalItemCount Admins
+</p>
 
 <script src="~/js/confirm-delete.js"></script>

@@ -1,39 +1,34 @@
 ﻿using Domain.Constants;
-using Domain.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Models;
+using Services.Abstractions;
 using X.PagedList.Extensions;
+using Mapster;
 
 namespace Presentation.Controllers
 {
     [Authorize(Roles = AuthRoles.Admin)]
     public class AdminsController : Controller
     {
-        private readonly IAdminRepository _adminRepository;
+        private readonly IAdminService _adminService;
 
-        public AdminsController(IRepositoryManager manager)
+        public AdminsController(IServiceManager manager)
         {
-            _adminRepository = manager.AdminRepository;
+            _adminService = manager.AdminService;
         }
 
         public async Task<IActionResult> Index(int? page)
         {
-            int pageSize = 10;
             int pageNum = page ?? 1;
+            int pageSize = 10;
 
-            var admins = await _adminRepository.GetAdminListAsync();
-            var models = admins.ToArray()
-                        .Select(a => new AdminListItemViewModel 
-                        { 
-                            Id = a.Id, 
-                            FirstName = a.FirstName, 
-                            LastName = a.LastName, 
-                            Email = a.Email 
-                        })
-                        .ToPagedList(pageNum, pageSize);
+            var admins = await _adminService.GetAdminsAsync(pageNum, pageSize);
+            var pagedAdmins = admins.List
+                .Select(a => a.Adapt<AdminListItemViewModel>())
+                .ToPagedList(pageNum, pageSize, admins.TotalCount);
 
-            return View(models);
+            return View(pagedAdmins);
         }
 
         public IActionResult Administration()

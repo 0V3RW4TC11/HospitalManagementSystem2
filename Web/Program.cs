@@ -51,13 +51,4 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-using (var scope = app.Services.CreateScope())
-{
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    var serviceManager = scope.ServiceProvider.GetRequiredService<IServiceManager>();
-
-    await SeedData.SeedAuthRoles(roleManager);
-    await SeedData.SeedAdmin(serviceManager.AdminService);
-}
-
 app.Run();

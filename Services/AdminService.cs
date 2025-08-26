@@ -24,6 +24,23 @@ internal sealed class AdminService : IAdminService
         _staffEmailService = staffEmailService;
     }
 
+    public async Task<(AdminDto[] List, int TotalCount)> GetAdminsAsync(int pageNumber, int pageSize)
+    {
+        var admins = await _repositoryManager.AdminRepository.GetAdmins(pageNumber, pageSize);
+        int totalCount = await _repositoryManager.AdminRepository.GetTotalCount();
+
+        var dtos = admins.Select(a => a.Adapt<AdminDto>()).ToArray();
+
+        return (List: dtos, TotalCount: totalCount);
+    }
+
+    public async Task<AdminDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var admin = await GetAdminByIdAsync(id);
+
+        return admin.Adapt<AdminDto>();
+    }
+
     public async Task CreateAsync(AdminCreateDto adminCreateDto, CancellationToken cancellationToken = default)
     {
         await ValidateAdminCreateDtoAsync(adminCreateDto);
@@ -38,13 +55,6 @@ internal sealed class AdminService : IAdminService
             
             await _accountService.CreateAsync(admin.Id, AuthRoles.Admin, username, adminCreateDto.Password);
         });
-    }
-
-    public async Task<AdminDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
-    {
-        var admin = await GetAdminByIdAsync(id);
-        
-        return admin.Adapt<AdminDto>();
     }
 
     public async Task UpdateAsync(AdminDto adminDto, CancellationToken cancellationToken = default)
