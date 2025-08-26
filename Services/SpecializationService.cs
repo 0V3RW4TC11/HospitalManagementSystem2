@@ -17,6 +17,13 @@ internal sealed class SpecializationService : ISpecializationService
         _repositoryManager = repositoryManager;
     }
 
+    public async Task<IEnumerable<SpecializationDto>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        var specializations = await _repositoryManager.SpecializationRepository.GetAllAsync();
+
+        return specializations.Adapt<IEnumerable<SpecializationDto>>();
+    }
+
     public async Task CreateAsync(SpecializationCreateDto specializationCreateDto, CancellationToken cancellationToken = default)
     {
         await ValidateSpecializationDto(specializationCreateDto);
@@ -26,13 +33,6 @@ internal sealed class SpecializationService : ISpecializationService
         _repositoryManager.SpecializationRepository.Add(specialization);
         
         await _repositoryManager.UnitOfWork.SaveChangesAsync();
-    }
-
-    public async Task<IEnumerable<SpecializationDto>> GetAllAsync(CancellationToken cancellationToken = default)
-    {
-        var specializations = await _repositoryManager.SpecializationRepository.GetAllAsync();
-        
-        return specializations.Adapt<IEnumerable<SpecializationDto>>();
     }
 
     public async Task UpdateAsync(SpecializationDto specializationDto, CancellationToken cancellationToken = default)

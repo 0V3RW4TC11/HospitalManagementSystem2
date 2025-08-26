@@ -5,6 +5,10 @@ namespace Domain.Repositories;
 
 public interface IPatientRepository
 {
+    Task<IEnumerable<Patient>> Patients(int pageNumber, int pageSize);
+
+    Task<int> GetTotalCount();
+
     Task<Patient?> FindByIdAsync(Guid id);
     
     Task<bool> ExistsAsync(Expression<Func<Patient, bool>> predicate);

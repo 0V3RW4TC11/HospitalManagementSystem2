@@ -1,7 +1,4 @@
-﻿using DataTransfer.Admin;
-using DataTransfer.Doctor;
-using DataTransfer.Specialization;
-using Domain;
+﻿using DataTransfer.Doctor;
 using Domain.Constants;
 using Domain.Entities;
 using Domain.Exceptions;
@@ -27,6 +24,29 @@ internal sealed class DoctorService : IDoctorService
         _staffEmailService = staffEmailService;
     }
 
+    public async Task<(DoctorDto[] List, int TotalCount)> Doctors(int pageNumber, int pageSize)
+    {
+        var doctors = await _repositoryManager.DoctorRepository.Doctors(pageNumber, pageSize);
+        var dtos = doctors
+            .Select(d => d.Adapt<DoctorDto>())
+            .ToArray();
+        var totalCount = await _repositoryManager.DoctorRepository.GetTotalCount();
+
+        return (List: dtos, TotalCount: totalCount);
+    }
+
+    public async Task<DoctorDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var doctor = await GetDoctorFromIdAsync(id);
+
+        var doctorDto = doctor.Adapt<DoctorDto>();
+
+        doctorDto.SpecializationIds = await _repositoryManager.DoctorSpecializationRepository
+            .GetSpecIdsByDoctorIdAsync(doctor.Id);
+
+        return doctorDto;
+    }
+
     public async Task CreateAsync(DoctorCreateDto doctorCreateDto, CancellationToken cancellationToken = default)
     {
         await ValidateDoctorCreateDtoAsync(doctorCreateDto);
@@ -44,18 +64,6 @@ internal sealed class DoctorService : IDoctorService
 
             await _accountService.CreateAsync(doctor.Id, AuthRoles.Doctor, username, doctorCreateDto.Password);
         });
-    }
-
-    public async Task<DoctorDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
-    {
-        var doctor = await GetDoctorFromIdAsync(id);
-        
-        var doctorDto = doctor.Adapt<DoctorDto>();
-        
-        doctorDto.SpecializationIds = await _repositoryManager.DoctorSpecializationRepository
-            .GetSpecIdsByDoctorIdAsync(doctor.Id);
-        
-        return doctorDto;
     }
     
     public async Task UpdateAsync(DoctorDto doctorDto, CancellationToken cancellationToken = default)

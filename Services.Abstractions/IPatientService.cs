@@ -4,6 +4,8 @@ namespace Services.Abstractions;
 
 public interface IPatientService
 {
+    Task<(PatientDto[] List, int TotalCount)> Patients(int pageNumber, int pageSize);
+
     Task CreateAsync(PatientCreateDto patientCreateDto, CancellationToken cancellationToken = default);
     
     Task<PatientDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);

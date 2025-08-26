@@ -4,9 +4,11 @@ namespace Services.Abstractions;
 
 public interface IDoctorService
 {
-    Task CreateAsync(DoctorCreateDto doctorCreateDto, CancellationToken cancellationToken = default);
-    
+    Task<(DoctorDto[] List, int TotalCount)> Doctors(int pageNumber, int pageSize);
+
     Task<DoctorDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+
+    Task CreateAsync(DoctorCreateDto doctorCreateDto, CancellationToken cancellationToken = default);
     
     Task UpdateAsync(DoctorDto doctorDto, CancellationToken cancellationToken = default);
     

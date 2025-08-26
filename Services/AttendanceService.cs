@@ -1,5 +1,4 @@
 ﻿using DataTransfer.Attendance;
-using Domain;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Repositories;
@@ -28,26 +27,24 @@ internal sealed class AttendanceService : IAttendanceService
         await _repositoryManager.UnitOfWork.SaveChangesAsync();
     }
 
-    public async Task<IEnumerable<AttendanceShortDto>> GetAllByPatientIdAsync(Guid id)
+    public async Task<(AttendanceDto[] List, int TotalCount)> AttendancesByPatientIdAsync(Guid patientId, int pageNumber, int pageSize)
     {
-        var attendances =
-            (await _repositoryManager.AttendanceRepository.FindAttendanceInfoByPatientIdAsync(id)).ToArray();
+        var attendances = await _repositoryManager.AttendanceRepository.AttendancesByPatientIdAsync(patientId, pageNumber, pageSize);
+        var dtos = attendances.List
+            .Select(a => a.Adapt<AttendanceDto>())
+            .ToArray();
 
-        if (attendances.Length == 0)
-            throw new PatientNotFoundException();
-
-        return AdaptAttendanceInfos(attendances);
+        return (List: dtos, attendances.TotalCount);
     }
 
-    public async Task<IEnumerable<AttendanceShortDto>> GetAllByDoctorIdAsync(Guid id)
+    public async Task<(AttendanceDto[] List, int TotalCount)> AttendancesByDoctorIdAsync(Guid doctorId, int pageNumber, int pageSize)
     {
-        var attendances =
-            (await _repositoryManager.AttendanceRepository.FindAttendanceInfoByDoctorIdAsync(id)).ToArray();
+        var attendances = await _repositoryManager.AttendanceRepository.AttendancesByDoctorIdAsync(doctorId, pageNumber, pageSize);
+        var dtos = attendances.List
+            .Select(a => a.Adapt<AttendanceDto>())
+            .ToArray();
 
-        if (attendances.Length == 0)
-            throw new DoctorNotFoundException();
-
-        return AdaptAttendanceInfos(attendances);
+        return (List: dtos, attendances.TotalCount);
     }
     
     public async Task<AttendanceDto> GetByIdAsync(Guid id)
@@ -80,17 +77,6 @@ internal sealed class AttendanceService : IAttendanceService
         _repositoryManager.AttendanceRepository.Remove(attendance);
         
         await _repositoryManager.UnitOfWork.SaveChangesAsync();
-    }
-
-    private static IEnumerable<AttendanceShortDto> AdaptAttendanceInfos(
-        IEnumerable<(Guid Id, Guid UserId, DateTime DateTime)> attendances)
-    {
-        return attendances.Select(a => new AttendanceShortDto
-        {
-            Id = a.Id,
-            UserId = a.UserId,
-            DateTime = a.DateTime
-        });
     }
 
     private async Task<Attendance> GetAttendanceFromIdAsync(Guid id)

@@ -2,6 +2,7 @@
 using Domain.Entities;
 using Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Persistence.Helpers;
 
 namespace Persistence.Repositories;
 
@@ -14,11 +15,18 @@ internal sealed class AdminRepository : IAdminRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<(Guid Id, string FirstName, string? LastName, string Email)>> GetAdminListAsync()
+    public async Task<IEnumerable<Admin>> GetAdmins(int pageNumber, int pageSize)
     {
-        return await _context.Admins
-            .Select(a => new ValueTuple<Guid, string, string?, string>(a.Id, a.FirstName, a.LastName, a.Email))
-            .ToArrayAsync();
+        return await PagedListHelper.GetPagedList(
+            _context.Admins,
+            a => a.Id,
+            pageNumber,
+            pageSize);
+    }
+
+    public async Task<int> GetTotalCount()
+    {
+        return await _context.Admins.CountAsync();
     }
 
     public async Task<Admin?> FindByIdAsync(Guid id)

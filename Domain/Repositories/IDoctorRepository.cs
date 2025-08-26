@@ -6,6 +6,10 @@ namespace Domain.Repositories;
 
 public interface IDoctorRepository
 {
+    Task<IEnumerable<Doctor>> Doctors(int pageNumber, int pageSize);
+
+    Task<int> GetTotalCount();
+
     Task<Doctor?> FindByIdAsync(Guid id);
     
     Task<bool> ExistsAsync(Expression<Func<Doctor, bool>> predicate);
