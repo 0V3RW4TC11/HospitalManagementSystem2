@@ -1,5 +1,4 @@
-﻿using Domain;
-using Domain.Repositories;
+﻿using Domain.Repositories;
 using Services.Abstractions;
 
 namespace Services;
@@ -11,6 +10,8 @@ public sealed class ServiceManager : IServiceManager
         var lazyAccountService = new Lazy<IAccountService>(() => new AccountService(repositoryManager));
         
         var lazyStaffEmailService = new Lazy<IStaffEmailService>(() => new StaffEmailService(repositoryManager.IdentityProvider));
+
+        var lazyAccountDictionary = new Lazy<IAccountDictionary>(() => new AccountDictionary(repositoryManager.AccountRepository));
         
         var lazyAdminService = new Lazy<IAdminService>(() => new AdminService(
             repositoryManager, 
@@ -30,13 +31,15 @@ public sealed class ServiceManager : IServiceManager
         
         var lazyAttendanceService = new Lazy<IAttendanceService>(() => new AttendanceService(repositoryManager));
         
+        AccountDictionary = lazyAccountDictionary.Value;
         AdminService = lazyAdminService.Value;
         PatientService = lazyPatientService.Value;
         DoctorService = lazyDoctorService.Value;
         SpecializationService = lazySpecializationService.Value;
         AttendanceService = lazyAttendanceService.Value;
     }
-    
+
+    public IAccountDictionary AccountDictionary { get; }
     public IAdminService AdminService { get; }
     public IPatientService PatientService { get; }
     public IDoctorService DoctorService { get; }

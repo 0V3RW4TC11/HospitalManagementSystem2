@@ -1,5 +1,6 @@
-﻿@using X.PagedList.Mvc.Core
-@model X.PagedList.IPagedList<Presentation.Models.AdminListItemViewModel>
+﻿@using Presentation.Models.Admin
+@using X.PagedList.Mvc.Core
+@model X.PagedList.IPagedList<AdminListItemViewModel>
 
 @{
     ViewData["Title"] = "Administrators";
@@ -26,18 +27,7 @@
                 <td>@Html.DisplayFor(item => admin.LastName)</td>
                 <td>@Html.DisplayFor(item => admin.Email)</td>
                 <td>
-                    <form asp-action="Delete" asp-route-id="@admin.Id" method="post">
-                        <a asp-action="Details" asp-route-id="@admin.Id" class="btn btn-secondary deleteSpan_@admin.Id">Details</a>
-                        <a asp-action="ChangePassword" asp-controller="Account" asp-route-userId="@admin.Id" asp-route-returnUrl="@Context.Request.Path" class="btn btn-secondary deleteSpan_@admin.Id">Change Password</a>
-                        <span class="deleteSpan_@admin.Id">
-                            <a href="#" class="btn btn-danger" onclick="confirmDelete('@admin.Id', true)">Delete</a>
-                        </span>
-                        <span class="confirmDeleteSpan_@admin.Id" style="display:none">
-                            <span>Confirm delete?</span>
-                            <button type="submit" class="btn btn-danger">Yes</button>
-                            <a href="#" class="btn btn-secondary" onclick="confirmDelete('@admin.Id', false)">No</a>
-                        </span>
-                    </form>
+                    <a asp-action="Details" asp-route-id="@admin.Id" class="btn btn-outline-primary">Details</a>
                 </td>
             </tr>
         }
@@ -46,17 +36,13 @@
 
 <!-- Pagination controls -->
 <div>
-    @Html.PagedListPager(Model, page => Url.Action("Index", new { page }),
-    new PagedListRenderOptions
-    {
-        LiElementClasses = new[] { "page-item" },
-        PageClasses = new[] { "page-link" }
-    })
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page = page }),
+    new PagedListRenderOptions {
+        LiElementClasses = new string[] { "page-item" },
+        PageClasses = new string[] { "page-link" }})
 </div>
 
 <!-- Page information -->
 <p>
     Showing @Model.FirstItemOnPage to @Model.LastItemOnPage of @Model.TotalItemCount Admins
 </p>
-
-<script src="~/js/confirm-delete.js"></script>

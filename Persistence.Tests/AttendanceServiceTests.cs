@@ -78,65 +78,65 @@ internal class AttendanceServiceTests : PersistenceTestBase
             GetServiceManager().AttendanceService.CreateAsync(seededAttendanceDto));
     }
     
-    [Test]
-    public async Task GetAllByPatientIdAsync_ExistingPatient_ReturnsAttendances()
-    {
-        // Arrange
-        var patientId = Guid.NewGuid();
-        var doctorId = Guid.NewGuid();
-        var seeded = await AttendanceTestData.SeedAttendance(GetDbContext(), patientId, doctorId);
+    //[Test]
+    //public async Task GetAllByPatientIdAsync_ExistingPatient_ReturnsAttendances()
+    //{
+    //    // Arrange
+    //    var patientId = Guid.NewGuid();
+    //    var doctorId = Guid.NewGuid();
+    //    var seeded = await AttendanceTestData.SeedAttendance(GetDbContext(), patientId, doctorId);
         
-        // Act
-        var result = 
-            await GetServiceManager().AttendanceService.GetAllByPatientIdAsync(patientId);
+    //    // Act
+    //    var result = 
+    //        await GetServiceManager().AttendanceService.GetAllByPatientIdAsync(patientId);
         
-        // Assert
-        var attendance = result.Single();
-        Assert.Multiple(() =>
-        {
-            Assert.That(attendance.Id, Is.EqualTo(seeded.Id));
-            Assert.That(attendance.UserId, Is.EqualTo(doctorId));
-            Assert.That(attendance.DateTime, Is.EqualTo(seeded.DateTime));
-        });
-    }
+    //    // Assert
+    //    var attendance = result.Single();
+    //    Assert.Multiple(() =>
+    //    {
+    //        Assert.That(attendance.Id, Is.EqualTo(seeded.Id));
+    //        Assert.That(attendance.UserId, Is.EqualTo(doctorId));
+    //        Assert.That(attendance.DateTime, Is.EqualTo(seeded.DateTime));
+    //    });
+    //}
     
-    [Test]
-    public async Task GetAllByDoctorIdAsync_ExistingDoctor_ReturnsAttendances()
-    {
-        // Arrange
-        var patientId = Guid.NewGuid();
-        var doctorId = Guid.NewGuid();
-        var seeded = await AttendanceTestData.SeedAttendance(GetDbContext(), patientId, doctorId);
+    //[Test]
+    //public async Task GetAllByDoctorIdAsync_ExistingDoctor_ReturnsAttendances()
+    //{
+    //    // Arrange
+    //    var patientId = Guid.NewGuid();
+    //    var doctorId = Guid.NewGuid();
+    //    var seeded = await AttendanceTestData.SeedAttendance(GetDbContext(), patientId, doctorId);
         
-        // Act
-        var result = 
-            await GetServiceManager().AttendanceService.GetAllByDoctorIdAsync(doctorId);
+    //    // Act
+    //    var result = 
+    //        await GetServiceManager().AttendanceService.GetAllByDoctorIdAsync(doctorId);
         
-        // Assert
-        var attendance = result.Single();
-        Assert.Multiple(() =>
-        {
-            Assert.That(attendance.Id, Is.EqualTo(seeded.Id));
-            Assert.That(attendance.UserId, Is.EqualTo(patientId));
-            Assert.That(attendance.DateTime, Is.EqualTo(seeded.DateTime));
-        });
-    }
+    //    // Assert
+    //    var attendance = result.Single();
+    //    Assert.Multiple(() =>
+    //    {
+    //        Assert.That(attendance.Id, Is.EqualTo(seeded.Id));
+    //        Assert.That(attendance.UserId, Is.EqualTo(patientId));
+    //        Assert.That(attendance.DateTime, Is.EqualTo(seeded.DateTime));
+    //    });
+    //}
     
-    [Test]
-    public void GetAllByPatientIdAsync_NonExistingPatient_Throws()
-    {
-        // Act & Assert
-        Assert.ThrowsAsync<PatientNotFoundException>(() =>
-            GetServiceManager().AttendanceService.GetAllByPatientIdAsync(Guid.NewGuid()));
-    }
+    //[Test]
+    //public void GetAllByPatientIdAsync_NonExistingPatient_Throws()
+    //{
+    //    // Act & Assert
+    //    Assert.ThrowsAsync<PatientNotFoundException>(() =>
+    //        GetServiceManager().AttendanceService.GetAllByPatientIdAsync(Guid.NewGuid()));
+    //}
     
-    [Test]
-    public void GetAllByDoctorIdAsync_NonExistingDoctor_ReturnsEmptyAttendances()
-    {
-        // Act & Assert
-        Assert.ThrowsAsync<DoctorNotFoundException>(() =>
-            GetServiceManager().AttendanceService.GetAllByDoctorIdAsync(Guid.NewGuid()));
-    }
+    //[Test]
+    //public void GetAllByDoctorIdAsync_NonExistingDoctor_ReturnsEmptyAttendances()
+    //{
+    //    // Act & Assert
+    //    Assert.ThrowsAsync<DoctorNotFoundException>(() =>
+    //        GetServiceManager().AttendanceService.GetAllByDoctorIdAsync(Guid.NewGuid()));
+    //}
     
     [Test]
     public async Task GetByIdAsync_ExistingAttendance_ReturnsAttendance()

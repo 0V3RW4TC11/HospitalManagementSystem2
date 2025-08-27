@@ -2,6 +2,8 @@
 
 public interface IServiceManager
 {
+    IAccountDictionary AccountDictionary { get; }
+
     IAdminService AdminService { get; }
     
     IPatientService PatientService { get; }
