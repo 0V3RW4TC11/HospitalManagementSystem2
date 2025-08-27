@@ -63,6 +63,7 @@ internal sealed class AdminService : IAdminService
         
         ValidateAdminDto(adminDto);
         
+        admin.Title = adminDto.Title;
         admin.FirstName = adminDto.FirstName;
         admin.LastName = adminDto.LastName;
         admin.Gender = adminDto.Gender;
