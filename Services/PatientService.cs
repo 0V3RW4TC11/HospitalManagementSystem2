@@ -12,12 +12,12 @@ namespace Services;
 internal sealed class PatientService : IPatientService
 {
     private readonly IRepositoryManager _repositoryManager;
-    private readonly IAccountService _accountService;
+    private readonly IAccountManager _accountManager;
 
-    public PatientService(IRepositoryManager repositoryManager, IAccountService accountService)
+    public PatientService(IRepositoryManager repositoryManager, IAccountManager accountManager)
     {
         _repositoryManager = repositoryManager;
-        _accountService = accountService;
+        _accountManager = accountManager;
     }
 
     public async Task<(PatientDto[] List, int TotalCount)> Patients(int pageNumber, int pageSize)
@@ -41,7 +41,7 @@ internal sealed class PatientService : IPatientService
             _repositoryManager.PatientRepository.Add(patient);
             await _repositoryManager.UnitOfWork.SaveChangesAsync();
 
-            await _accountService.CreateAsync(
+            await _accountManager.CreateAsync(
                 patient.Id,
                 AuthRoles.Patient,
                 patientCreateDto.Email,
@@ -81,7 +81,7 @@ internal sealed class PatientService : IPatientService
             _repositoryManager.PatientRepository.Remove(patient);
             await _repositoryManager.UnitOfWork.SaveChangesAsync();
             
-            await _accountService.DeleteByUserIdAsync(patient.Id);
+            await _accountManager.DeleteAsync(patient.Id);
         });
     }
 

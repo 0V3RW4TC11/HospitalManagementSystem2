@@ -1,14 +1,19 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Helpers;
 using Presentation.Models;
+using Services.Abstractions;
 
 namespace Presentation.Controllers
 {
-    public class AccountController(SignInManager<IdentityUser> signInManager) : Controller
+    public class AccountController : Controller
     {
-        private readonly SignInManager<IdentityUser> _signInManager = signInManager;
+        private readonly IAccountService _accountService;
+
+        public AccountController(IServiceManager manager)
+        {
+            _accountService = manager.AccountService;
+        }
 
         [HttpGet]
         [AllowAnonymous]
@@ -22,29 +27,56 @@ namespace Presentation.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl)
         {
-            if (ModelState.IsValid is false)
-                return View(model);
-
-            var result = await _signInManager.PasswordSignInAsync(
-                model.UserName,
-                model.Password,
-                model.IsPersistant,
-                lockoutOnFailure: false);
-
-            if (result.Succeeded is false)
+            if (ModelState.IsValid)
             {
-                ModelState.AddModelError(string.Empty, result.ToString());
-                return View(model);
+                try
+                {
+                    await _accountService.LoginAsync(
+                       model.UserName,
+                       model.Password,
+                       model.IsPersistant,
+                       false);
+
+                    return UrlHelper.Redirect(this, returnUrl);
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                }
             }
 
-            return UrlHelper.Redirect(this, returnUrl);
+            return View(model);
         }
 
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
-            await _signInManager.SignOutAsync();
+            await _accountService.LogoutAsync();
             return RedirectToAction("Index", "Home");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ChangePassword(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        {
+            throw new NotImplementedException();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ResetPassword(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(object model)
+        {
+            throw new NotImplementedException();
         }
 
         [HttpGet]

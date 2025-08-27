@@ -1,45 +1,64 @@
 ﻿using Domain.Entities;
+using Domain.Exceptions;
 using Domain.Repositories;
 using Services.Abstractions;
 
-namespace Services;
-
-internal sealed class AccountService : IAccountService
+namespace Services
 {
-    private readonly IRepositoryManager _repositoryManager;
-    
-    public AccountService(IRepositoryManager repositoryManager) => _repositoryManager = repositoryManager;
-
-    public async Task CreateAsync(Guid userId, string role, string username, string password)
+    internal class AccountService : IAccountService
     {
-        var account = new Account
+        private readonly IRepositoryManager _repositoryManager;
+
+        public AccountService(IRepositoryManager repositoryManager)
         {
-            UserId = userId,
-            IdentityUserId = await _repositoryManager.IdentityProvider.CreateAsync(username, password)
-        };
+            _repositoryManager = repositoryManager;
+        }
 
-        await _repositoryManager.IdentityProvider.AddToRoleAsync(account.IdentityUserId, role);
+        public async Task LoginAsync(
+            string username, 
+            string password, 
+            bool isPersistent, 
+            bool enableLockoutOnFail)
+        {
+            await _repositoryManager.IdentityProvider.LoginAsync(
+                username,
+                password, 
+                isPersistent, 
+                enableLockoutOnFail);
+        }
 
-        _repositoryManager.AccountRepository.Add(account);
-        
-        await _repositoryManager.UnitOfWork.SaveChangesAsync();
-    }
+        public async Task LogoutAsync()
+        {
+            await _repositoryManager.IdentityProvider.LogoutAsync();
+        }
 
-    public async Task<Guid> FindUserIdByIdentityIdAsync(string identityId)
-    {
-        var account = await _repositoryManager.AccountRepository.FindByIdentityIdAsync(identityId);
-        
-        return account!.UserId;
-    }
+        public async Task ChangePasswordAsync(Guid userId, string oldPassword, string newPassword)
+        {
+            var account = await GetAccountByUserIdAsync(userId);
+            await _repositoryManager.IdentityProvider.ChangePasswordAsync(
+                account.IdentityUserId,
+                oldPassword,
+                newPassword);
+        }
 
-    public async Task DeleteByUserIdAsync(Guid userId)
-    {
-        var account = await _repositoryManager.AccountRepository.FindByUserIdAsync(userId);
-        
-        _repositoryManager.AccountRepository.Remove(account!);
-        
-        await _repositoryManager.UnitOfWork.SaveChangesAsync();
-        
-        await _repositoryManager.IdentityProvider.RemoveAsync(account!.IdentityUserId);
+        public async Task ResetPasswordAsync(Guid userId, string newPassword)
+        {
+            var account = await GetAccountByUserIdAsync(userId);
+            await _repositoryManager.IdentityProvider.ResetPasswordAsync(
+                account.IdentityUserId,
+                newPassword);
+        }
+
+        public async Task<string> GetUserNameAsync(Guid userId)
+        {
+            var account = await GetAccountByUserIdAsync(userId);
+            return await _repositoryManager.IdentityProvider.GetUserNameAsync(account.IdentityUserId);
+        }
+
+        private async Task<Account> GetAccountByUserIdAsync(Guid userId)
+        {
+            return await _repositoryManager.AccountRepository.FindByUserIdAsync(userId)
+                ?? throw new AccountNotFoundException("Account not found for User Id: " + userId);
+        }
     }
 }

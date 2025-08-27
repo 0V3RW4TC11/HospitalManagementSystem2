@@ -1,10 +1,19 @@
-﻿namespace Services.Abstractions;
-
-public interface IAccountService
+﻿namespace Services.Abstractions
 {
-    Task CreateAsync(Guid userId, string role, string username, string password);
-    
-    Task<Guid> FindUserIdByIdentityIdAsync(string identityId);
+    public interface IAccountService
+    {
+        Task LoginAsync(
+            string username,
+            string password,
+            bool isPersistent,
+            bool enableLockoutOnFail);
 
-    Task DeleteByUserIdAsync(Guid userId);
+        Task LogoutAsync();
+
+        Task ChangePasswordAsync(Guid userId, string oldPassword, string newPassword);
+
+        Task ResetPasswordAsync(Guid userId, string newPassword);
+
+        Task<string> GetUserNameAsync(Guid userId);
+    }
 }

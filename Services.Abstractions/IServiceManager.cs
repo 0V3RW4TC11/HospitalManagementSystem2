@@ -2,7 +2,7 @@
 
 public interface IServiceManager
 {
-    IAccountDictionary AccountDictionary { get; }
+    IAccountService AccountService { get; }
 
     IAdminService AdminService { get; }
     
