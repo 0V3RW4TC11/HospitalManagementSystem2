@@ -7,31 +7,31 @@ public sealed class ServiceManager : IServiceManager
 {
     public ServiceManager(IRepositoryManager repositoryManager)
     {
-        var lazyAccountService = new Lazy<IAccountService>(() => new AccountService(repositoryManager));
+        var lazyAccountManager = new Lazy<IAccountManager>(() => new AccountManager(repositoryManager));
         
         var lazyStaffEmailService = new Lazy<IStaffEmailService>(() => new StaffEmailService(repositoryManager.IdentityProvider));
 
-        var lazyAccountDictionary = new Lazy<IAccountDictionary>(() => new AccountDictionary(repositoryManager.AccountRepository));
+        var lazyAccountService = new Lazy<IAccountService>(() => new AccountService(repositoryManager));
         
         var lazyAdminService = new Lazy<IAdminService>(() => new AdminService(
             repositoryManager, 
-            lazyAccountService.Value, 
+            lazyAccountManager.Value, 
             lazyStaffEmailService.Value));
         
         var lazyDoctorService = new Lazy<IDoctorService>(() => new DoctorService(
             repositoryManager,
-            lazyAccountService.Value,
+            lazyAccountManager.Value,
             lazyStaffEmailService.Value));
         
         var lazyPatientService = new Lazy<IPatientService>(() => new PatientService(
             repositoryManager,
-            lazyAccountService.Value));
+            lazyAccountManager.Value));
         
         var lazySpecializationService = new Lazy<ISpecializationService>(() => new SpecializationService(repositoryManager));
         
         var lazyAttendanceService = new Lazy<IAttendanceService>(() => new AttendanceService(repositoryManager));
         
-        AccountDictionary = lazyAccountDictionary.Value;
+        AccountService = lazyAccountService.Value;
         AdminService = lazyAdminService.Value;
         PatientService = lazyPatientService.Value;
         DoctorService = lazyDoctorService.Value;
@@ -39,7 +39,7 @@ public sealed class ServiceManager : IServiceManager
         AttendanceService = lazyAttendanceService.Value;
     }
 
-    public IAccountDictionary AccountDictionary { get; }
+    public IAccountService AccountService { get; }
     public IAdminService AdminService { get; }
     public IPatientService PatientService { get; }
     public IDoctorService DoctorService { get; }

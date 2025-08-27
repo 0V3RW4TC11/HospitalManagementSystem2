@@ -5,7 +5,11 @@ namespace Persistence.Repositories;
 
 public sealed class RepositoryManager : IRepositoryManager
 {
-    public RepositoryManager(RepositoryDbContext context, UserManager<IdentityUser> userManager)
+    public RepositoryManager(
+        RepositoryDbContext context, 
+        UserManager<IdentityUser> userManager,
+        RoleManager<IdentityRole> roleManager,
+        SignInManager<IdentityUser> signInManager)
     {
         var lazyAccountRepository = new Lazy<IAccountRepository>(() => new AccountRepository(context));
         var lazyAdminRepository = new Lazy<IAdminRepository>(() => new AdminRepository(context));
@@ -14,7 +18,7 @@ public sealed class RepositoryManager : IRepositoryManager
         var lazyDoctorSpecializationRepository = new Lazy<IDoctorSpecializationRepository>(() => new DoctorSpecializationRepository(context));
         var lazyPatientRepository = new Lazy<IPatientRepository>(() => new PatientRepository(context));
         var lazySpecializationRepository = new Lazy<ISpecializationRepository>(() => new SpecializationRepository(context));
-        var lazyIdentityProvider = new Lazy<IIdentityProvider>(() => new IdentityProvider(userManager));
+        var lazyIdentityProvider = new Lazy<IIdentityProvider>(() => new IdentityProvider(userManager, roleManager, signInManager));
         var lazyUnitOfWork = new Lazy<IUnitOfWork>(() => new UnitOfWork(context));
         
         AccountRepository = lazyAccountRepository.Value;

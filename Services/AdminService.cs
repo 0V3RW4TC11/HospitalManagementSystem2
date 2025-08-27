@@ -11,16 +11,16 @@ namespace Services;
 internal sealed class AdminService : IAdminService
 {
     private readonly IRepositoryManager _repositoryManager;
-    private readonly IAccountService _accountService;
+    private readonly IAccountManager _accountManager;
     private readonly IStaffEmailService _staffEmailService;
 
     public AdminService(
         IRepositoryManager repositoryManager,
-        IAccountService accountService,
+        IAccountManager accountManager,
         IStaffEmailService staffEmailService)
     {
         _repositoryManager = repositoryManager;
-        _accountService = accountService;
+        _accountManager = accountManager;
         _staffEmailService = staffEmailService;
     }
 
@@ -53,7 +53,7 @@ internal sealed class AdminService : IAdminService
             
             var username = await _staffEmailService.CreateStaffEmailAsync(adminCreateDto.FirstName, adminCreateDto.LastName);
             
-            await _accountService.CreateAsync(admin.Id, AuthRoles.Admin, username, adminCreateDto.Password);
+            await _accountManager.CreateAsync(admin.Id, AuthRoles.Admin, username, adminCreateDto.Password);
         });
     }
 
@@ -83,7 +83,7 @@ internal sealed class AdminService : IAdminService
         {
             _repositoryManager.AdminRepository.Remove(admin);
             await _repositoryManager.UnitOfWork.SaveChangesAsync();
-            await _accountService.DeleteByUserIdAsync(admin.Id);
+            await _accountManager.DeleteAsync(admin.Id);
         });
     }
 

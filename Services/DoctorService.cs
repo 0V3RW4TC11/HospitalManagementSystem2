@@ -11,16 +11,16 @@ namespace Services;
 internal sealed class DoctorService : IDoctorService
 {
     private readonly IRepositoryManager _repositoryManager;
-    private readonly IAccountService _accountService;
+    private readonly IAccountManager _accountManager;
     private readonly IStaffEmailService _staffEmailService;
 
     public DoctorService(
         IRepositoryManager repositoryManager, 
-        IAccountService accountService, 
+        IAccountManager accountManager, 
         IStaffEmailService staffEmailService)
     {
         _repositoryManager = repositoryManager;
-        _accountService = accountService;
+        _accountManager = accountManager;
         _staffEmailService = staffEmailService;
     }
 
@@ -62,7 +62,7 @@ internal sealed class DoctorService : IDoctorService
             
             var username = await _staffEmailService.CreateStaffEmailAsync(doctorCreateDto.FirstName, doctorCreateDto.LastName);
 
-            await _accountService.CreateAsync(doctor.Id, AuthRoles.Doctor, username, doctorCreateDto.Password);
+            await _accountManager.CreateAsync(doctor.Id, AuthRoles.Doctor, username, doctorCreateDto.Password);
         });
     }
     
@@ -93,7 +93,7 @@ internal sealed class DoctorService : IDoctorService
         {
             _repositoryManager.DoctorRepository.Remove(doctor);
             await _repositoryManager.UnitOfWork.SaveChangesAsync();
-            await _accountService.DeleteByUserIdAsync(doctor.Id);
+            await _accountManager.DeleteAsync(doctor.Id);
         });
     }
 
