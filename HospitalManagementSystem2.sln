@@ -25,7 +25,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestData", "TestData\TestDa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web", "Web\Web.csproj", "{D52D2DFF-DFE4-4CFE-BFED-D1D14A8E653F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Seeding", "DatabaseSeeder\Seeding.csproj", "{8D929DA4-2C7A-4416-8EAE-FBDDF95A751B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Seeding", "Seeding\Seeding.csproj", "{8D929DA4-2C7A-4416-8EAE-FBDDF95A751B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Constants", "Constants\Constants.csproj", "{2AD0B304-B79C-4C22-BCB5-6DE4E0D4DA16}"
 EndProject
