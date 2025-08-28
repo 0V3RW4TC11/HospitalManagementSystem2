@@ -1,4 +1,4 @@
-﻿using DataTransfer.Admin;
+﻿using Services.Dtos.Admin;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Repositories;

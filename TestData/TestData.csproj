@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\DataTransfer\DataTransfer.csproj" />
+      <ProjectReference Include="..\DataTransfer\Services.Dtos.csproj" />
       <ProjectReference Include="..\Persistence\Persistence.csproj" />
     </ItemGroup>
 

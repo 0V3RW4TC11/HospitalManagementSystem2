@@ -1,4 +1,4 @@
-﻿using DataTransfer.Specialization;
+﻿using Services.Dtos.Specialization;
 using Domain;
 using Domain.Entities;
 using Domain.Exceptions;

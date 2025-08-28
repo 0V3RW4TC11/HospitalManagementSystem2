@@ -1,7 +1,7 @@
-﻿using DataTransfer.Attendance;
-using Domain.Entities;
+﻿using Domain.Entities;
 using Mapster;
 using Persistence;
+using Services.Dtos.Attendance;
 
 namespace TestData;
 

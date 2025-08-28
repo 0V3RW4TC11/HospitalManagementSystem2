@@ -1,4 +1,4 @@
-﻿namespace DataTransfer.Doctor;
+﻿namespace Services.Dtos.Doctor;
 
 public class DoctorDto : DoctorBaseDto
 {

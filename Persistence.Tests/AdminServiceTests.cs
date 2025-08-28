@@ -1,8 +1,8 @@
-﻿using DataTransfer.Admin;
-using Domain.Exceptions;
+﻿using Domain.Exceptions;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using Services.Dtos.Admin;
 using TestData;
 
 namespace Persistence.Tests;

@@ -1,7 +1,7 @@
-﻿using DataTransfer.Attendance;
-using Domain.Entities;
+﻿using Domain.Entities;
 using Domain.Exceptions;
 using Mapster;
+using Services.Dtos.Attendance;
 using TestData;
 
 namespace Persistence.Tests;

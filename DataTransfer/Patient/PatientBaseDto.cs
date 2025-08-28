@@ -1,4 +1,4 @@
-﻿namespace DataTransfer.Patient;
+﻿namespace Services.Dtos.Patient;
 
 public abstract class PatientBaseDto
 {

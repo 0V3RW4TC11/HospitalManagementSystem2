@@ -1,4 +1,4 @@
-﻿using DataTransfer.Attendance;
+﻿using Services.Dtos.Attendance;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Repositories;

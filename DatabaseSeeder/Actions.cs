@@ -1,4 +1,4 @@
-﻿using DataTransfer.Admin;
+﻿using Services.Dtos.Admin;
 using Domain.Exceptions;
 using Microsoft.AspNetCore.Identity;
 using Services.Abstractions;

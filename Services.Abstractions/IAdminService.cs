@@ -1,4 +1,4 @@
-﻿using DataTransfer.Admin;
+﻿using Services.Dtos.Admin;
 
 namespace Services.Abstractions;
 

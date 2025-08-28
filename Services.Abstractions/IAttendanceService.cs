@@ -1,4 +1,4 @@
-﻿using DataTransfer.Attendance;
+﻿using Services.Dtos.Attendance;
 
 namespace Services.Abstractions;
 

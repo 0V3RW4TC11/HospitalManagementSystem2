@@ -1,4 +1,4 @@
-﻿using DataTransfer.Specialization;
+﻿using Services.Dtos.Specialization;
 
 namespace Services.Abstractions;
 

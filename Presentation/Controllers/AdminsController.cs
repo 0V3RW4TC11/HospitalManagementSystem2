@@ -1,4 +1,4 @@
-﻿using DataTransfer.Admin;
+﻿using Services.Dtos.Admin;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
