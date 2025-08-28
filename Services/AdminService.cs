@@ -1,5 +1,4 @@
 ﻿using DataTransfer.Admin;
-using Domain.Constants;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Repositories;
@@ -53,7 +52,7 @@ internal sealed class AdminService : IAdminService
             
             var username = await _staffEmailService.CreateStaffEmailAsync(adminCreateDto.FirstName, adminCreateDto.LastName);
             
-            await _accountManager.CreateAsync(admin.Id, AuthRoles.Admin, username, adminCreateDto.Password);
+            await _accountManager.CreateAsync(admin.Id, Constants.AuthRoles.Admin, username, adminCreateDto.Password);
         });
     }
 

@@ -1,5 +1,4 @@
 ﻿using DataTransfer.Admin;
-using Domain.Constants;
 using Domain.Entities;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
@@ -12,7 +11,7 @@ public static class AdminTestData
     private const string FirstName = "TestAdminFirstName";
     private const string LastName = "TestAdminLastName";
     public static readonly string ExpectedUsername =
-        $"{FirstName.ToLower()}.{LastName.ToLower()}@{DomainNames.Organization}";
+        $"{FirstName.ToLower()}.{LastName.ToLower()}@{Constants.DomainNames.Organization}";
 
     public static AdminCreateDto CreateDto() => new()
     {
@@ -36,7 +35,7 @@ public static class AdminTestData
         
         var identity = new IdentityUser {UserName = ExpectedUsername};
         await userManager.CreateAsync(identity, adminCreateDto.Password);
-        await userManager.AddToRoleAsync(identity, AuthRoles.Admin);
+        await userManager.AddToRoleAsync(identity, Constants.AuthRoles.Admin);
         
         context.Accounts.Add(new Account {UserId = admin.Id, IdentityUserId = identity.Id});
         await context.SaveChangesAsync();

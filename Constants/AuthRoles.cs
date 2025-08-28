@@ -1,4 +1,4 @@
-﻿namespace Domain.Constants;
+﻿namespace Constants;
 
 public static class AuthRoles
 {

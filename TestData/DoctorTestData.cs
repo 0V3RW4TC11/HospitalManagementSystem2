@@ -1,6 +1,4 @@
-﻿using DataTransfer.Admin;
-using DataTransfer.Doctor;
-using Domain.Constants;
+﻿using DataTransfer.Doctor;
 using Domain.Entities;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
@@ -13,7 +11,7 @@ public static class DoctorTestData
     private const string FirstName = "TestDoctorFirstName";
     private const string LastName = "TestDoctorLastName";
     public static readonly string ExpectedUsername =
-        $"{FirstName.ToLower()}.{LastName.ToLower()}@{DomainNames.Organization}";
+        $"{FirstName.ToLower()}.{LastName.ToLower()}@{Constants.DomainNames.Organization}";
 
     public static DoctorCreateDto CreateDto(ISet<Guid> specializationIds) => new()
     {
@@ -45,7 +43,7 @@ public static class DoctorTestData
         
         var identity = new IdentityUser {UserName = ExpectedUsername};
         await userManager.CreateAsync(identity, doctorCreateDto.Password);
-        await userManager.AddToRoleAsync(identity, AuthRoles.Doctor);
+        await userManager.AddToRoleAsync(identity, Constants.AuthRoles.Doctor);
         
         context.Accounts.Add(new Account {UserId = doctor.Id, IdentityUserId = identity.Id});
         await context.SaveChangesAsync();

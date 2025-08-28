@@ -1,17 +1,8 @@
 ﻿using DataTransfer.Admin;
-using Domain.Constants;
-using Domain.Entities;
 using Domain.Exceptions;
-using Domain.Repositories;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Persistence.Configurations;
-using Persistence.Repositories;
-using Services;
-using Services.Abstractions;
 using TestData;
 
 namespace Persistence.Tests;
@@ -28,7 +19,7 @@ internal sealed class AdminServiceTests : PersistenceTestBase
     private void SeedAdminRole()
     {
         var roleManager = GetServiceProvider().GetRequiredService<RoleManager<IdentityRole>>();
-        roleManager.CreateAsync(new IdentityRole(AuthRoles.Admin)).GetAwaiter().GetResult();
+        roleManager.CreateAsync(new IdentityRole(Constants.AuthRoles.Admin)).GetAwaiter().GetResult();
     }
     
     [Test]
@@ -62,7 +53,7 @@ internal sealed class AdminServiceTests : PersistenceTestBase
         Assert.That(identityUser.UserName, Is.EqualTo(AdminTestData.ExpectedUsername));
         
         // Has expected AuthRole
-        var adminRoleId = context.Roles.Single(r => r.Name == AuthRoles.Admin).Id;
+        var adminRoleId = context.Roles.Single(r => r.Name == Constants.AuthRoles.Admin).Id;
         Assert.That(context.UserRoles.Any(r => r.UserId == identityUser.Id && r.RoleId == adminRoleId));
     }
 

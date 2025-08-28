@@ -1,5 +1,4 @@
 ﻿using DataTransfer.Patient;
-using Domain.Constants;
 using Domain.Entities;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
@@ -19,7 +18,7 @@ public class PatientTestData
         Email = "testPatient@example.com",
         DateOfBirth = DateOnly.FromDateTime(new DateTime(1990, 1, 1)),
         Password = "Password123!",
-        BloodType = BloodType.AbPositive
+        BloodType = Constants.BloodType.AbPositive
     };
 
     public static async Task<PatientDto> SeedPatient(RepositoryDbContext context, UserManager<IdentityUser> userManager)
@@ -32,7 +31,7 @@ public class PatientTestData
         
         var identity = new IdentityUser {UserName = patientCreateDto.Email};
         await userManager.CreateAsync(identity, patientCreateDto.Password);
-        await userManager.AddToRoleAsync(identity, AuthRoles.Patient);
+        await userManager.AddToRoleAsync(identity, Constants.AuthRoles.Patient);
         
         context.Accounts.Add(new Account {UserId = patient.Id, IdentityUserId = identity.Id});
         await context.SaveChangesAsync();
