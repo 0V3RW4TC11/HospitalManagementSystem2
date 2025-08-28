@@ -1,4 +1,4 @@
-﻿namespace DataTransfer.Attendance;
+﻿namespace Services.Dtos.Attendance;
 
 public class AttendanceCreateDto
 {

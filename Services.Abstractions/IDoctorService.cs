@@ -1,4 +1,4 @@
-﻿using DataTransfer.Doctor;
+﻿using Services.Dtos.Doctor;
 
 namespace Services.Abstractions;
 

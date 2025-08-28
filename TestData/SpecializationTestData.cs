@@ -1,8 +1,8 @@
-﻿using DataTransfer.Specialization;
-using Domain.Entities;
+﻿using Domain.Entities;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
+using Services.Dtos.Specialization;
 
 namespace TestData;
 

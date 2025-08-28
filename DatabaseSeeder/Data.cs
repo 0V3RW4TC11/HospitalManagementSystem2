@@ -1,5 +1,5 @@
-﻿using DataTransfer.Doctor;
-using DataTransfer.Patient;
+﻿using Services.Dtos.Doctor;
+using Services.Dtos.Patient;
 
 namespace Seeding
 {

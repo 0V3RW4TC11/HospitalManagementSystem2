@@ -1,4 +1,4 @@
-﻿using DataTransfer.Patient;
+﻿using Services.Dtos.Patient;
 
 namespace Services.Abstractions;
 

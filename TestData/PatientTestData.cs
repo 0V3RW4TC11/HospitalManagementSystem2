@@ -1,8 +1,8 @@
-﻿using DataTransfer.Patient;
-using Domain.Entities;
+﻿using Domain.Entities;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Persistence;
+using Services.Dtos.Patient;
 
 namespace TestData;
 

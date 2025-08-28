@@ -1,4 +1,4 @@
-﻿namespace DataTransfer.Admin;
+﻿namespace Services.Dtos.Admin;
 
 public abstract class AdminBaseDto
 {

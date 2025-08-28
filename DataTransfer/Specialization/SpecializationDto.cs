@@ -1,4 +1,4 @@
-﻿namespace DataTransfer.Specialization;
+﻿namespace Services.Dtos.Specialization;
 
 public class SpecializationDto : SpecializationCreateDto
 {

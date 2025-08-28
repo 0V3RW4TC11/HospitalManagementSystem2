@@ -1,6 +1,6 @@
-﻿using DataTransfer.Specialization;
-using Domain.Exceptions;
+﻿using Domain.Exceptions;
 using Mapster;
+using Services.Dtos.Specialization;
 using TestData;
 
 namespace Persistence.Tests;

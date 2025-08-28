@@ -1,8 +1,8 @@
-﻿using DataTransfer.Patient;
-using Domain.Exceptions;
+﻿using Domain.Exceptions;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using Services.Dtos.Patient;
 using TestData;
 
 namespace Persistence.Tests;

@@ -1,4 +1,4 @@
-﻿using DataTransfer.Patient;
+﻿using Services.Dtos.Patient;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Repositories;
