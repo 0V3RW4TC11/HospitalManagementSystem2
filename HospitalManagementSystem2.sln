@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{E1671096-5
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{03822CF3-E4D3-44D7-A2DE-D6547F5BCB37}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.Dtos", "DataTransfer\Services.Dtos.csproj", "{5BB36337-7CF2-4E26-8C0A-23536FA8E7A5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.Dtos", "Services.Dtos\Services.Dtos.csproj", "{5BB36337-7CF2-4E26-8C0A-23536FA8E7A5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{2E0198E6-82A0-4BB6-AB6A-7289FD6EBA88}"
 EndProject
