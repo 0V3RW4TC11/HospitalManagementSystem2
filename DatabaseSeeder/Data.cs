@@ -1,6 +1,5 @@
 ﻿using DataTransfer.Doctor;
 using DataTransfer.Patient;
-using System.Runtime.InteropServices;
 
 namespace Seeding
 {
@@ -58,7 +57,7 @@ namespace Seeding
             Address = "Example Address",
             Phone = "00-0-0000-0000",
             Email = "patient.a@example.com",
-            BloodType = Domain.Entities.BloodType.APositive,
+            BloodType = Constants.BloodType.APositive,
             DateOfBirth = DateOnly.FromDateTime(DateTime.UnixEpoch),
             Password = "Pass123!"
         };
@@ -72,7 +71,7 @@ namespace Seeding
             Address = "Example Address",
             Phone = "00-0-0000-0000",
             Email = "patient.b@example.com",
-            BloodType = Domain.Entities.BloodType.AbNegative,
+            BloodType = Constants.BloodType.AbNegative,
             DateOfBirth = DateOnly.FromDateTime(DateTime.UnixEpoch),
             Password = "Pass123!"
         };
@@ -86,7 +85,7 @@ namespace Seeding
             Address = "Example Address",
             Phone = "00-0-0000-0000",
             Email = "patient.c@example.com",
-            BloodType = Domain.Entities.BloodType.ONegative,
+            BloodType = Constants.BloodType.ONegative,
             DateOfBirth = DateOnly.FromDateTime(DateTime.UnixEpoch),
             Password = "Pass123!"
         };

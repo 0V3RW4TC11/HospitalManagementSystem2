@@ -1,6 +1,4 @@
 ﻿using DataTransfer.Admin;
-using DataTransfer.Specialization;
-using Domain.Constants;
 using Domain.Exceptions;
 using Microsoft.AspNetCore.Identity;
 using Services.Abstractions;
@@ -11,7 +9,7 @@ namespace Seeding
     {
         public static async Task SeedAuthRoles(RoleManager<IdentityRole> manager)
         {
-            foreach (var roleName in AuthRoles.AsList())
+            foreach (var roleName in Constants.AuthRoles.AsList())
             {
                 bool roleExists = await manager.RoleExistsAsync(roleName);
                 

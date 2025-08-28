@@ -1,5 +1,4 @@
 ﻿using DataTransfer.Admin;
-using Domain.Constants;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +8,7 @@ using X.PagedList.Extensions;
 
 namespace Presentation.Controllers
 {
-    [Authorize(Roles = AuthRoles.Admin)]
+    [Authorize(Roles = Constants.AuthRoles.Admin)]
     public class AdminsController : Controller
     {
         private readonly IAdminService _adminService;

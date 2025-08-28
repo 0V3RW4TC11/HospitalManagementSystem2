@@ -1,5 +1,4 @@
 ﻿using DataTransfer.Patient;
-using Domain.Constants;
 using Domain.Exceptions;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
@@ -20,7 +19,7 @@ internal sealed class PatientServiceTests : PersistenceTestBase
     private void SeedPatientRole()
     {
         var roleManager = GetServiceProvider().GetRequiredService<RoleManager<IdentityRole>>();
-        roleManager.CreateAsync(new IdentityRole(AuthRoles.Patient)).GetAwaiter().GetResult();
+        roleManager.CreateAsync(new IdentityRole(Constants.AuthRoles.Patient)).GetAwaiter().GetResult();
     }
 
     [Test]
@@ -55,7 +54,7 @@ internal sealed class PatientServiceTests : PersistenceTestBase
         Assert.That(identityUser.UserName, Is.EqualTo(patientCreateDto.Email));
         
         // Has expected AuthRole
-        var patientRoleId = context.Roles.Single(r => r.Name == AuthRoles.Patient).Id;
+        var patientRoleId = context.Roles.Single(r => r.Name == Constants.AuthRoles.Patient).Id;
         Assert.That(context.UserRoles.Any(r => 
             r.UserId == identityUser.Id && 
             r.RoleId == patientRoleId));

@@ -1,6 +1,4 @@
 ﻿using DataTransfer.Patient;
-using Domain;
-using Domain.Constants;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Repositories;
@@ -43,7 +41,7 @@ internal sealed class PatientService : IPatientService
 
             await _accountManager.CreateAsync(
                 patient.Id,
-                AuthRoles.Patient,
+                Constants.AuthRoles.Patient,
                 patientCreateDto.Email,
                 patientCreateDto.Password);
         });

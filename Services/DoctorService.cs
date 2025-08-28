@@ -1,5 +1,4 @@
 ﻿using DataTransfer.Doctor;
-using Domain.Constants;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Repositories;
@@ -62,7 +61,7 @@ internal sealed class DoctorService : IDoctorService
             
             var username = await _staffEmailService.CreateStaffEmailAsync(doctorCreateDto.FirstName, doctorCreateDto.LastName);
 
-            await _accountManager.CreateAsync(doctor.Id, AuthRoles.Doctor, username, doctorCreateDto.Password);
+            await _accountManager.CreateAsync(doctor.Id, Constants.AuthRoles.Doctor, username, doctorCreateDto.Password);
         });
     }
     

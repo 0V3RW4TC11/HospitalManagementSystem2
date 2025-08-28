@@ -1,11 +1,10 @@
-﻿@using Domain.Constants
-@using Microsoft.AspNetCore.Identity
+﻿@using Microsoft.AspNetCore.Identity
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
 
 @if (SignInManager.IsSignedIn(User))
 {
-    @if (User.IsInRole(AuthRoles.Admin))
+    @if (User.IsInRole(Constants.AuthRoles.Admin))
     {
         <li class="nav-item">
             <a class="nav-link text-dark" asp-controller="Admins" asp-action="Administration">Administration</a>

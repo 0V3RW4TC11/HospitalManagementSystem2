@@ -20,22 +20,10 @@ public class Patient : Entity
 
     public DateOnly DateOfBirth { get; set; }
     
-    public BloodType BloodType { get; set; }
+    public Constants.BloodType BloodType { get; set; }
     
     public static Expression<Func<Patient, bool>> Matches(Patient patient)
     {
         return x => x.Email.ToLower() == patient.Email.ToLower();
     }
-}
-
-public enum BloodType
-{
-    APositive,
-    ANegative,
-    BPositive,
-    BNegative,
-    AbPositive,
-    AbNegative,
-    OPositive,
-    ONegative
 }

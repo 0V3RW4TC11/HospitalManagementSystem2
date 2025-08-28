@@ -1,8 +1,6 @@
-﻿using System.Text;
-using Domain;
-using Domain.Constants;
-using Domain.Repositories;
+﻿using Domain.Repositories;
 using Services.Abstractions;
+using System.Text;
 
 namespace Services;
 
@@ -20,7 +18,7 @@ internal sealed class StaffEmailService : IStaffEmailService
     public async Task<string> CreateStaffEmailAsync(string firstName, string? lastName)
     {
         var username = CreateUsername(firstName, lastName);
-        var domain = DomainNames.Organization;
+        var domain = Constants.DomainNames.Organization;
         var email = new StringBuilder($"{username}@{domain}");
 
         // Check if base email is available

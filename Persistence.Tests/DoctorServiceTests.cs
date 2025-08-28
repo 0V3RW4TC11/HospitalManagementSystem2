@@ -1,6 +1,5 @@
 ﻿using DataTransfer.Doctor;
 using DataTransfer.Specialization;
-using Domain.Constants;
 using Domain.Exceptions;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
@@ -21,7 +20,7 @@ internal sealed class DoctorServiceTests : PersistenceTestBase
     private void SeedDoctorRole()
     {
         var roleManager = GetServiceProvider().GetRequiredService<RoleManager<IdentityRole>>();
-        roleManager.CreateAsync(new IdentityRole(AuthRoles.Doctor)).GetAwaiter().GetResult();
+        roleManager.CreateAsync(new IdentityRole(Constants.AuthRoles.Doctor)).GetAwaiter().GetResult();
     }
 
     private async Task<HashSet<Guid>> SeedSpecsAndReturnGuidSet(params SpecializationCreateDto[] specializations)
@@ -71,7 +70,7 @@ internal sealed class DoctorServiceTests : PersistenceTestBase
         Assert.That(identityUser.UserName, Is.EqualTo(DoctorTestData.ExpectedUsername));
         
         // Has expected AuthRole
-        var doctorRoleId = context.Roles.Single(r => r.Name == AuthRoles.Doctor).Id;
+        var doctorRoleId = context.Roles.Single(r => r.Name == Constants.AuthRoles.Doctor).Id;
         Assert.That(context.UserRoles.Any(r => r.UserId == identityUser.Id && r.RoleId == doctorRoleId));
     }
     
