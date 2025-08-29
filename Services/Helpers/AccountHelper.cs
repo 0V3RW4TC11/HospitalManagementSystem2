@@ -3,13 +3,13 @@ using Domain.Exceptions;
 using Domain.Repositories;
 using Services.Abstractions;
 
-namespace Services;
+namespace Services.Helpers;
 
-internal sealed class AccountManager : IAccountManager
+internal sealed class AccountHelper
 {
     private readonly IRepositoryManager _repositoryManager;
     
-    public AccountManager(IRepositoryManager repositoryManager) => _repositoryManager = repositoryManager;
+    public AccountHelper(IRepositoryManager repositoryManager) => _repositoryManager = repositoryManager;
 
     public async Task CreateAsync(Guid userId, string role, string username, string password)
     {

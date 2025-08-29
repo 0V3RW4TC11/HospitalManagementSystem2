@@ -1,5 +1,6 @@
 ﻿using Domain.Repositories;
 using Services.Abstractions;
+using Services.Helpers;
 
 namespace Services;
 
@@ -7,30 +8,30 @@ public sealed class ServiceManager : IServiceManager
 {
     public ServiceManager(IRepositoryManager repositoryManager)
     {
-        var lazyAccountManager = new Lazy<IAccountManager>(() => new AccountManager(repositoryManager));
-        
+        var lazyAccountHelper = new Lazy<AccountHelper>(() => new AccountHelper(repositoryManager));
+
         var lazyStaffEmailService = new Lazy<IStaffEmailService>(() => new StaffEmailService(repositoryManager.IdentityProvider));
 
         var lazyAccountService = new Lazy<IAccountService>(() => new AccountService(repositoryManager));
-        
+
         var lazyAdminService = new Lazy<IAdminService>(() => new AdminService(
-            repositoryManager, 
-            lazyAccountManager.Value, 
-            lazyStaffEmailService.Value));
-        
+            repositoryManager,
+            lazyStaffEmailService.Value,
+            lazyAccountHelper.Value));
+
         var lazyDoctorService = new Lazy<IDoctorService>(() => new DoctorService(
             repositoryManager,
-            lazyAccountManager.Value,
-            lazyStaffEmailService.Value));
-        
+            lazyStaffEmailService.Value,
+            lazyAccountHelper.Value));
+
         var lazyPatientService = new Lazy<IPatientService>(() => new PatientService(
             repositoryManager,
-            lazyAccountManager.Value));
-        
+            lazyAccountHelper.Value));
+
         var lazySpecializationService = new Lazy<ISpecializationService>(() => new SpecializationService(repositoryManager));
-        
+
         var lazyAttendanceService = new Lazy<IAttendanceService>(() => new AttendanceService(repositoryManager));
-        
+
         AccountService = lazyAccountService.Value;
         AdminService = lazyAdminService.Value;
         PatientService = lazyPatientService.Value;

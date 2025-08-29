@@ -4,22 +4,23 @@ using Domain.Exceptions;
 using Domain.Repositories;
 using Mapster;
 using Services.Abstractions;
+using Services.Helpers;
 
 namespace Services;
 
 internal sealed class DoctorService : IDoctorService
 {
     private readonly IRepositoryManager _repositoryManager;
-    private readonly IAccountManager _accountManager;
     private readonly IStaffEmailService _staffEmailService;
+    private readonly AccountHelper _accountHelper;
 
     public DoctorService(
         IRepositoryManager repositoryManager, 
-        IAccountManager accountManager, 
-        IStaffEmailService staffEmailService)
+        IStaffEmailService staffEmailService,
+        AccountHelper accountHelper)
     {
         _repositoryManager = repositoryManager;
-        _accountManager = accountManager;
+        _accountHelper = accountHelper;
         _staffEmailService = staffEmailService;
     }
 
@@ -61,7 +62,7 @@ internal sealed class DoctorService : IDoctorService
             
             var username = await _staffEmailService.CreateStaffEmailAsync(doctorCreateDto.FirstName, doctorCreateDto.LastName);
 
-            await _accountManager.CreateAsync(doctor.Id, Constants.AuthRoles.Doctor, username, doctorCreateDto.Password);
+            await _accountHelper.CreateAsync(doctor.Id, Constants.AuthRoles.Doctor, username, doctorCreateDto.Password);
         });
     }
     
@@ -92,7 +93,7 @@ internal sealed class DoctorService : IDoctorService
         {
             _repositoryManager.DoctorRepository.Remove(doctor);
             await _repositoryManager.UnitOfWork.SaveChangesAsync();
-            await _accountManager.DeleteAsync(doctor.Id);
+            await _accountHelper.DeleteAsync(doctor.Id);
         });
     }
 

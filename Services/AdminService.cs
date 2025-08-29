@@ -4,22 +4,24 @@ using Domain.Exceptions;
 using Domain.Repositories;
 using Mapster;
 using Services.Abstractions;
+using Services.Helpers;
 
 namespace Services;
 
 internal sealed class AdminService : IAdminService
 {
     private readonly IRepositoryManager _repositoryManager;
-    private readonly IAccountManager _accountManager;
     private readonly IStaffEmailService _staffEmailService;
+    private readonly AccountHelper _accountHelper;
 
     public AdminService(
         IRepositoryManager repositoryManager,
-        IAccountManager accountManager,
-        IStaffEmailService staffEmailService)
+        IStaffEmailService staffEmailService,
+        AccountHelper accountHelper
+        )
     {
         _repositoryManager = repositoryManager;
-        _accountManager = accountManager;
+        _accountHelper = accountHelper;
         _staffEmailService = staffEmailService;
     }
 
@@ -52,7 +54,7 @@ internal sealed class AdminService : IAdminService
             
             var username = await _staffEmailService.CreateStaffEmailAsync(adminCreateDto.FirstName, adminCreateDto.LastName);
             
-            await _accountManager.CreateAsync(admin.Id, Constants.AuthRoles.Admin, username, adminCreateDto.Password);
+            await _accountHelper.CreateAsync(admin.Id, Constants.AuthRoles.Admin, username, adminCreateDto.Password);
         });
     }
 
@@ -82,7 +84,7 @@ internal sealed class AdminService : IAdminService
         {
             _repositoryManager.AdminRepository.Remove(admin);
             await _repositoryManager.UnitOfWork.SaveChangesAsync();
-            await _accountManager.DeleteAsync(admin.Id);
+            await _accountHelper.DeleteAsync(admin.Id);
         });
     }
 

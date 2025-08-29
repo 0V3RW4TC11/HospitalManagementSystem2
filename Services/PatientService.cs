@@ -4,18 +4,19 @@ using Domain.Exceptions;
 using Domain.Repositories;
 using Mapster;
 using Services.Abstractions;
+using Services.Helpers;
 
 namespace Services;
 
 internal sealed class PatientService : IPatientService
 {
     private readonly IRepositoryManager _repositoryManager;
-    private readonly IAccountManager _accountManager;
+    private readonly AccountHelper _accountHelper;
 
-    public PatientService(IRepositoryManager repositoryManager, IAccountManager accountManager)
+    public PatientService(IRepositoryManager repositoryManager, AccountHelper accountHelper)
     {
         _repositoryManager = repositoryManager;
-        _accountManager = accountManager;
+        _accountHelper = accountHelper;
     }
 
     public async Task<(PatientDto[] List, int TotalCount)> Patients(int pageNumber, int pageSize)
@@ -39,7 +40,7 @@ internal sealed class PatientService : IPatientService
             _repositoryManager.PatientRepository.Add(patient);
             await _repositoryManager.UnitOfWork.SaveChangesAsync();
 
-            await _accountManager.CreateAsync(
+            await _accountHelper.CreateAsync(
                 patient.Id,
                 Constants.AuthRoles.Patient,
                 patientCreateDto.Email,
@@ -79,7 +80,7 @@ internal sealed class PatientService : IPatientService
             _repositoryManager.PatientRepository.Remove(patient);
             await _repositoryManager.UnitOfWork.SaveChangesAsync();
             
-            await _accountManager.DeleteAsync(patient.Id);
+            await _accountHelper.DeleteAsync(patient.Id);
         });
     }
 

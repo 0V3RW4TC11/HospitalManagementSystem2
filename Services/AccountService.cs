@@ -1,5 +1,4 @@
-﻿using Domain.Entities;
-using Domain.Exceptions;
+﻿using Domain.Exceptions;
 using Domain.Repositories;
 using Services.Abstractions;
 
@@ -34,31 +33,31 @@ namespace Services
 
         public async Task ChangePasswordAsync(Guid userId, string oldPassword, string newPassword)
         {
-            var account = await GetAccountByUserIdAsync(userId);
             await _repositoryManager.IdentityProvider.ChangePasswordAsync(
-                account.IdentityUserId,
+                await GetIdentityIdByUserIdAsync(userId),
                 oldPassword,
                 newPassword);
         }
 
         public async Task ResetPasswordAsync(Guid userId, string newPassword)
         {
-            var account = await GetAccountByUserIdAsync(userId);
             await _repositoryManager.IdentityProvider.ResetPasswordAsync(
-                account.IdentityUserId,
+                await GetIdentityIdByUserIdAsync(userId),
                 newPassword);
         }
 
         public async Task<string> GetUserNameAsync(Guid userId)
         {
-            var account = await GetAccountByUserIdAsync(userId);
-            return await _repositoryManager.IdentityProvider.GetUserNameAsync(account.IdentityUserId);
+            return await _repositoryManager.IdentityProvider.GetUserNameAsync(
+                await GetIdentityIdByUserIdAsync(userId));
         }
 
-        private async Task<Account> GetAccountByUserIdAsync(Guid userId)
+        private async Task<string> GetIdentityIdByUserIdAsync(Guid userId)
         {
-            return await _repositoryManager.AccountRepository.FindByUserIdAsync(userId)
+            var account = await _repositoryManager.AccountRepository.FindByUserIdAsync(userId)
                 ?? throw new AccountNotFoundException("Account not found for User Id: " + userId);
+
+            return account.IdentityUserId;
         }
     }
 }
