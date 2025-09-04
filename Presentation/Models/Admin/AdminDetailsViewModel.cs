@@ -9,6 +9,8 @@ namespace Presentation.Models.Admin
 
         public string Username { get; set; }
 
+        public bool IsLockedOut { get; set; }
+
         public string? Title { get; set; }
 
         [DisplayName("First Name")]

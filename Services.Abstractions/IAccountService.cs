@@ -14,6 +14,10 @@
 
         Task ResetPasswordAsync(Guid userId, string newPassword);
 
+        Task SetLockoutAsync(Guid userId, bool enabled);
+
+        Task<bool> IsLockedOut(Guid userId);
+
         Task<string> GetUserNameAsync(Guid userId);
     }
 }

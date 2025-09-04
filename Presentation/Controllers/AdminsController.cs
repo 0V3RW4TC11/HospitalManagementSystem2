@@ -107,6 +107,7 @@ namespace Presentation.Controllers
             var admin = await _adminService.GetByIdAsync(id);
             var model = admin.Adapt<AdminDetailsViewModel>();
             model.Username = await _accountService.GetUserNameAsync(id);
+            model.IsLockedOut = await _accountService.IsLockedOut(id);
 
             return model;
         }
