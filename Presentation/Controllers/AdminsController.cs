@@ -102,6 +102,21 @@ namespace Presentation.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            try
+            {
+                await _adminService.DeleteAsync(id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return RedirectToAction(nameof(Details), new { id });
+            }
+        }
+
         private async Task<AdminDetailsViewModel> GetAdminDetailsViewModel(Guid id)
         {
             var admin = await _adminService.GetByIdAsync(id);
