@@ -27,4 +27,8 @@ public interface IIdentityProvider
     Task<string> GetUserNameAsync(string identityId);
 
     Task<bool> EmailExistsAsync(string email);
+
+    Task<bool> IsLockedOut(string identityId);
+
+    Task SetLockoutAsync(string identityId, bool enabled);
 }

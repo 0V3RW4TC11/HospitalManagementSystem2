@@ -31,7 +31,7 @@ public class IdentityProvider : IIdentityProvider
 
     public async Task RemoveAsync(string identityId)
     {
-        var user = await GetUserAsync(identityId);
+        var user = await GetIdentityAsync(identityId);
         var result = await _userManager.DeleteAsync(user);
         IdentityResultThrowOnFail(result);
     }
@@ -52,7 +52,7 @@ public class IdentityProvider : IIdentityProvider
 
     public async Task AddToRoleAsync(string identityId, string role)
     {
-        var user = await GetUserAsync(identityId);
+        var user = await GetIdentityAsync(identityId);
         var result = await _userManager.AddToRoleAsync(user, role);
         IdentityResultThrowOnFail(result);
     }
@@ -80,14 +80,14 @@ public class IdentityProvider : IIdentityProvider
 
     public async Task ChangePasswordAsync(string identityId, string oldPassword, string newPassword)
     {
-        var identity = await GetUserAsync(identityId);
+        var identity = await GetIdentityAsync(identityId);
         var result = await _userManager.ChangePasswordAsync(identity, oldPassword, newPassword);
         IdentityResultThrowOnFail(result);
     }
 
     public async Task ResetPasswordAsync(string identityId, string newPassword)
     {
-        var identity = await GetUserAsync(identityId);
+        var identity = await GetIdentityAsync(identityId);
         var token = await _userManager.GeneratePasswordResetTokenAsync(identity);
         var result = await _userManager.ResetPasswordAsync(identity, token, newPassword);
         IdentityResultThrowOnFail(result);
@@ -95,7 +95,7 @@ public class IdentityProvider : IIdentityProvider
 
     public async Task<string> GetUserNameAsync(string identityId)
     {
-        var identity = await GetUserAsync(identityId);
+        var identity = await GetIdentityAsync(identityId);
         return identity.UserName
             ?? throw new Exception("Username not found for Identity Id: " + identityId);
     }
@@ -105,7 +105,26 @@ public class IdentityProvider : IIdentityProvider
         return await _userManager.Users.AnyAsync(x => x.Email == email);
     }
 
-    private async Task<IdentityUser> GetUserAsync(string identityId)
+    public async Task<bool> IsLockedOut(string identityId)
+    {
+        var identity = await GetIdentityAsync(identityId);
+        return await _userManager.IsLockedOutAsync(identity);
+    }
+
+    public async Task SetLockoutAsync(string identityId, bool enabled)
+    {
+        var identity = await GetIdentityAsync(identityId);
+        
+        if (enabled)
+            identity.LockoutEnd = DateTimeOffset.MaxValue;
+        else
+            identity.LockoutEnd = null;
+
+        var result = await _userManager.UpdateAsync(identity);
+        IdentityResultThrowOnFail(result);
+    }
+
+    private async Task<IdentityUser> GetIdentityAsync(string identityId)
     {
         var user = await _userManager.FindByIdAsync(identityId)
             ?? throw new Exception($"Identity not found for Identity Id {identityId}");

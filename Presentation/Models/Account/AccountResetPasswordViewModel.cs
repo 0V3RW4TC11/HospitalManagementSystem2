@@ -1,17 +1,13 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace Presentation.Models
+namespace Presentation.Models.Account
 {
-    public class ChangePasswordViewModel
+    public class AccountResetPasswordViewModel
     {
         public Guid UserId { get; set; }
 
         public string UserName { get; set; }
-
-        [DisplayName("Current Password")]
-        [DataType(DataType.Password)]
-        public string OldPassword { get; set; }
 
         [DisplayName("New Password")]
         [DataType(DataType.Password)]
@@ -19,7 +15,7 @@ namespace Presentation.Models
 
         [DisplayName("Confirm Password")]
         [DataType(DataType.Password)]
-        [Compare(nameof(NewPassword), ErrorMessage = "New/Confirm passwords do not match")]
+        [Compare(nameof(NewPassword), ErrorMessage = "Passwords do not match")]
         public string ConfirmPassword { get; set; }
     }
 }

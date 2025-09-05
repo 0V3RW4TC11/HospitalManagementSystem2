@@ -1,4 +1,5 @@
-﻿using Domain.Exceptions;
+﻿using Domain.Entities;
+using Domain.Exceptions;
 using Domain.Repositories;
 using Services.Abstractions;
 
@@ -46,6 +47,19 @@ namespace Services
                 newPassword);
         }
 
+        public async Task SetLockoutAsync(Guid userId, bool enabled)
+        {
+            await _repositoryManager.IdentityProvider.SetLockoutAsync(
+                await GetIdentityIdByUserIdAsync(userId),
+                enabled);
+        }
+
+        public async Task<bool> IsLockedOut(Guid userId)
+        {
+            return await _repositoryManager.IdentityProvider.IsLockedOut(
+                await GetIdentityIdByUserIdAsync(userId));
+        }
+
         public async Task<string> GetUserNameAsync(Guid userId)
         {
             return await _repositoryManager.IdentityProvider.GetUserNameAsync(
@@ -54,10 +68,14 @@ namespace Services
 
         private async Task<string> GetIdentityIdByUserIdAsync(Guid userId)
         {
-            var account = await _repositoryManager.AccountRepository.FindByUserIdAsync(userId)
-                ?? throw new AccountNotFoundException("Account not found for User Id: " + userId);
-
+            var account = await GetAccountAsync(userId);
             return account.IdentityUserId;
+        }
+
+        private async Task<Account> GetAccountAsync(Guid userId)
+        {
+            return await _repositoryManager.AccountRepository.FindByUserIdAsync(userId)
+                ?? throw new AccountNotFoundException("Account not found for User Id: " + userId);
         }
     }
 }

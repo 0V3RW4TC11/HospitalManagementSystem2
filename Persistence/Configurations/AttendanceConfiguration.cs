@@ -17,11 +17,11 @@ internal sealed class AttendanceConfiguration : IEntityTypeConfiguration<Attenda
         builder.HasOne<Patient>()
             .WithMany()
             .HasForeignKey(p => p.PatientId)
-            .OnDelete(DeleteBehavior.Restrict); // need account enabled/disabled behaviour
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne<Doctor>()
             .WithMany()
             .HasForeignKey(p => p.DoctorId)
-            .OnDelete(DeleteBehavior.Restrict); // need account enabled/disabled behaviour
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }
