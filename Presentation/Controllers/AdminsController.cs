@@ -86,11 +86,8 @@ namespace Presentation.Controllers
             {
                 try
                 {
-                    var adminDto = model.Adapt<AdminDto>()
-                        ?? throw new Exception("Failure to adapt ViewModel to AdminDto");
-
+                    var adminDto = model.Adapt<AdminDto>();
                     await _adminService.UpdateAsync(adminDto);
-
                     return RedirectToAction(nameof(Details), new { id = model.Id });
                 }
                 catch (Exception ex)
