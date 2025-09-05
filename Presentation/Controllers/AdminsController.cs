@@ -1,9 +1,9 @@
-﻿using Services.Dtos.Admin;
-using Mapster;
+﻿using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Models.Admin;
 using Services.Abstractions;
+using Services.Dtos.Admin;
 using X.PagedList.Extensions;
 
 namespace Presentation.Controllers
@@ -47,6 +47,31 @@ namespace Presentation.Controllers
         public IActionResult Administration()
         {
             return View();
+        }
+
+        [HttpGet]
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(AdminCreateViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var adminCreateDto = model.Adapt<AdminCreateDto>();
+                    await _adminService.CreateAsync(adminCreateDto);
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                }
+            }
+            return View(model);
         }
 
         [HttpGet]

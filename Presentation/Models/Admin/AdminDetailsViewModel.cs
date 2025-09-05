@@ -23,10 +23,8 @@ namespace Presentation.Models.Admin
 
         public string Address { get; set; }
 
-        [DisplayName("Phone Number")]
         public string Phone { get; set; }
 
-        [DisplayName("Email Address")]
         [EmailAddress]
         public string Email { get; set; }
 
