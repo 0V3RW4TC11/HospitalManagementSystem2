@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Operations;
 using Presentation.Helpers;
-using Presentation.Models;
 using Presentation.Models.Account;
 using Services.Abstractions;
 
@@ -27,7 +26,7 @@ namespace Presentation.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl)
+        public async Task<IActionResult> Login(AccountLoginViewModel model, string? returnUrl)
         {
             if (ModelState.IsValid)
             {
