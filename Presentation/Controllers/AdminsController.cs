@@ -86,11 +86,8 @@ namespace Presentation.Controllers
             {
                 try
                 {
-                    var adminDto = model.Adapt<AdminDto>()
-                        ?? throw new Exception("Failure to adapt ViewModel to AdminDto");
-
+                    var adminDto = model.Adapt<AdminDto>();
                     await _adminService.UpdateAsync(adminDto);
-
                     return RedirectToAction(nameof(Details), new { id = model.Id });
                 }
                 catch (Exception ex)
@@ -100,6 +97,21 @@ namespace Presentation.Controllers
             }
 
             return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            try
+            {
+                await _adminService.DeleteAsync(id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return RedirectToAction(nameof(Details), new { id });
+            }
         }
 
         private async Task<AdminDetailsViewModel> GetAdminDetailsViewModel(Guid id)
