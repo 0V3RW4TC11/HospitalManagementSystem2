@@ -120,6 +120,21 @@ namespace Presentation.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            try
+            {
+                await _patientService.DeleteAsync(id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return RedirectToAction(nameof(Details), new { id });
+            }
+        }
+
         private async Task<PatientDetailsViewModel> GetPatientDetailsViewModel(Guid id)
         {
             var patient = await _patientService.GetByIdAsync(id);
