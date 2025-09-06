@@ -5,6 +5,7 @@ using Presentation.Helpers;
 using Presentation.Models.Patient;
 using Services.Abstractions;
 using Services.Dtos.Patient;
+using System.Reflection;
 using X.PagedList.Extensions;
 
 namespace Presentation.Controllers
@@ -68,6 +69,21 @@ namespace Presentation.Controllers
                 }
             }
             return View(model);
+        }
+
+        [Authorize(Roles = Constants.AuthRoles.Admin)]
+        public async Task<IActionResult> Details(Guid id)
+        {
+            try
+            {
+                var patient = await _patientService.GetByIdAsync(id);
+                var model = patient.Adapt<PatientDetailsViewModel>();
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
     }
 }

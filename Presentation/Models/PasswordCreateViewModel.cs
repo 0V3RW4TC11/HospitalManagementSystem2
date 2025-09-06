@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Presentation.Models
 {
-    public abstract class PasswordCreateViewModel
+    public class PasswordCreateViewModel
     {
         [DisplayName("Password")]
         [DataType(DataType.Password)]

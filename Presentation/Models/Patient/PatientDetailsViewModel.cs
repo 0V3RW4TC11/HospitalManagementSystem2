@@ -1,6 +1,6 @@
-﻿namespace Presentation.Models.Admin
+﻿namespace Presentation.Models.Patient
 {
-    public class AdminDetailsViewModel : AdminBaseViewModel
+    public class PatientDetailsViewModel : PatientBaseViewModel
     {
         public Guid Id { get; set; }
 
