@@ -61,6 +61,7 @@ internal sealed class PatientService : IPatientService
 
         ValidatePatientBaseDto(patientDto);
         
+        patient.Title = patientDto.Title;
         patient.FirstName = patientDto.FirstName;
         patient.LastName = patientDto.LastName;
         patient.Gender = patientDto.Gender;

@@ -1,11 +1,11 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Presentation.Helpers;
 using Presentation.Models.Patient;
 using Services.Abstractions;
 using Services.Dtos.Patient;
-using System.Reflection;
 using X.PagedList.Extensions;
 
 namespace Presentation.Controllers
@@ -76,14 +76,57 @@ namespace Presentation.Controllers
         {
             try
             {
-                var patient = await _patientService.GetByIdAsync(id);
-                var model = patient.Adapt<PatientDetailsViewModel>();
+                var model = await GetPatientDetailsViewModel(id);
                 return View(model);
             }
             catch (Exception ex)
             {
                 throw;
             }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(Guid id, string? returnUrl)
+        {
+            try
+            {
+                ViewData["ReturnUrl"] = returnUrl;
+                var model = await GetPatientDetailsViewModel(id);
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(PatientDetailsViewModel model, string? returnUrl)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var dto = model.Adapt<PatientDto>();
+                    await _patientService.UpdateAsync(dto);
+                    return UrlHelper.Redirect(this, returnUrl);
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                    return View(model);
+                }
+            }
+            return View(model);
+        }
+
+        private async Task<PatientDetailsViewModel> GetPatientDetailsViewModel(Guid id)
+        {
+            var patient = await _patientService.GetByIdAsync(id);
+            var model = patient.Adapt<PatientDetailsViewModel>();
+            model.Username = await _accountService.GetUserNameAsync(id);
+            model.IsLockedOut = await _accountService.IsLockedOut(id);
+            return model;
         }
     }
 }
