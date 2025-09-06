@@ -1,25 +1,27 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Presentation.Models.Admin;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Presentation.Helpers;
+using Presentation.Models.Patient;
 using Services.Abstractions;
-using Services.Dtos.Admin;
+using Services.Dtos.Patient;
 using X.PagedList.Extensions;
 
 namespace Presentation.Controllers
 {
-    [Authorize(Roles = Constants.AuthRoles.Admin)]
-    public class AdminsController : Controller
+    public class PatientsController : Controller
     {
-        private readonly IAdminService _adminService;
+        private readonly IPatientService _patientService;
         private readonly IAccountService _accountService;
 
-        public AdminsController(IServiceManager manager)
+        public PatientsController(IServiceManager manager)
         {
-            _adminService = manager.AdminService;
+            _patientService = manager.PatientService;
             _accountService = manager.AccountService;
         }
 
+        [Authorize(Roles = Constants.AuthRoles.Admin)]
         [HttpGet]
         public async Task<IActionResult> Index(int? page)
         {
@@ -28,97 +30,93 @@ namespace Presentation.Controllers
 
             try
             {
-                var admins = await _adminService.Admins(pageNum, pageSize);
-                var pagedAdmins = admins.List
-                    .Select(a => a.Adapt<AdminListItemViewModel>())
-                    .ToPagedList(pageNum, pageSize, admins.TotalCount);
+                var patients = await _patientService.Patients(pageNum, pageSize);
+                var pagedAdmins = patients.List
+                    .Select(p => p.Adapt<PatientListItemViewModel>())
+                    .ToPagedList(pageNum, pageSize, patients.TotalCount);
                 return View(pagedAdmins);
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(string.Empty, ex.Message);
-                return RedirectToAction(nameof(Administration));
+                throw;
             }
         }
 
+        [AllowAnonymous]
         [HttpGet]
-        public IActionResult Administration()
+        public IActionResult Create(string? returnUrl)
         {
+            ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
-        [HttpGet]
-        public IActionResult Create()
-        {
-            return View();
-        }
-
+        [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> Create(AdminCreateViewModel model)
+        public async Task<IActionResult> Create(PatientCreateViewModel model, string? returnUrl)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var adminCreateDto = model.Adapt<AdminCreateDto>();
-                    await _adminService.CreateAsync(adminCreateDto);
-                    return RedirectToAction(nameof(Index));
+                    var dto = model.Adapt<PatientCreateDto>();
+                    await _patientService.CreateAsync(dto);
+                    return UrlHelper.Redirect(this, returnUrl);
                 }
                 catch (Exception ex)
                 {
                     ModelState.AddModelError(string.Empty, ex.Message);
+                    return View(model);
                 }
             }
             return View(model);
         }
 
-        [HttpGet]
+        [Authorize(Roles = Constants.AuthRoles.Admin)]
         public async Task<IActionResult> Details(Guid id)
         {
             try
             {
-                var model = await GetAdminDetailsViewModel(id);
+                var model = await GetPatientDetailsViewModel(id);
                 return View(model);
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(string.Empty, ex.Message);
-                return RedirectToAction(nameof(Index));
+                throw;
             }
         }
 
         [HttpGet]
-        public async Task<IActionResult> Edit(Guid id)
+        public async Task<IActionResult> Edit(Guid id, string? returnUrl)
         {
             try
             {
-                var model = await GetAdminDetailsViewModel(id);
+                ViewData["ReturnUrl"] = returnUrl;
+                var model = await GetPatientDetailsViewModel(id);
                 return View(model);
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(string.Empty, ex.Message);
-                return RedirectToAction(nameof(Details), new { id });
+                throw;
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(AdminDetailsViewModel model)
+        public async Task<IActionResult> Edit(PatientDetailsViewModel model, string? returnUrl)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var adminDto = model.Adapt<AdminDto>();
-                    await _adminService.UpdateAsync(adminDto);
-                    return RedirectToAction(nameof(Details), new { id = model.Id });
+                    var dto = model.Adapt<PatientDto>();
+                    await _patientService.UpdateAsync(dto);
+                    return UrlHelper.Redirect(this, returnUrl);
                 }
                 catch (Exception ex)
                 {
                     ModelState.AddModelError(string.Empty, ex.Message);
+                    return View(model);
                 }
             }
-
             return View(model);
         }
 
@@ -127,7 +125,7 @@ namespace Presentation.Controllers
         {
             try
             {
-                await _adminService.DeleteAsync(id);
+                await _patientService.DeleteAsync(id);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -137,13 +135,12 @@ namespace Presentation.Controllers
             }
         }
 
-        private async Task<AdminDetailsViewModel> GetAdminDetailsViewModel(Guid id)
+        private async Task<PatientDetailsViewModel> GetPatientDetailsViewModel(Guid id)
         {
-            var admin = await _adminService.GetByIdAsync(id);
-            var model = admin.Adapt<AdminDetailsViewModel>();
+            var patient = await _patientService.GetByIdAsync(id);
+            var model = patient.Adapt<PatientDetailsViewModel>();
             model.Username = await _accountService.GetUserNameAsync(id);
             model.IsLockedOut = await _accountService.IsLockedOut(id);
-
             return model;
         }
     }

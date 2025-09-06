@@ -24,9 +24,9 @@ internal sealed class PatientRepository : IPatientRepository
             pageSize);
     }
 
-    public Task<int> GetTotalCount()
+    public async Task<int> GetTotalCount()
     {
-        throw new NotImplementedException();
+        return await _context.Patients.CountAsync();
     }
 
     public async Task<Patient?> FindByIdAsync(Guid id)

@@ -4,7 +4,7 @@ namespace Services.Abstractions;
 
 public interface IAdminService
 {
-    Task<(AdminDto[] List, int TotalCount)> GetAdminsAsync(int pageNumber, int pageSize);
+    Task<(AdminDto[] List, int TotalCount)> Admins(int pageNumber, int pageSize);
 
     Task<AdminDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 

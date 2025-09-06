@@ -1,0 +1,47 @@
+﻿@using X.PagedList.Mvc.Core
+@model X.PagedList.IPagedList<Patient.PatientListItemViewModel>
+
+@{
+    ViewData["Title"] = "Patients";
+}
+
+<h1>Patients</h1>
+<br />
+<p>
+    <a asp-action="Create" asp-route-returnUrl="@Context.Request.Path" class="btn btn-primary">Create</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(m => m.First().FirstName)</th>
+            <th>@Html.DisplayNameFor(m => m.First().LastName)</th>
+            <th>@Html.DisplayNameFor(m => m.First().Email)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var patient in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(item => patient.FirstName)</td>
+                <td>@Html.DisplayFor(item => patient.LastName)</td>
+                <td>@Html.DisplayFor(item => patient.Email)</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@patient.Id" class="btn btn-outline-primary">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Pagination controls -->
+<div>
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page = page }),
+    new PagedListRenderOptions {
+        LiElementClasses = new string[] { "page-item" },
+        PageClasses = new string[] { "page-link" }})
+</div>
+
+<!-- Page information -->
+<p>
+    Showing @Model.FirstItemOnPage to @Model.LastItemOnPage of @Model.TotalItemCount Patients
+</p>

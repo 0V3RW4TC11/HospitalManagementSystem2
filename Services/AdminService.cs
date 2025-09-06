@@ -25,7 +25,7 @@ internal sealed class AdminService : IAdminService
         _staffEmailService = staffEmailService;
     }
 
-    public async Task<(AdminDto[] List, int TotalCount)> GetAdminsAsync(int pageNumber, int pageSize)
+    public async Task<(AdminDto[] List, int TotalCount)> Admins(int pageNumber, int pageSize)
     {
         var admins = await _repositoryManager.AdminRepository.GetAdmins(pageNumber, pageSize);
         int totalCount = await _repositoryManager.AdminRepository.GetTotalCount();
