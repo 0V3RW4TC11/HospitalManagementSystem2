@@ -28,7 +28,7 @@ namespace Presentation.Controllers
 
             try
             {
-                var admins = await _adminService.GetAdminsAsync(pageNum, pageSize);
+                var admins = await _adminService.Admins(pageNum, pageSize);
                 var pagedAdmins = admins.List
                     .Select(a => a.Adapt<AdminListItemViewModel>())
                     .ToPagedList(pageNum, pageSize, admins.TotalCount);
@@ -39,8 +39,6 @@ namespace Presentation.Controllers
                 ModelState.AddModelError(string.Empty, ex.Message);
                 return RedirectToAction(nameof(Administration));
             }
-
-            
         }
 
         [HttpGet]
