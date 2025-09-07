@@ -12,7 +12,7 @@ public sealed class ServiceManager : IServiceManager
 
         var lazyStaffEmailService = new Lazy<IStaffEmailService>(() => new StaffEmailService(repositoryManager.IdentityProvider));
 
-        var lazyAccountService = new Lazy<IAccountService>(() => new AccountService(repositoryManager));
+        var lazyIdentityService = new Lazy<IIdentityService>(() => new IdentityService(repositoryManager));
 
         var lazyAdminService = new Lazy<IAdminService>(() => new AdminService(
             repositoryManager,
@@ -32,18 +32,22 @@ public sealed class ServiceManager : IServiceManager
 
         var lazyAttendanceService = new Lazy<IAttendanceService>(() => new AttendanceService(repositoryManager));
 
-        AccountService = lazyAccountService.Value;
+        var lazyAccountService = new Lazy<IAccountService>(() => new AccountService(repositoryManager.AccountRepository));
+
+        IdentityService = lazyIdentityService.Value;
         AdminService = lazyAdminService.Value;
         PatientService = lazyPatientService.Value;
         DoctorService = lazyDoctorService.Value;
         SpecializationService = lazySpecializationService.Value;
         AttendanceService = lazyAttendanceService.Value;
+        AccountService = lazyAccountService.Value;
     }
 
-    public IAccountService AccountService { get; }
+    public IIdentityService IdentityService { get; }
     public IAdminService AdminService { get; }
     public IPatientService PatientService { get; }
     public IDoctorService DoctorService { get; }
     public ISpecializationService SpecializationService { get; }
     public IAttendanceService AttendanceService { get; }
+    public IAccountService AccountService { get; }
 }

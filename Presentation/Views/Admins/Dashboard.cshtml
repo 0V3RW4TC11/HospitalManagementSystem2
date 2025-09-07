@@ -1,10 +1,12 @@
 ﻿@{
-    ViewData["Title"] = "Administration";
+    ViewData["Title"] = "Administrator Dashboard";
 }
 
-<h1>Administration</h1>
+<h1>Administrator Dashboard</h1>
 <br />
 <div class="d-flex flex-column align-items-baseline mt-4" style="min-height: 100vh;">
+    <a asp-controller="Admins" asp-action="Profile" class="btn btn-primary mb-2">My Profile</a>
+    <br />
     <a asp-controller="Specializations" asp-action="Index" class="btn btn-primary mb-2">Manage Specializations</a>
     <a asp-controller="Admins" asp-action="Index" class="btn btn-primary mb-2">Manage Administrators</a>
     <a asp-controller="Doctors" asp-action="Index" class="btn btn-primary mb-2">Manage Doctors</a>

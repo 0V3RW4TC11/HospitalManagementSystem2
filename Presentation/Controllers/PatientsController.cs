@@ -1,7 +1,6 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Presentation.Helpers;
 using Presentation.Models.Patient;
 using Services.Abstractions;
@@ -13,16 +12,41 @@ namespace Presentation.Controllers
     public class PatientsController : Controller
     {
         private readonly IPatientService _patientService;
-        private readonly IAccountService _accountService;
+        private readonly IIdentityService _identityService;
+        private readonly IAccountService _accountService;   
 
         public PatientsController(IServiceManager manager)
         {
             _patientService = manager.PatientService;
+            _identityService = manager.IdentityService;
             _accountService = manager.AccountService;
         }
 
-        [Authorize(Roles = Constants.AuthRoles.Admin)]
         [HttpGet]
+        [Authorize(Roles = Constants.AuthRoles.Patient)]
+        public IActionResult Dashboard()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        [Authorize(Roles = Constants.AuthRoles.Patient)]
+        public async Task<IActionResult> Profile()
+        {
+            try
+            {
+                var userId = await IdentityHelper.GetUserIdFromSignedInUser(User, _accountService);
+                var model = await GetPatientDetailsViewModel(userId);
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        [HttpGet]
+        [Authorize(Roles = Constants.AuthRoles.Admin)]
         public async Task<IActionResult> Index(int? page)
         {
             int pageNum = page ?? 1;
@@ -41,17 +65,17 @@ namespace Presentation.Controllers
                 throw;
             }
         }
-
-        [AllowAnonymous]
+        
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Create(string? returnUrl)
         {
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
-
-        [AllowAnonymous]
+        
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Create(PatientCreateViewModel model, string? returnUrl)
         {
             if (ModelState.IsValid)
@@ -71,6 +95,7 @@ namespace Presentation.Controllers
             return View(model);
         }
 
+        [HttpGet]
         [Authorize(Roles = Constants.AuthRoles.Admin)]
         public async Task<IActionResult> Details(Guid id)
         {
@@ -86,6 +111,7 @@ namespace Presentation.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = Constants.AuthRoles.Admin)]
         public async Task<IActionResult> Edit(Guid id, string? returnUrl)
         {
             try
@@ -101,6 +127,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = Constants.AuthRoles.Admin)]
         public async Task<IActionResult> Edit(PatientDetailsViewModel model, string? returnUrl)
         {
             if (ModelState.IsValid)
@@ -120,7 +147,22 @@ namespace Presentation.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        [Authorize(Roles = Constants.AuthRoles.Patient)]
+        public async Task<IActionResult> EditProfile()
+        {
+            throw new NotImplementedException();
+        }
+
         [HttpPost]
+        [Authorize(Roles = Constants.AuthRoles.Patient)]
+        public async Task<IActionResult> EditProfile(object model)
+        {
+            throw new NotImplementedException();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = Constants.AuthRoles.Admin)]
         public async Task<IActionResult> Delete(Guid id)
         {
             try
@@ -139,8 +181,8 @@ namespace Presentation.Controllers
         {
             var patient = await _patientService.GetByIdAsync(id);
             var model = patient.Adapt<PatientDetailsViewModel>();
-            model.Username = await _accountService.GetUserNameAsync(id);
-            model.IsLockedOut = await _accountService.IsLockedOut(id);
+            model.Username = await _identityService.GetUserNameAsync(id);
+            model.IsLockedOut = await _identityService.IsLockedOut(id);
             return model;
         }
     }

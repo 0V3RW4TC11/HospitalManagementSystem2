@@ -2,7 +2,7 @@
 
 public interface IServiceManager
 {
-    IAccountService AccountService { get; }
+    IIdentityService IdentityService { get; }
 
     IAdminService AdminService { get; }
     
@@ -13,4 +13,6 @@ public interface IServiceManager
     ISpecializationService SpecializationService { get; }
     
     IAttendanceService AttendanceService { get; }
+
+    IAccountService AccountService { get; }
 }

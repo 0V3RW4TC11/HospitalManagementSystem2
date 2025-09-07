@@ -1,6 +1,7 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.Helpers;
 using Presentation.Models.Admin;
 using Services.Abstractions;
 using Services.Dtos.Admin;
@@ -12,12 +13,20 @@ namespace Presentation.Controllers
     public class AdminsController : Controller
     {
         private readonly IAdminService _adminService;
+        private readonly IIdentityService _identityService;
         private readonly IAccountService _accountService;
 
         public AdminsController(IServiceManager manager)
         {
             _adminService = manager.AdminService;
+            _identityService = manager.IdentityService;
             _accountService = manager.AccountService;
+        }
+
+        [HttpGet]
+        public IActionResult Dashboard()
+        {
+            return View();
         }
 
         [HttpGet]
@@ -36,15 +45,8 @@ namespace Presentation.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(string.Empty, ex.Message);
-                return RedirectToAction(nameof(Administration));
+                throw;
             }
-        }
-
-        [HttpGet]
-        public IActionResult Administration()
-        {
-            return View();
         }
 
         [HttpGet]
@@ -72,8 +74,22 @@ namespace Presentation.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            try
+            {
+                await _adminService.DeleteAsync(id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
         [HttpGet]
-        public async Task<IActionResult> Details(Guid id)
+        public async Task<IActionResult> Manage(Guid id)
         {
             try
             {
@@ -82,8 +98,7 @@ namespace Presentation.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(string.Empty, ex.Message);
-                return RedirectToAction(nameof(Index));
+                throw;
             }
         }
 
@@ -97,8 +112,7 @@ namespace Presentation.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(string.Empty, ex.Message);
-                return RedirectToAction(nameof(Details), new { id });
+                throw;
             }
         }
 
@@ -111,7 +125,7 @@ namespace Presentation.Controllers
                 {
                     var adminDto = model.Adapt<AdminDto>();
                     await _adminService.UpdateAsync(adminDto);
-                    return RedirectToAction(nameof(Details), new { id = model.Id });
+                    return RedirectToAction(nameof(Manage), new { id = model.Id});
                 }
                 catch (Exception ex)
                 {
@@ -122,18 +136,54 @@ namespace Presentation.Controllers
             return View(model);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Delete(Guid id)
+        [HttpGet]
+        public async Task<IActionResult> EditProfile()
         {
             try
             {
-                await _adminService.DeleteAsync(id);
-                return RedirectToAction(nameof(Index));
+                var userId = await IdentityHelper.GetUserIdFromSignedInUser(User, _accountService);
+                var model = await GetAdminProfileViewModel(userId);
+                return View(model);
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(string.Empty, ex.Message);
-                return RedirectToAction(nameof(Details), new { id });
+                throw;
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditProfile(AdminProfileViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var adminDto = model.Adapt<AdminDto>();
+                    adminDto.Id = await IdentityHelper.GetUserIdFromSignedInUser(User, _accountService);
+                    await _adminService.UpdateAsync(adminDto);
+                    return RedirectToAction(nameof(Profile));
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
+            }
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Profile()
+        {
+            try
+            {
+                var userId = await IdentityHelper.GetUserIdFromSignedInUser(User, _accountService);
+                var model = await GetAdminProfileViewModel(userId);
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
         }
 
@@ -141,9 +191,17 @@ namespace Presentation.Controllers
         {
             var admin = await _adminService.GetByIdAsync(id);
             var model = admin.Adapt<AdminDetailsViewModel>();
-            model.Username = await _accountService.GetUserNameAsync(id);
-            model.IsLockedOut = await _accountService.IsLockedOut(id);
+            model.Username = await _identityService.GetUserNameAsync(id);
+            model.IsLockedOut = await _identityService.IsLockedOut(id);
 
+            return model;
+        }
+
+        private async Task<AdminProfileViewModel> GetAdminProfileViewModel(Guid id)
+        {
+            var admin = await _adminService.GetByIdAsync(id);
+            var model = admin.Adapt<AdminProfileViewModel>();
+            model.Username = await _identityService.GetUserNameAsync(id);
             return model;
         }
     }

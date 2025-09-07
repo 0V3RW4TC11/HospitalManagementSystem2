@@ -9,11 +9,11 @@ namespace Presentation.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly IAccountService _accountService;
+        private readonly IIdentityService _accountService;
 
         public AccountController(IServiceManager manager)
         {
-            _accountService = manager.AccountService;
+            _accountService = manager.IdentityService;
         }
 
         [HttpGet]
