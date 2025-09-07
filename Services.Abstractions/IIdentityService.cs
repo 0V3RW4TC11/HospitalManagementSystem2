@@ -19,5 +19,7 @@
         Task<bool> IsLockedOut(Guid userId);
 
         Task<string> GetUserNameAsync(Guid userId);
+
+        Task<Guid> GetLoggedInUserId();
     }
 }

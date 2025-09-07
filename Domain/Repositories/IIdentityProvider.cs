@@ -31,4 +31,6 @@ public interface IIdentityProvider
     Task<bool> IsLockedOut(string identityId);
 
     Task SetLockoutAsync(string identityId, bool enabled);
+
+    string GetLoggedInUserIdentityId();
 }

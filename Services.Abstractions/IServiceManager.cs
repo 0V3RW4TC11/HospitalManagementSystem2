@@ -13,6 +13,4 @@ public interface IServiceManager
     ISpecializationService SpecializationService { get; }
     
     IAttendanceService AttendanceService { get; }
-
-    IAccountService AccountService { get; }
 }

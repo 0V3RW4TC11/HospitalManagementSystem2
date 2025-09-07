@@ -4,16 +4,15 @@ using Domain.Exceptions;
 using Domain.Repositories;
 using Mapster;
 using Services.Abstractions;
-using Services.Helpers;
 
 namespace Services;
 
 internal sealed class PatientService : IPatientService
 {
     private readonly IRepositoryManager _repositoryManager;
-    private readonly AccountHelper _accountHelper;
+    private readonly AccountService _accountHelper;
 
-    public PatientService(IRepositoryManager repositoryManager, AccountHelper accountHelper)
+    public PatientService(IRepositoryManager repositoryManager, AccountService accountHelper)
     {
         _repositoryManager = repositoryManager;
         _accountHelper = accountHelper;

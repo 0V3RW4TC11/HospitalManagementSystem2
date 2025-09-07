@@ -1,7 +1,6 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Presentation.Helpers;
 using Presentation.Models.Admin;
 using Services.Abstractions;
 using Services.Dtos.Admin;
@@ -14,13 +13,11 @@ namespace Presentation.Controllers
     {
         private readonly IAdminService _adminService;
         private readonly IIdentityService _identityService;
-        private readonly IAccountService _accountService;
 
         public AdminsController(IServiceManager manager)
         {
             _adminService = manager.AdminService;
             _identityService = manager.IdentityService;
-            _accountService = manager.AccountService;
         }
 
         [HttpGet]
@@ -141,7 +138,7 @@ namespace Presentation.Controllers
         {
             try
             {
-                var userId = await IdentityHelper.GetUserIdFromSignedInUser(User, _accountService);
+                var userId = await _identityService.GetLoggedInUserId();
                 var model = await GetAdminProfileViewModel(userId);
                 return View(model);
             }
@@ -159,7 +156,7 @@ namespace Presentation.Controllers
                 try
                 {
                     var adminDto = model.Adapt<AdminDto>();
-                    adminDto.Id = await IdentityHelper.GetUserIdFromSignedInUser(User, _accountService);
+                    adminDto.Id = await _identityService.GetLoggedInUserId();
                     await _adminService.UpdateAsync(adminDto);
                     return RedirectToAction(nameof(Profile));
                 }
@@ -177,7 +174,7 @@ namespace Presentation.Controllers
         {
             try
             {
-                var userId = await IdentityHelper.GetUserIdFromSignedInUser(User, _accountService);
+                var userId = await _identityService.GetLoggedInUserId();
                 var model = await GetAdminProfileViewModel(userId);
                 return View(model);
             }

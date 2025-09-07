@@ -124,6 +124,21 @@ public class IdentityProvider : IIdentityProvider
         IdentityResultThrowOnFail(result);
     }
 
+    public string GetLoggedInUserIdentityId()
+    {
+        var user = _signInManager.Context.User;
+
+        if (_signInManager.IsSignedIn(user))
+        {
+            var userId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
+                ?? throw new Exception("User ID not found in claims.");
+
+            return userId;
+        }
+
+        throw new Exception("No user is currently signed in.");
+    }
+
     private async Task<IdentityUser> GetIdentityAsync(string identityId)
     {
         var user = await _userManager.FindByIdAsync(identityId)

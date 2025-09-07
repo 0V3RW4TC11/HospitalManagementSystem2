@@ -13,13 +13,11 @@ namespace Presentation.Controllers
     {
         private readonly IPatientService _patientService;
         private readonly IIdentityService _identityService;
-        private readonly IAccountService _accountService;   
 
         public PatientsController(IServiceManager manager)
         {
             _patientService = manager.PatientService;
             _identityService = manager.IdentityService;
-            _accountService = manager.AccountService;
         }
 
         [HttpGet]
@@ -35,7 +33,7 @@ namespace Presentation.Controllers
         {
             try
             {
-                var userId = await IdentityHelper.GetUserIdFromSignedInUser(User, _accountService);
+                var userId = await _identityService.GetLoggedInUserId();
                 var model = await GetPatientDetailsViewModel(userId);
                 return View(model);
             }

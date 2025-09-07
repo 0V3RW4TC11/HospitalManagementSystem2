@@ -1,6 +1,4 @@
-﻿using Domain.Entities;
-using Domain.Exceptions;
-using Domain.Repositories;
+﻿using Domain.Repositories;
 using Services.Abstractions;
 
 namespace Services
@@ -8,10 +6,12 @@ namespace Services
     internal class IdentityService : IIdentityService
     {
         private readonly IRepositoryManager _repositoryManager;
+        private readonly AccountService _accountService;
 
-        public IdentityService(IRepositoryManager repositoryManager)
+        public IdentityService(IRepositoryManager repositoryManager, AccountService accountService)
         {
             _repositoryManager = repositoryManager;
+            _accountService = accountService;
         }
 
         public async Task LoginAsync(
@@ -35,7 +35,7 @@ namespace Services
         public async Task ChangePasswordAsync(Guid userId, string oldPassword, string newPassword)
         {
             await _repositoryManager.IdentityProvider.ChangePasswordAsync(
-                await GetIdentityIdByUserIdAsync(userId),
+                await _accountService.GetIdentityIdFromUserId(userId),
                 oldPassword,
                 newPassword);
         }
@@ -43,39 +43,33 @@ namespace Services
         public async Task ResetPasswordAsync(Guid userId, string newPassword)
         {
             await _repositoryManager.IdentityProvider.ResetPasswordAsync(
-                await GetIdentityIdByUserIdAsync(userId),
+                await _accountService.GetIdentityIdFromUserId(userId),
                 newPassword);
         }
 
         public async Task SetLockoutAsync(Guid userId, bool enabled)
         {
             await _repositoryManager.IdentityProvider.SetLockoutAsync(
-                await GetIdentityIdByUserIdAsync(userId),
+                await _accountService.GetIdentityIdFromUserId(userId),
                 enabled);
         }
 
         public async Task<bool> IsLockedOut(Guid userId)
         {
             return await _repositoryManager.IdentityProvider.IsLockedOut(
-                await GetIdentityIdByUserIdAsync(userId));
+                await _accountService.GetIdentityIdFromUserId(userId));
         }
 
         public async Task<string> GetUserNameAsync(Guid userId)
         {
             return await _repositoryManager.IdentityProvider.GetUserNameAsync(
-                await GetIdentityIdByUserIdAsync(userId));
+                await _accountService.GetIdentityIdFromUserId(userId));
         }
 
-        private async Task<string> GetIdentityIdByUserIdAsync(Guid userId)
+        public async Task<Guid> GetLoggedInUserId()
         {
-            var account = await GetAccountAsync(userId);
-            return account.IdentityUserId;
-        }
-
-        private async Task<Account> GetAccountAsync(Guid userId)
-        {
-            return await _repositoryManager.AccountRepository.FindByUserIdAsync(userId)
-                ?? throw new AccountNotFoundException("Account not found for User Id: " + userId);
+            string identityId = _repositoryManager.IdentityProvider.GetLoggedInUserIdentityId();
+            return await _accountService.GetUserIdFromIdentityId(identityId);
         }
     }
 }

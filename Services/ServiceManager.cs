@@ -1,6 +1,5 @@
 ﻿using Domain.Repositories;
 using Services.Abstractions;
-using Services.Helpers;
 
 namespace Services;
 
@@ -8,31 +7,29 @@ public sealed class ServiceManager : IServiceManager
 {
     public ServiceManager(IRepositoryManager repositoryManager)
     {
-        var lazyAccountHelper = new Lazy<AccountHelper>(() => new AccountHelper(repositoryManager));
+        var lazyAccountService = new Lazy<AccountService>(() => new AccountService(repositoryManager));
 
         var lazyStaffEmailService = new Lazy<IStaffEmailService>(() => new StaffEmailService(repositoryManager.IdentityProvider));
 
-        var lazyIdentityService = new Lazy<IIdentityService>(() => new IdentityService(repositoryManager));
+        var lazyIdentityService = new Lazy<IIdentityService>(() => new IdentityService(repositoryManager, lazyAccountService.Value));
 
         var lazyAdminService = new Lazy<IAdminService>(() => new AdminService(
             repositoryManager,
             lazyStaffEmailService.Value,
-            lazyAccountHelper.Value));
+            lazyAccountService.Value));
 
         var lazyDoctorService = new Lazy<IDoctorService>(() => new DoctorService(
             repositoryManager,
             lazyStaffEmailService.Value,
-            lazyAccountHelper.Value));
+            lazyAccountService.Value));
 
         var lazyPatientService = new Lazy<IPatientService>(() => new PatientService(
             repositoryManager,
-            lazyAccountHelper.Value));
+            lazyAccountService.Value));
 
         var lazySpecializationService = new Lazy<ISpecializationService>(() => new SpecializationService(repositoryManager));
 
         var lazyAttendanceService = new Lazy<IAttendanceService>(() => new AttendanceService(repositoryManager));
-
-        var lazyAccountService = new Lazy<IAccountService>(() => new AccountService(repositoryManager.AccountRepository));
 
         IdentityService = lazyIdentityService.Value;
         AdminService = lazyAdminService.Value;
@@ -40,7 +37,6 @@ public sealed class ServiceManager : IServiceManager
         DoctorService = lazyDoctorService.Value;
         SpecializationService = lazySpecializationService.Value;
         AttendanceService = lazyAttendanceService.Value;
-        AccountService = lazyAccountService.Value;
     }
 
     public IIdentityService IdentityService { get; }
@@ -49,5 +45,4 @@ public sealed class ServiceManager : IServiceManager
     public IDoctorService DoctorService { get; }
     public ISpecializationService SpecializationService { get; }
     public IAttendanceService AttendanceService { get; }
-    public IAccountService AccountService { get; }
 }
