@@ -11,7 +11,7 @@ public sealed class ServiceManager : IServiceManager
 
         var lazyStaffEmailService = new Lazy<IStaffEmailService>(() => new StaffEmailService(repositoryManager.IdentityProvider));
 
-        var lazyIdentityService = new Lazy<IIdentityService>(() => new IdentityService(repositoryManager, lazyAccountService.Value));
+        var lazyIdentityService = new Lazy<IIdentityService>(() => new IdentityService(repositoryManager.IdentityProvider, lazyAccountService.Value));
 
         var lazyAdminService = new Lazy<IAdminService>(() => new AdminService(
             repositoryManager,

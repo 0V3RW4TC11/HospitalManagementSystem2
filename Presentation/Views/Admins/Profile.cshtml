@@ -1,5 +1,4 @@
-﻿@using Presentation.Controllers
-@model Admin.AdminProfileViewModel
+﻿@model Admin.AdminProfileViewModel
 
 @{
     ViewData["Title"] = "Profile " + Model.Username;
@@ -61,7 +60,7 @@
 </div>
 <div>
     <a asp-action="@nameof(AdminsController.Dashboard)" class="btn btn-secondary">Back</a>
-    <a class="btn btn-primary" asp-action="EditProfile">Edit</a>
+    <a asp-action="@nameof(AdminsController.EditProfile)" class="btn btn-primary">Edit</a>
 </div>
 
 

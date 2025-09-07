@@ -5,12 +5,12 @@ namespace Services
 {
     internal class IdentityService : IIdentityService
     {
-        private readonly IRepositoryManager _repositoryManager;
+        private readonly IIdentityProvider _identityProvider;
         private readonly AccountService _accountService;
 
-        public IdentityService(IRepositoryManager repositoryManager, AccountService accountService)
+        public IdentityService(IIdentityProvider identityProvider, AccountService accountService)
         {
-            _repositoryManager = repositoryManager;
+            _identityProvider = identityProvider;
             _accountService = accountService;
         }
 
@@ -20,7 +20,7 @@ namespace Services
             bool isPersistent, 
             bool enableLockoutOnFail)
         {
-            await _repositoryManager.IdentityProvider.LoginAsync(
+            await _identityProvider.LoginAsync(
                 username,
                 password, 
                 isPersistent, 
@@ -29,12 +29,12 @@ namespace Services
 
         public async Task LogoutAsync()
         {
-            await _repositoryManager.IdentityProvider.LogoutAsync();
+            await _identityProvider.LogoutAsync();
         }
 
         public async Task ChangePasswordAsync(Guid userId, string oldPassword, string newPassword)
         {
-            await _repositoryManager.IdentityProvider.ChangePasswordAsync(
+            await _identityProvider.ChangePasswordAsync(
                 await _accountService.GetIdentityIdFromUserId(userId),
                 oldPassword,
                 newPassword);
@@ -42,33 +42,33 @@ namespace Services
 
         public async Task ResetPasswordAsync(Guid userId, string newPassword)
         {
-            await _repositoryManager.IdentityProvider.ResetPasswordAsync(
+            await _identityProvider.ResetPasswordAsync(
                 await _accountService.GetIdentityIdFromUserId(userId),
                 newPassword);
         }
 
         public async Task SetLockoutAsync(Guid userId, bool enabled)
         {
-            await _repositoryManager.IdentityProvider.SetLockoutAsync(
+            await _identityProvider.SetLockoutAsync(
                 await _accountService.GetIdentityIdFromUserId(userId),
                 enabled);
         }
 
         public async Task<bool> IsLockedOut(Guid userId)
         {
-            return await _repositoryManager.IdentityProvider.IsLockedOut(
+            return await _identityProvider.IsLockedOut(
                 await _accountService.GetIdentityIdFromUserId(userId));
         }
 
         public async Task<string> GetUserNameAsync(Guid userId)
         {
-            return await _repositoryManager.IdentityProvider.GetUserNameAsync(
+            return await _identityProvider.GetUserNameAsync(
                 await _accountService.GetIdentityIdFromUserId(userId));
         }
 
         public async Task<Guid> GetLoggedInUserId()
         {
-            string identityId = _repositoryManager.IdentityProvider.GetLoggedInUserIdentityId();
+            string identityId = _identityProvider.GetLoggedInUserIdentityId();
             return await _accountService.GetUserIdFromIdentityId(identityId);
         }
     }
