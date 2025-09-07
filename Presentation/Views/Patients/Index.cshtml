@@ -8,7 +8,7 @@
 <h1>Patients</h1>
 <br />
 <p>
-    <a asp-action="Create" asp-route-returnUrl="@Context.Request.Path" class="btn btn-primary">Create</a>
+    <a asp-action="@nameof(PatientsController.Create)" class="btn btn-primary">Create</a>
 </p>
 <table class="table">
     <thead>
@@ -26,7 +26,7 @@
                 <td>@Html.DisplayFor(item => patient.LastName)</td>
                 <td>@Html.DisplayFor(item => patient.Email)</td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@patient.Id" class="btn btn-outline-primary">Details</a>
+                    <a asp-action="@nameof(PatientsController.Manage)" asp-route-id="@patient.Id" class="btn btn-outline-primary">Manage</a>
                 </td>
             </tr>
         }
@@ -35,7 +35,7 @@
 
 <!-- Pagination controls -->
 <div>
-    @Html.PagedListPager(Model, page => Url.Action("Index", new { page = page }),
+    @Html.PagedListPager(Model, page => Url.Action(nameof(PatientsController.Index), new { page = page }),
     new PagedListRenderOptions {
         LiElementClasses = new string[] { "page-item" },
         PageClasses = new string[] { "page-link" }})

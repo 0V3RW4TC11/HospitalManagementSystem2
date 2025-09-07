@@ -26,7 +26,7 @@
                 <td>@Html.DisplayFor(item => admin.LastName)</td>
                 <td>@Html.DisplayFor(item => admin.Email)</td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@admin.Id" class="btn btn-outline-primary">Details</a>
+                    <a asp-action="@nameof(AdminsController.Manage)" asp-route-id="@admin.Id" class="btn btn-outline-primary">Manage</a>
                 </td>
             </tr>
         }
@@ -35,7 +35,7 @@
 
 <!-- Pagination controls -->
 <div>
-    @Html.PagedListPager(Model, page => Url.Action("Index", new { page = page }),
+    @Html.PagedListPager(Model, page => Url.Action(nameof(AdminsController.Index), new { page = page }),
     new PagedListRenderOptions {
         LiElementClasses = new string[] { "page-item" },
         PageClasses = new string[] { "page-link" }})

@@ -1,7 +1,6 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Presentation.Helpers;
 using Presentation.Models.Patient;
 using Services.Abstractions;
@@ -13,16 +12,67 @@ namespace Presentation.Controllers
     public class PatientsController : Controller
     {
         private readonly IPatientService _patientService;
-        private readonly IAccountService _accountService;
+        private readonly IIdentityService _identityService;
 
         public PatientsController(IServiceManager manager)
         {
             _patientService = manager.PatientService;
-            _accountService = manager.AccountService;
+            _identityService = manager.IdentityService;
         }
 
-        [Authorize(Roles = Constants.AuthRoles.Admin)]
         [HttpGet]
+        [Authorize(Roles = Constants.AuthRoles.Admin)]
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = Constants.AuthRoles.Admin)]
+        public async Task<IActionResult> Create(PatientCreateViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var dto = model.Adapt<PatientCreateDto>();
+                    await _patientService.CreateAsync(dto);
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                    return View(model);
+                }
+            }
+            return View(model);
+        }
+
+        [HttpGet]
+        [Authorize(Roles = Constants.AuthRoles.Patient)]
+        public IActionResult Dashboard()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = Constants.AuthRoles.Admin)]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            try
+            {
+                await _patientService.DeleteAsync(id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return RedirectToAction(nameof(Manage), new { id });
+            }
+        }
+
+        [HttpGet]
+        [Authorize(Roles = Constants.AuthRoles.Admin)]
         public async Task<IActionResult> Index(int? page)
         {
             int pageNum = page ?? 1;
@@ -42,37 +92,9 @@ namespace Presentation.Controllers
             }
         }
 
-        [AllowAnonymous]
         [HttpGet]
-        public IActionResult Create(string? returnUrl)
-        {
-            ViewData["ReturnUrl"] = returnUrl;
-            return View();
-        }
-
-        [AllowAnonymous]
-        [HttpPost]
-        public async Task<IActionResult> Create(PatientCreateViewModel model, string? returnUrl)
-        {
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    var dto = model.Adapt<PatientCreateDto>();
-                    await _patientService.CreateAsync(dto);
-                    return UrlHelper.Redirect(this, returnUrl);
-                }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError(string.Empty, ex.Message);
-                    return View(model);
-                }
-            }
-            return View(model);
-        }
-
         [Authorize(Roles = Constants.AuthRoles.Admin)]
-        public async Task<IActionResult> Details(Guid id)
+        public async Task<IActionResult> Manage(Guid id)
         {
             try
             {
@@ -86,11 +108,11 @@ namespace Presentation.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Edit(Guid id, string? returnUrl)
+        [Authorize(Roles = Constants.AuthRoles.Admin)]
+        public async Task<IActionResult> Edit(Guid id)
         {
             try
             {
-                ViewData["ReturnUrl"] = returnUrl;
                 var model = await GetPatientDetailsViewModel(id);
                 return View(model);
             }
@@ -101,7 +123,8 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(PatientDetailsViewModel model, string? returnUrl)
+        [Authorize(Roles = Constants.AuthRoles.Admin)]
+        public async Task<IActionResult> Edit(PatientManageViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -109,7 +132,7 @@ namespace Presentation.Controllers
                 {
                     var dto = model.Adapt<PatientDto>();
                     await _patientService.UpdateAsync(dto);
-                    return UrlHelper.Redirect(this, returnUrl);
+                    return RedirectToAction(nameof(Manage), new { id = model.Id });
                 }
                 catch (Exception ex)
                 {
@@ -117,30 +140,78 @@ namespace Presentation.Controllers
                     return View(model);
                 }
             }
+
             return View(model);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Delete(Guid id)
+        [HttpGet]
+        [Authorize(Roles = Constants.AuthRoles.Patient)]
+        public async Task<IActionResult> EditProfile()
         {
             try
             {
-                await _patientService.DeleteAsync(id);
-                return RedirectToAction(nameof(Index));
+                var userId = await _identityService.GetLoggedInUserId();
+                var model = await GetPatientProfileViewModel(userId);
+                return View(model);
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(string.Empty, ex.Message);
-                return RedirectToAction(nameof(Details), new { id });
+                throw;
             }
         }
 
-        private async Task<PatientDetailsViewModel> GetPatientDetailsViewModel(Guid id)
+        [HttpPost]
+        [Authorize(Roles = Constants.AuthRoles.Patient)]
+        public async Task<IActionResult> EditProfile(PatientProfileViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var patientDto = model.Adapt<PatientDto>();
+                    patientDto.Id = await _identityService.GetLoggedInUserId();
+                    await _patientService.UpdateAsync(patientDto);
+                    return RedirectToAction(nameof(Profile));
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
+            }
+
+            return View(model);
+        }
+
+        [HttpGet]
+        [Authorize(Roles = Constants.AuthRoles.Patient)]
+        public async Task<IActionResult> Profile()
+        {
+            try
+            {
+                var userId = await _identityService.GetLoggedInUserId();
+                var model = await GetPatientDetailsViewModel(userId);
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        private async Task<PatientManageViewModel> GetPatientDetailsViewModel(Guid id)
         {
             var patient = await _patientService.GetByIdAsync(id);
-            var model = patient.Adapt<PatientDetailsViewModel>();
-            model.Username = await _accountService.GetUserNameAsync(id);
-            model.IsLockedOut = await _accountService.IsLockedOut(id);
+            var model = patient.Adapt<PatientManageViewModel>();
+            model.Username = await _identityService.GetUserNameAsync(id);
+            model.IsLockedOut = await _identityService.IsLockedOut(id);
+            return model;
+        }
+
+        private async Task<PatientProfileViewModel> GetPatientProfileViewModel(Guid id)
+        {
+            var patient = await _patientService.GetByIdAsync(id);
+            var model = patient.Adapt<PatientProfileViewModel>();
+            model.Username = await _identityService.GetUserNameAsync(id);
             return model;
         }
     }
