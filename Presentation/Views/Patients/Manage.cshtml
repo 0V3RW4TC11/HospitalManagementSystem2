@@ -1,0 +1,28 @@
+﻿@model Patient.PatientManageViewModel
+@{
+    ViewData["Title"] = "Details " + Model.Username;
+}
+
+@section Scripts {
+    <script src="~/js/account-lockout.js"></script>
+}
+
+@Html.AntiForgeryToken()
+
+<h1>Details @Model.Username</h1>
+<br />
+<partial name="_PatientProfilePartial" />
+<div>
+    <a class="btn btn-secondary" asp-action="@nameof(PatientsController.Index)">Back</a>
+    <a class="btn btn-primary" asp-action="@nameof(PatientsController.Edit)" asp-route-id="@Model.Id">Edit</a>
+    <button class="btn @(Model.IsLockedOut ? "btn-success" : "btn-danger")"
+            onclick="toggleAccountLockout('@Model.Id', @Model.IsLockedOut.ToString().ToLower())">
+        @(Model.IsLockedOut ? "Enable" : "Disable")
+    </button>
+    <form asp-action="@nameof(PatientsController.Delete)" method="post" style="display: inline-block">
+        <input type="hidden" name="id" value="@Model.Id" />
+        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+    </form>
+</div>
+
+

@@ -1,71 +1,14 @@
-﻿@model Patient.PatientDetailsViewModel
+﻿@model Patient.PatientManageViewModel
 @{
     ViewData["Title"] = "Profile " + Model.Username;
 }
 
 <h1>Profile @Model.Username</h1>
 <br />
+<partial name="_PatientProfilePartial" />
 <div>
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Title)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.FirstName)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.FirstName)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.LastName)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.LastName)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Gender)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Gender)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Address)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Address)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Phone)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Phone)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Email)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Email)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.DateOfBirth)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.DateOfBirth)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.BloodType)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.BloodType)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a class="btn btn-secondary" asp-action="Dashboard">Back</a>
-    <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id" asp-route-returnUrl="@Context.Request.Path">Edit</a>
+    <a class="btn btn-secondary" asp-action="@nameof(PatientsController.Dashboard)">Back</a>
+    <a class="btn btn-primary" asp-action="@nameof(PatientsController.EditProfile)">Edit</a>
 </div>
 
 

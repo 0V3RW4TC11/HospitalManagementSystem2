@@ -67,7 +67,8 @@ internal sealed class PatientService : IPatientService
         patient.Address = patientDto.Address;
         patient.Phone = patientDto.Phone;
         patient.Email = patientDto.Email;
-        
+        patient.BloodType = patientDto.BloodType;
+
         await _repositoryManager.UnitOfWork.SaveChangesAsync();
     }
 

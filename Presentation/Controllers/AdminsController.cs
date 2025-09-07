@@ -86,20 +86,6 @@ namespace Presentation.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Manage(Guid id)
-        {
-            try
-            {
-                var model = await GetAdminDetailsViewModel(id);
-                return View(model);
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
-
-        [HttpGet]
         public async Task<IActionResult> Edit(Guid id)
         {
             try
@@ -167,6 +153,20 @@ namespace Presentation.Controllers
             }
 
             return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Manage(Guid id)
+        {
+            try
+            {
+                var model = await GetAdminDetailsViewModel(id);
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         [HttpGet]
