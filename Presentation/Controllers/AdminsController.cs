@@ -114,7 +114,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(AdminDetailsViewModel model)
+        public async Task<IActionResult> Edit(AdminManageViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -184,10 +184,10 @@ namespace Presentation.Controllers
             }
         }
 
-        private async Task<AdminDetailsViewModel> GetAdminDetailsViewModel(Guid id)
+        private async Task<AdminManageViewModel> GetAdminDetailsViewModel(Guid id)
         {
             var admin = await _adminService.GetByIdAsync(id);
-            var model = admin.Adapt<AdminDetailsViewModel>();
+            var model = admin.Adapt<AdminManageViewModel>();
             model.Username = await _identityService.GetUserNameAsync(id);
             model.IsLockedOut = await _identityService.IsLockedOut(id);
 

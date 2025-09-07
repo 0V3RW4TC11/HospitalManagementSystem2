@@ -1,6 +1,6 @@
 ﻿namespace Presentation.Models.Admin
 {
-    public class AdminDetailsViewModel : AdminBaseViewModel
+    public class AdminManageViewModel : AdminBaseViewModel
     {
         public Guid Id { get; set; }
 
