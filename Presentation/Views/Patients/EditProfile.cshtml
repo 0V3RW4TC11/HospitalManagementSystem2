@@ -1,15 +1,15 @@
-﻿@model Patient.PatientProfileViewModel
+﻿@model Patient.PatientEditProfileViewModel
 
 @{
-    ViewData["Title"] = "Edit " + Model.Username;
+    ViewData["Title"] = "Edit " + Model.UserName;
 }
 
-<h1>Edit @Model.Username</h1>
+<h1>Edit @Model.UserName</h1>
 <div class="row">
     <div class="col-md-12">
         <form method="post">
-            <input type="hidden" asp-for="Username" />
-            <partial name="_PatientEditPartial" />
+            <input type="hidden" asp-for="UserName" />
+            <partial name="_PatientEditPartial" for="DetailsViewModel"/>
             <br />
             <div class="form-group">
                 <a asp-action="@nameof(PatientsController.Profile)" class="btn btn-secondary">Cancel</a>

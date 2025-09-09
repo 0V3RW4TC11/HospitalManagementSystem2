@@ -27,26 +27,6 @@ namespace Presentation.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(int? page)
-        {
-            int pageNum = page ?? 1;
-            int pageSize = 10;
-
-            try
-            {
-                var admins = await _adminService.Admins(pageNum, pageSize);
-                var pagedAdmins = admins.List
-                    .Select(a => a.Adapt<AdminListItemViewModel>())
-                    .ToPagedList(pageNum, pageSize, admins.TotalCount);
-                return View(pagedAdmins);
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
-
-        [HttpGet]
         public IActionResult Create()
         {
             return View();
@@ -59,8 +39,9 @@ namespace Presentation.Controllers
             {
                 try
                 {
-                    var adminCreateDto = model.Adapt<AdminCreateDto>();
-                    await _adminService.CreateAsync(adminCreateDto);
+                    var dto = model.DetailsViewModel.Adapt<AdminCreateDto>();
+                    dto.Password = model.PasswordViewModel.Password;
+                    await _adminService.CreateAsync(dto);
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)
@@ -90,7 +71,7 @@ namespace Presentation.Controllers
         {
             try
             {
-                var model = await GetAdminDetailsViewModel(id);
+                var model = await GetAdminManageViewModel(id);
                 return View(model);
             }
             catch (Exception ex)
@@ -106,8 +87,9 @@ namespace Presentation.Controllers
             {
                 try
                 {
-                    var adminDto = model.Adapt<AdminDto>();
-                    await _adminService.UpdateAsync(adminDto);
+                    var dto = model.DetailsViewModel.Adapt<AdminDto>();
+                    dto.Id = model.Id;
+                    await _adminService.UpdateAsync(dto);
                     return RedirectToAction(nameof(Manage), new { id = model.Id});
                 }
                 catch (Exception ex)
@@ -141,9 +123,9 @@ namespace Presentation.Controllers
             {
                 try
                 {
-                    var adminDto = model.Adapt<AdminDto>();
-                    adminDto.Id = await _identityService.GetLoggedInUserId();
-                    await _adminService.UpdateAsync(adminDto);
+                    var dto = model.DetailsViewModel.Adapt<AdminDto>();
+                    dto.Id = await _identityService.GetLoggedInUserId();
+                    await _adminService.UpdateAsync(dto);
                     return RedirectToAction(nameof(Profile));
                 }
                 catch (Exception ex)
@@ -156,11 +138,31 @@ namespace Presentation.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> Index(int? page)
+        {
+            int pageNum = page ?? 1;
+            int pageSize = 10;
+
+            try
+            {
+                var admins = await _adminService.Admins(pageNum, pageSize);
+                var pagedResults = admins.List
+                    .Select(a => a.Adapt<AdminListItemViewModel>())
+                    .ToPagedList(pageNum, pageSize, admins.TotalCount);
+                return View(pagedResults);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        [HttpGet]
         public async Task<IActionResult> Manage(Guid id)
         {
             try
             {
-                var model = await GetAdminDetailsViewModel(id);
+                var model = await GetAdminManageViewModel(id);
                 return View(model);
             }
             catch (Exception ex)
@@ -184,10 +186,12 @@ namespace Presentation.Controllers
             }
         }
 
-        private async Task<AdminManageViewModel> GetAdminDetailsViewModel(Guid id)
+        private async Task<AdminManageViewModel> GetAdminManageViewModel(Guid id)
         {
+            var model = new AdminManageViewModel();
             var admin = await _adminService.GetByIdAsync(id);
-            var model = admin.Adapt<AdminManageViewModel>();
+            model.Id = admin.Id;
+            model.DetailsViewModel = admin.Adapt<AdminDetailsViewModel>();
             model.Username = await _identityService.GetUserNameAsync(id);
             model.IsLockedOut = await _identityService.IsLockedOut(id);
 
@@ -196,8 +200,9 @@ namespace Presentation.Controllers
 
         private async Task<AdminProfileViewModel> GetAdminProfileViewModel(Guid id)
         {
+            var model = new AdminProfileViewModel();
             var admin = await _adminService.GetByIdAsync(id);
-            var model = admin.Adapt<AdminProfileViewModel>();
+            model.DetailsViewModel = admin.Adapt<AdminDetailsViewModel>();
             model.Username = await _identityService.GetUserNameAsync(id);
             return model;
         }

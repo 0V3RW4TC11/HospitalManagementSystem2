@@ -1,0 +1,14 @@
+﻿@model Doctor.DoctorProfileViewModel
+
+@{
+    ViewData["Title"] = "Profile " + Model.Username;
+}
+
+<h1>Profile @Model.Username</h1>
+<br />
+<partial name="_DoctorDetailsPartial" for="DetailsViewModel" />
+<partial name="_DoctorSpecializationsPartial" for="SpecsViewModel" />
+<div>
+    <a asp-action="@nameof(DoctorsController.Dashboard)" class="btn btn-secondary">Back</a>
+    <a asp-action="@nameof(DoctorsController.EditProfile)" class="btn btn-primary">Edit</a>
+</div>

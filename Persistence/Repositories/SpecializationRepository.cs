@@ -47,4 +47,10 @@ internal sealed class SpecializationRepository : ISpecializationRepository
     {
         _context.Specializations.Remove(specialization);   
     }
+
+    public async Task<bool> ContainsAllAsync(IEnumerable<Guid> ids)
+    {
+        return await _context.Specializations
+            .CountAsync(s => ids.Contains(s.Id)) == ids.Count();
+    }
 }

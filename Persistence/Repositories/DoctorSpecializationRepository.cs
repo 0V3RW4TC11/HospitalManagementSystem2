@@ -13,6 +13,11 @@ internal sealed class DoctorSpecializationRepository : IDoctorSpecializationRepo
         _context = context;
     }
 
+    public void AddRange(IEnumerable<DoctorSpecialization> doctorSpecializations)
+    {
+        _context.DoctorSpecializations.AddRange(doctorSpecializations);
+    }
+
     public async Task<IEnumerable<Guid>> GetSpecIdsByDoctorIdAsync(Guid doctorId)
     {
         return await _context.DoctorSpecializations
@@ -21,22 +26,8 @@ internal sealed class DoctorSpecializationRepository : IDoctorSpecializationRepo
             .ToArrayAsync();
     }
 
-    public async Task UpdateAsync(Guid doctorId, IEnumerable<Guid> specializationIds)
+    public void RemoveRange(IEnumerable<DoctorSpecialization> doctorSpecializations)
     {
-        var currentSpecs = (await GetSpecIdsByDoctorIdAsync(doctorId)).ToArray();
-        
-        var newSpecs = specializationIds.ToArray();
-        
-        var intersect = newSpecs.Intersect(currentSpecs).ToArray();
-        
-        var toAdd = newSpecs
-            .Except(intersect)
-            .Select(id => new DoctorSpecialization { DoctorId = doctorId, SpecializationId = id });
-        var toRemove = currentSpecs
-            .Except(intersect)
-            .Select(id => new DoctorSpecialization { DoctorId = doctorId, SpecializationId = id });
-        
-        _context.DoctorSpecializations.AddRange(toAdd);
-        _context.DoctorSpecializations.RemoveRange(toRemove);
+        _context.DoctorSpecializations.RemoveRange(doctorSpecializations);
     }
 }

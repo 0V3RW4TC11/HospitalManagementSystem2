@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace Presentation.Models.Admin
+namespace Presentation.Models.Patient
 {
-    public abstract class AdminBaseViewModel
+    public class PatientDetailsViewModel
     {
         public string? Title { get; set; }
 
@@ -13,16 +13,19 @@ namespace Presentation.Models.Admin
         [DisplayName("Last Name")]
         public string? LastName { get; set; }
 
-        public string? Gender { get; set; }
+        public string Gender { get; set; }
 
         public string? Address { get; set; }
 
-        public string Phone { get; set; }
+        public string? Phone { get; set; }
 
         public string Email { get; set; }
 
-        [DisplayName("Date Of Birth")]
+        [DisplayName("Blood Type")]
+        public Constants.BloodType BloodType { get; set; }
+
+        [DisplayName("Date of Birth")]
         [DataType(DataType.Date)]
-        public DateOnly? DateOfBirth { get; set; }
+        public DateOnly DateOfBirth { get; set; }
     }
 }
