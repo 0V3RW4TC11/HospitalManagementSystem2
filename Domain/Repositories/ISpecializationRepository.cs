@@ -13,7 +13,9 @@ public interface ISpecializationRepository
     Task<bool> ExistsAsync(Guid id);
     
     Task<bool> ExistsAsync(string name);
-    
+
+    Task<bool> ContainsAllAsync(IEnumerable<Guid> ids);
+
     void Add(Specialization specialization);
     
     void Remove(Specialization specialization);

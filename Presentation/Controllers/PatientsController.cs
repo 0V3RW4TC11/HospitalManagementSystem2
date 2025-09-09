@@ -1,7 +1,6 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Presentation.Helpers;
 using Presentation.Models.Patient;
 using Services.Abstractions;
 using Services.Dtos.Patient;
@@ -36,6 +35,7 @@ namespace Presentation.Controllers
                 try
                 {
                     var dto = model.Adapt<PatientCreateDto>();
+                    dto.Password = model.PasswordViewModel.Password;
                     await _patientService.CreateAsync(dto);
                     return RedirectToAction(nameof(Index));
                 }
@@ -81,10 +81,10 @@ namespace Presentation.Controllers
             try
             {
                 var patients = await _patientService.Patients(pageNum, pageSize);
-                var pagedAdmins = patients.List
+                var pagedResults = patients.List
                     .Select(p => p.Adapt<PatientListItemViewModel>())
                     .ToPagedList(pageNum, pageSize, patients.TotalCount);
-                return View(pagedAdmins);
+                return View(pagedResults);
             }
             catch (Exception ex)
             {

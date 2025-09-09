@@ -1,16 +1,17 @@
-﻿@model Admin.AdminManageViewModel
+﻿@model Doctor.DoctorEditViewModel
 
 @{
-    ViewData["Title"] = "Edit " + Model.Username;
+    ViewData["Title"] = "Edit " + Model.UserName;
 }
 
-<h1>Edit @Model.Username</h1>
+<h1>Edit @Model.UserName</h1>
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="@nameof(AdminsController.Edit)" method="post">
+        <form asp-action="@nameof(DoctorsController.Edit)" method="post">
             <input type="hidden" asp-for="Id" />
-            <input type="hidden" asp-for="Username" />
-            <partial name="_AdminEditPartial" for="DetailsViewModel" />
+            <input type="hidden" asp-for="UserName" />
+            <partial name="_DoctorEditPartial" for="DetailsViewModel" />
+            <partial name="_DoctorEditSpecializationsPartial" for="EditSpecViewModels" />
             <br />
             <div class="form-group">
                 <a asp-action="@nameof(AdminsController.Manage)" asp-route-id="@Model.Id" class="btn btn-secondary">Cancel</a>

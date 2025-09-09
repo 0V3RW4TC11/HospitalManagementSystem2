@@ -4,6 +4,7 @@ using Domain.Exceptions;
 using Domain.Repositories;
 using Mapster;
 using Services.Abstractions;
+using System.Threading.Tasks;
 
 namespace Services;
 
@@ -12,15 +13,18 @@ internal sealed class DoctorService : IDoctorService
     private readonly IRepositoryManager _repositoryManager;
     private readonly IStaffEmailService _staffEmailService;
     private readonly AccountService _accountHelper;
+    private readonly DoctorSpecializationService _doctorSpecializationService;
 
     public DoctorService(
         IRepositoryManager repositoryManager, 
         IStaffEmailService staffEmailService,
-        AccountService accountHelper)
+        AccountService accountHelper,
+        DoctorSpecializationService doctorSpecializationService)
     {
         _repositoryManager = repositoryManager;
         _accountHelper = accountHelper;
         _staffEmailService = staffEmailService;
+        _doctorSpecializationService = doctorSpecializationService;
     }
 
     public async Task<(DoctorDto[] List, int TotalCount)> Doctors(int pageNumber, int pageSize)
@@ -56,7 +60,7 @@ internal sealed class DoctorService : IDoctorService
             _repositoryManager.DoctorRepository.Add(doctor);
             await _repositoryManager.UnitOfWork.SaveChangesAsync();
             
-            await _repositoryManager.DoctorSpecializationRepository.UpdateAsync(doctor.Id, doctorCreateDto.SpecializationIds);
+            await _doctorSpecializationService.UpdateAsync(doctor.Id, doctorCreateDto.SpecializationIds);
             await _repositoryManager.UnitOfWork.SaveChangesAsync();
             
             var username = await _staffEmailService.CreateStaffEmailAsync(doctorCreateDto.FirstName, doctorCreateDto.LastName);
@@ -69,7 +73,7 @@ internal sealed class DoctorService : IDoctorService
     {
         var doctor = await GetDoctorFromIdAsync(doctorDto.Id);
         
-        ValidateDoctorDto(doctorDto);
+        await ValidateDoctorDto(doctorDto);
         
         doctor.FirstName = doctorDto.FirstName;
         doctor.LastName = doctorDto.LastName;
@@ -79,7 +83,7 @@ internal sealed class DoctorService : IDoctorService
         doctor.Email = doctorDto.Email;
         doctor.DateOfBirth = doctorDto.DateOfBirth;
 
-        await _repositoryManager.DoctorSpecializationRepository.UpdateAsync(doctor.Id, doctorDto.SpecializationIds);
+        await _doctorSpecializationService.UpdateAsync(doctor.Id, doctorDto.SpecializationIds);
         
         await _repositoryManager.UnitOfWork.SaveChangesAsync();
     }
@@ -107,16 +111,16 @@ internal sealed class DoctorService : IDoctorService
     {
         if (await IsExistingAsync(dto))
             throw new DoctorDuplicationException($"Email {dto.Email} is used by another Doctor.");
-        
-        ArgumentException.ThrowIfNullOrWhiteSpace(dto.Password, nameof(dto.Password));
+
         ValidateDoctorBaseDto(dto);
-        ValidateSpecializations(dto.SpecializationIds);
+        ArgumentException.ThrowIfNullOrWhiteSpace(dto.Password, nameof(dto.Password));
+        await ValidateSpecializations(dto.SpecializationIds);
     }
     
-    private static void ValidateDoctorDto(DoctorDto dto)
+    private async Task ValidateDoctorDto(DoctorDto dto)
     {
         ValidateDoctorBaseDto(dto);
-        ValidateSpecializations(dto.SpecializationIds);
+        await ValidateSpecializations(dto.SpecializationIds);
     }
 
     private static void ValidateDoctorBaseDto(DoctorBaseDto baseDto)
@@ -129,10 +133,15 @@ internal sealed class DoctorService : IDoctorService
         ArgumentException.ThrowIfNullOrWhiteSpace(baseDto.Email, nameof(baseDto.Email));
     }
 
-    private static void ValidateSpecializations(IEnumerable<Guid> specializationIds)
+    private async Task ValidateSpecializations(IEnumerable<Guid>? specializationIds)
     {
-        if (!specializationIds.Any())
+        if (specializationIds == null || !specializationIds.Any())
             throw new Exception("Doctor must have at least one specialization.");
+
+        var isValidIds = await _repositoryManager.SpecializationRepository
+            .ContainsAllAsync(specializationIds);
+        if (isValidIds is false)
+            throw new Exception("One or more Specialization Ids are invalid");
     }
     
     private async Task<bool> IsExistingAsync(DoctorCreateDto doctorCreateDto)

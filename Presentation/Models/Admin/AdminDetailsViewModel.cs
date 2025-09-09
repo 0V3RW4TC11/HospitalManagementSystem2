@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Presentation.Models.Admin
 {
-    public abstract class AdminBaseViewModel
+    public class AdminDetailsViewModel
     {
         public string? Title { get; set; }
 

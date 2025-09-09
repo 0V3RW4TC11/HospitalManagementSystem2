@@ -1,10 +1,9 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-
-namespace Presentation.Models.Admin
+﻿namespace Presentation.Models.Admin
 {
-    public class AdminCreateViewModel : AdminBaseViewModel
+    public class AdminCreateViewModel
     {
+        public AdminDetailsViewModel DetailsViewModel { get; set; }
+
         public PasswordCreateViewModel PasswordViewModel { get; set; }
     }
 }

@@ -1,0 +1,20 @@
+﻿@model Doctor.DoctorCreateViewModel
+@{
+    ViewData["Title"] = "Create Doctor";
+}
+
+<h1>Create Doctor</h1>
+<div class="row">
+    <div class="col-md-12">
+        <form method="post">
+            <partial name="_DoctorEditPartial" for="DetailsViewModel"/>
+            <partial name="_CreatePasswordPartial" for="PasswordViewModel" />
+            <partial name="_DoctorEditSpecializationsPartial" for="EditSpecViewModels" />
+            <br /><hr />
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Create</button>
+                <a asp-action="@nameof(AdminsController.Index)" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

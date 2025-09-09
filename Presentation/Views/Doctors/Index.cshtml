@@ -1,14 +1,14 @@
 ﻿@using X.PagedList.Mvc.Core
-@model X.PagedList.IPagedList<Admin.AdminListItemViewModel>
+@model X.PagedList.IPagedList<Doctor.DoctorListItemViewModel>
 
 @{
-    ViewData["Title"] = "Administrators";
+    ViewData["Title"] = "Doctors";
 }
 
-<h1>Administrators</h1>
+<h1>Doctors</h1>
 <br />
 <p>
-    <a asp-action="@nameof(AdminsController.Create)" class="btn btn-primary">Create</a>
+    <a asp-action="@nameof(DoctorsController.Create)" class="btn btn-primary">Create</a>
 </p>
 <table class="table">
     <thead>
@@ -19,14 +19,14 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var admin in Model)
+        @foreach (var doctor in Model)
         {
             <tr>
-                <td>@Html.DisplayFor(item => admin.FirstName)</td>
-                <td>@Html.DisplayFor(item => admin.LastName)</td>
-                <td>@Html.DisplayFor(item => admin.Email)</td>
+                <td>@Html.DisplayFor(item => doctor.FirstName)</td>
+                <td>@Html.DisplayFor(item => doctor.LastName)</td>
+                <td>@Html.DisplayFor(item => doctor.Email)</td>
                 <td>
-                    <a asp-action="@nameof(AdminsController.Manage)" asp-route-id="@admin.Id" class="btn btn-outline-primary">Manage</a>
+                    <a asp-action="@nameof(DoctorsController.Manage)" asp-route-id="@doctor.Id" class="btn btn-outline-primary">Manage</a>
                 </td>
             </tr>
         }
@@ -35,7 +35,7 @@
 
 <!-- Pagination controls -->
 <div>
-    @Html.PagedListPager(Model, page => Url.Action(nameof(AdminsController.Index), new { page = page }),
+    @Html.PagedListPager(Model, page => Url.Action(nameof(DoctorsController.Index), new { page = page }),
     new PagedListRenderOptions {
         LiElementClasses = new string[] { "page-item" },
         PageClasses = new string[] { "page-link" }})
