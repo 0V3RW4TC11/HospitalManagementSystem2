@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Presentation.Models.Patient
 {
-    public abstract class PatientBaseViewModel
+    public class PatientDetailsViewModel
     {
         public string? Title { get; set; }
 

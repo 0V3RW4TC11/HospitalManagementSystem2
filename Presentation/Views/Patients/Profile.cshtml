@@ -1,11 +1,11 @@
-﻿@model Patient.PatientManageViewModel
+﻿@model Patient.PatientProfileViewModel
 @{
-    ViewData["Title"] = "Profile " + Model.Username;
+    ViewData["Title"] = "Profile " + Model.UserName;
 }
 
-<h1>Profile @Model.Username</h1>
+<h1>Profile @Model.UserName</h1>
 <br />
-<partial name="_PatientProfilePartial" />
+<partial name="_PatientDetailsPartial" for="DetailsViewModel" />
 <div>
     <a class="btn btn-secondary" asp-action="@nameof(PatientsController.Dashboard)">Back</a>
     <a class="btn btn-primary" asp-action="@nameof(PatientsController.EditProfile)">Edit</a>

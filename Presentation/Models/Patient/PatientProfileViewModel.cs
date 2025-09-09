@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Presentation.Models.Patient
+﻿namespace Presentation.Models.Patient
 {
-    public class PatientProfileViewModel : PatientBaseViewModel
+    public class PatientProfileViewModel
     {
-        public string Username { get; set; }
+        public string UserName { get; set; }
+
+        public PatientDetailsViewModel DetailsViewModel { get; set; }
     }
 }

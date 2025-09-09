@@ -1,12 +1,10 @@
 ﻿namespace Presentation.Models.Patient
 {
-    public class PatientManageViewModel
+    public class PatientEditViewModel
     {
         public Guid Id { get; set; }
 
         public string UserName { get; set; }
-
-        public bool IsLockedOut { get; set; }
 
         public PatientDetailsViewModel DetailsViewModel { get; set; }
     }

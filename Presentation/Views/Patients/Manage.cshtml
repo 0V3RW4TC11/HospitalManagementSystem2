@@ -1,6 +1,6 @@
 ﻿@model Patient.PatientManageViewModel
 @{
-    ViewData["Title"] = "Details " + Model.Username;
+    ViewData["Title"] = "Details " + Model.UserName;
 }
 
 @section Scripts {
@@ -9,9 +9,9 @@
 
 @Html.AntiForgeryToken()
 
-<h1>Details @Model.Username</h1>
+<h1>Details @Model.UserName</h1>
 <br />
-<partial name="_PatientProfilePartial" />
+<partial name="_PatientDetailsPartial" for="DetailsViewModel"/>
 <div>
     <a class="btn btn-secondary" asp-action="@nameof(PatientsController.Index)">Back</a>
     <a class="btn btn-primary" asp-action="@nameof(PatientsController.Edit)" asp-route-id="@Model.Id">Edit</a>
