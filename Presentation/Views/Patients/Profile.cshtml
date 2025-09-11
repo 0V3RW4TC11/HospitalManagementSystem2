@@ -5,7 +5,7 @@
 
 <h1>Profile @Model.UserName</h1>
 <br />
-<partial name="_PatientDetailsPartial" for="DetailsViewModel" />
+<partial name="_PatientPartial" for="Patient" />
 <div>
     <a class="btn btn-secondary" asp-action="@nameof(PatientsController.Dashboard)">Back</a>
     <a class="btn btn-primary" asp-action="@nameof(PatientsController.EditProfile)">Edit</a>

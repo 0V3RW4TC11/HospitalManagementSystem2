@@ -11,7 +11,7 @@
 
 <h1>Details @Model.UserName</h1>
 <br />
-<partial name="_PatientDetailsPartial" for="DetailsViewModel"/>
+<partial name="_PatientPartial" for="Patient"/>
 <div>
     <a class="btn btn-secondary" asp-action="@nameof(PatientsController.Index)">Back</a>
     <a class="btn btn-primary" asp-action="@nameof(PatientsController.Edit)" asp-route-id="@Model.Id">Edit</a>

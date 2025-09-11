@@ -8,17 +8,8 @@
 <div class="row">
     <div class="col-md-12">
         <form method="post">
-            <partial name="_PatientEditPartial" for="DetailsViewModel"/>
-            <div class="form-group">
-                <label asp-for="PasswordViewModel.Password"></label>
-                <input asp-for="PasswordViewModel.Password" class="form-control" type="password" />
-                <span asp-validation-for="PasswordViewModel.Password" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PasswordViewModel.ConfirmPassword"></label>
-                <input asp-for="PasswordViewModel.ConfirmPassword" class="form-control" type="password" />
-                <span asp-validation-for="PasswordViewModel.ConfirmPassword" class="text-danger"></span>
-            </div>
+            <partial name="_PatientEditPartial" for="Patient"/>
+            <partial name="_PasswordCreatePartial" for="PasswordCreate" />
             <br />
             <div class="form-group">
                 <a asp-action="@nameof(PatientsController.Index)" class="btn btn-secondary">Cancel</a>
