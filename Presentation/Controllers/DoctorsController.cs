@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Models.Doctor;
 using Services.Abstractions;
-using Services.Dtos.Doctor;
 using X.PagedList.Extensions;
 
 namespace Presentation.Controllers

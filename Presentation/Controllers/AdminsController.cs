@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Models.Admin;
 using Services.Abstractions;
-using Services.Dtos.Admin;
 using X.PagedList.Extensions;
 
 namespace Presentation.Controllers
@@ -39,9 +38,7 @@ namespace Presentation.Controllers
             {
                 try
                 {
-                    var dto = model.AdminViewModel.Adapt<AdminCreateDto>();
-                    dto.Password = model.PasswordViewModel.Password;
-                    await _adminService.CreateAsync(dto);
+                    await _adminService.CreateAsync(model.Dto);
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)
@@ -71,7 +68,10 @@ namespace Presentation.Controllers
         {
             try
             {
-                var model = await GetAdminManageViewModel(id);
+                var model = new AdminManageViewModel(
+                    await _adminService.GetByIdAsync(id),
+                    await _identityService.GetUserNameAsync(id),
+                    await _identityService.IsLockedOutAsync(id));
                 return View(model);
             }
             catch (Exception ex)
@@ -87,9 +87,7 @@ namespace Presentation.Controllers
             {
                 try
                 {
-                    var dto = model.AdminViewModel.Adapt<AdminDto>();
-                    dto.Id = model.Id;
-                    await _adminService.UpdateAsync(dto);
+                    await _adminService.UpdateAsync(model.Dto);
                     return RedirectToAction(nameof(Manage), new { id = model.Id});
                 }
                 catch (Exception ex)
@@ -106,8 +104,10 @@ namespace Presentation.Controllers
         {
             try
             {
-                var userId = await _identityService.GetLoggedInUserId();
-                var model = await GetAdminProfileViewModel(userId);
+                var id = await _identityService.GetLoggedInUserId();
+                var model = new AdminProfileViewModel(
+                    await _adminService.GetByIdAsync(id),
+                    await _identityService.GetUserNameAsync(id));
                 return View(model);
             }
             catch (Exception ex)
@@ -123,9 +123,8 @@ namespace Presentation.Controllers
             {
                 try
                 {
-                    var dto = model.AdminViewModel.Adapt<AdminDto>();
-                    dto.Id = await _identityService.GetLoggedInUserId();
-                    await _adminService.UpdateAsync(dto);
+                    var id = await _identityService.GetLoggedInUserId();
+                    await _adminService.UpdateAsync(model.Dto(id));
                     return RedirectToAction(nameof(Profile));
                 }
                 catch (Exception ex)
@@ -162,7 +161,11 @@ namespace Presentation.Controllers
         {
             try
             {
-                var model = await GetAdminManageViewModel(id);
+                var model = new AdminManageViewModel(
+                    await _adminService.GetByIdAsync(id),
+                    await _identityService.GetUserNameAsync(id),
+                    await _identityService.IsLockedOutAsync(id));
+
                 return View(model);
             }
             catch (Exception ex)
@@ -176,35 +179,18 @@ namespace Presentation.Controllers
         {
             try
             {
-                var userId = await _identityService.GetLoggedInUserId();
-                var model = await GetAdminProfileViewModel(userId);
+                var id = await _identityService.GetLoggedInUserId();
+
+                var model = new AdminProfileViewModel(
+                    await _adminService.GetByIdAsync(id),
+                    await _identityService.GetUserNameAsync(id));
+
                 return View(model);
             }
             catch (Exception ex)
             {
                 throw;
             }
-        }
-
-        private async Task<AdminManageViewModel> GetAdminManageViewModel(Guid id)
-        {
-            var model = new AdminManageViewModel();
-            var admin = await _adminService.GetByIdAsync(id);
-            model.Id = admin.Id;
-            model.AdminViewModel = admin.Adapt<AdminViewModel>();
-            model.Username = await _identityService.GetUserNameAsync(id);
-            model.IsLockedOut = await _identityService.IsLockedOutAsync(id);
-
-            return model;
-        }
-
-        private async Task<AdminProfileViewModel> GetAdminProfileViewModel(Guid id)
-        {
-            var model = new AdminProfileViewModel();
-            var admin = await _adminService.GetByIdAsync(id);
-            model.AdminViewModel = admin.Adapt<AdminViewModel>();
-            model.Username = await _identityService.GetUserNameAsync(id);
-            return model;
         }
     }
 }

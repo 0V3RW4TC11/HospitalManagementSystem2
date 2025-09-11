@@ -12,7 +12,7 @@
 
 <h1>Manage @Model.Username</h1>
 <br />
-<partial name="_AdminPartial" for="AdminViewModel" />
+<partial name="_AdminPartial" for="Admin" />
 <div>
     <a asp-action="@nameof(AdminsController.Index)" class="btn btn-secondary">Back</a>
     <a asp-action="@nameof(AdminsController.Edit)" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>

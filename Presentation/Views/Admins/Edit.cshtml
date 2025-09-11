@@ -10,7 +10,7 @@
         <form asp-action="@nameof(AdminsController.Edit)" method="post">
             <input type="hidden" asp-for="Id" />
             <input type="hidden" asp-for="Username" />
-            <partial name="_AdminEditPartial" for="AdminViewModel" />
+            <partial name="_AdminEditPartial" for="Admin" />
             <br />
             <div class="form-group">
                 <a asp-action="@nameof(AdminsController.Manage)" asp-route-id="@Model.Id" class="btn btn-secondary">Cancel</a>

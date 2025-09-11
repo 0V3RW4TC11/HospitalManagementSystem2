@@ -8,8 +8,8 @@
 <div class="row">
     <div class="col-md-12">
         <form method="post">
-            <partial name="_AdminEditPartial" for="AdminViewModel"/>
-            <partial name="_CreatePasswordPartial" for="PasswordViewModel"/>
+            <partial name="_AdminEditPartial" for="Admin"/>
+            <partial name="_CreatePasswordPartial" for="PasswordCreate"/>
             <br />
             <div class="form-group">
                 <a asp-action="@nameof(AdminsController.Index)" class="btn btn-secondary">Cancel</a>
