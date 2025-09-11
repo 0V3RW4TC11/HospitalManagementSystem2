@@ -40,7 +40,7 @@
     <span asp-validation-for="Doctor.DateOfBirth" class="text-danger"></span>
 </div>
 <div class="form-group">
-    <h5>Specializations</h5>
+    @Html.DisplayNameFor(model => model.Specializations)
     @* <span asp-validation-for="SpecializationIds" class="text-danger"></span> *@
     <ul class="list-group">
         @for (var i = 0; i < @Model.Specializations.Length; i++)

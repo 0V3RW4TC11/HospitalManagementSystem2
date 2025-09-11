@@ -19,13 +19,12 @@ namespace Presentation.Models.Doctor
         }
 
         public DoctorManageViewModel(
-            Guid id, 
+            DoctorDto doctor,
             string userName, 
             bool isLockedOut, 
-            DoctorDto doctor, 
             IEnumerable<SpecializationDto> specializations)
         {
-            Id = id;
+            Id = doctor.Id;
             Username = userName;
             IsLockedOut = isLockedOut;
             DoctorAndSpecs = new DoctorAndSpecsViewModel(doctor, specializations);

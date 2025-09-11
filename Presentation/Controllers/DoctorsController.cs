@@ -101,10 +101,9 @@ namespace Presentation.Controllers
             try
             {
                 var model = new DoctorManageViewModel(
-                    id,
+                    await _doctorService.GetByIdAsync(id),
                     await _identityService.GetUserNameAsync(id),
                     await _identityService.IsLockedOutAsync(id),
-                    await _doctorService.GetByIdAsync(id),
                     await _specializationService.GetAllAsync());
                
                 return View(model);
@@ -206,9 +205,9 @@ namespace Presentation.Controllers
             {
                 var id = await _identityService.GetLoggedInUserId();
                 var model = new DoctorProfileViewModel(
-                    await _identityService.GetUserNameAsync(id),
                     await _doctorService.GetByIdAsync(id),
-                    await _specializationService.GetAllAsync()
+                    await _specializationService.GetAllAsync(),
+                    await _identityService.GetUserNameAsync(id)
                 );
 
                 return View(model);

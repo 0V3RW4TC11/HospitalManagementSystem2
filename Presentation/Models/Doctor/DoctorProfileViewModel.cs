@@ -14,11 +14,11 @@ namespace Presentation.Models.Doctor
             
         }
 
-        public DoctorProfileViewModel(string userName, DoctorDto doctor, IEnumerable<SpecializationDto> specDtos)
+        public DoctorProfileViewModel(DoctorDto doctor, IEnumerable<SpecializationDto> specializations, string userName)
         {
-            UserName = userName;
+            DoctorAndSpecs = new DoctorAndSpecsViewModel(doctor, specializations);
 
-            DoctorAndSpecs = new DoctorAndSpecsViewModel(doctor, specDtos);
+            UserName = userName;
         }
     }
 }
