@@ -16,7 +16,7 @@
 
         Task SetLockoutAsync(Guid userId, bool enabled);
 
-        Task<bool> IsLockedOut(Guid userId);
+        Task<bool> IsLockedOutAsync(Guid userId);
 
         Task<string> GetUserNameAsync(Guid userId);
 

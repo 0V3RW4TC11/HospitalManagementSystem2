@@ -2,7 +2,7 @@
 {
     public class AdminCreateViewModel
     {
-        public AdminDetailsViewModel DetailsViewModel { get; set; }
+        public AdminViewModel AdminViewModel { get; set; }
 
         public PasswordCreateViewModel PasswordViewModel { get; set; }
     }

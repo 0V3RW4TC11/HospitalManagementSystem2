@@ -102,7 +102,7 @@ namespace Presentation.Controllers
                 {
                     Id = id,
                     UserName = await _identityService.GetUserNameAsync(id),
-                    IsLockedOut = await _identityService.IsLockedOut(id),
+                    IsLockedOut = await _identityService.IsLockedOutAsync(id),
                     DetailsViewModel = await GetPatientDetailsViewModel(id)
                 };
 

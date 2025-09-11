@@ -26,10 +26,7 @@ namespace Presentation.Controllers
         public async Task<IActionResult> Create()
         {
             var specializations = await _specializationService.GetAllAsync();
-            var model = new DoctorCreateViewModel 
-            { 
-                EditSpecViewModels = GetEditSpecViewModels()
-            };
+            var model = new DoctorCreateViewModel(await _specializationService.GetAllAsync());
             return View(model);
         }
 
@@ -41,10 +38,7 @@ namespace Presentation.Controllers
             {
                 try
                 {
-                    var dto = model.DetailsViewModel.Adapt<DoctorCreateDto>();
-                    dto.Password = model.PasswordViewModel.Password;
-                    dto.SpecializationIds = GetSelectedSpecIds(model.EditSpecViewModels);
-                    await _doctorService.CreateAsync(dto);
+                    await _doctorService.CreateAsync(model.Dto);
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)
@@ -107,7 +101,13 @@ namespace Presentation.Controllers
         {
             try
             {
-                var model = await GetDoctorManageViewModel(id);
+                var model = new DoctorManageViewModel(
+                    id,
+                    await _identityService.GetUserNameAsync(id),
+                    await _identityService.IsLockedOutAsync(id),
+                    await _doctorService.GetByIdAsync(id),
+                    await _specializationService.GetAllAsync());
+               
                 return View(model);
             }
             catch (Exception ex)
@@ -122,16 +122,12 @@ namespace Presentation.Controllers
         {
             try
             {
-                var dto = await _doctorService.GetByIdAsync(id);
-                var specializations = await _specializationService.GetAllAsync();
-                var model = new DoctorEditViewModel
-                {
-                    Id = id,
-                    UserName = await _identityService.GetUserNameAsync(id),
-                    DetailsViewModel = dto.Adapt<DoctorDetailsViewModel>(),
-                    EditSpecViewModels = GetEditSpecViewModels(dto.SpecializationIds)
-                };
-
+                var model = new DoctorEditByIdViewModel(
+                    id, 
+                    await _identityService.GetUserNameAsync(id), 
+                    await _doctorService.GetByIdAsync(id),
+                    await _specializationService.GetAllAsync());
+                
                 return View(model);
             }
             catch (Exception ex)
@@ -142,16 +138,13 @@ namespace Presentation.Controllers
 
         [HttpPost]
         [Authorize(Roles = Constants.AuthRoles.Admin)]
-        public async Task<IActionResult> Edit(DoctorEditViewModel model)
+        public async Task<IActionResult> Edit(DoctorEditByIdViewModel model)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var dto = model.DetailsViewModel.Adapt<DoctorDto>();
-                    dto.Id = model.Id;
-                    dto.SpecializationIds = GetSelectedSpecIds(model.EditSpecViewModels);
-                    await _doctorService.UpdateAsync(dto);
+                    await _doctorService.UpdateAsync(model.Dto);
                     return RedirectToAction(nameof(Manage), new { id = model.Id });
                 }
                 catch (Exception ex)
@@ -170,8 +163,13 @@ namespace Presentation.Controllers
         {
             try
             {
-                var userId = await _identityService.GetLoggedInUserId();
-                var model = await GetDoctorEditProfileViewModel(userId);
+                var id = await _identityService.GetLoggedInUserId();
+                
+                var model = new DoctorEditProfileViewModel(
+                    await _identityService.GetUserNameAsync(id),
+                    await _doctorService.GetByIdAsync(id),
+                    await _specializationService.GetAllAsync());
+                
                 return View(model);
             }
             catch (Exception ex)
@@ -180,7 +178,6 @@ namespace Presentation.Controllers
             }
         }
 
-        // TODO: Separate specializations update from doctor update
         [HttpPost]
         [Authorize(Roles = Constants.AuthRoles.Doctor)]
         public async Task<IActionResult> EditProfile(DoctorEditProfileViewModel model)
@@ -189,12 +186,8 @@ namespace Presentation.Controllers
             {
                 try
                 {
-                    var userId = await _identityService.GetLoggedInUserId();
-                    var oldDto = await _doctorService.GetByIdAsync(userId);
-                    var newDto = model.DetailsViewModel.Adapt<DoctorDto>();
-                    newDto.Id = userId;
-                    newDto.SpecializationIds = oldDto.SpecializationIds;
-                    await _doctorService.UpdateAsync(newDto);
+                    var dto = model.Dto(await _identityService.GetLoggedInUserId());
+                    await _doctorService.UpdateAsync(dto);
                     return RedirectToAction(nameof(Profile));
                 }
                 catch (Exception ex)
@@ -212,104 +205,19 @@ namespace Presentation.Controllers
         {
             try
             {
-                var userId = await _identityService.GetLoggedInUserId();
-                var model = await GetDoctorProfileViewModel(userId);
+                var id = await _identityService.GetLoggedInUserId();
+                var model = new DoctorProfileViewModel(
+                    await _identityService.GetUserNameAsync(id),
+                    await _doctorService.GetByIdAsync(id),
+                    await _specializationService.GetAllAsync()
+                );
+
                 return View(model);
             }
             catch (Exception ex)
             {
                 throw;
             }
-        }
-
-        private async Task<DoctorManageViewModel> GetDoctorManageViewModel(Guid id)
-        {
-            var dto = await _doctorService.GetByIdAsync(id);
-            var detailsViewModel = dto.Adapt<DoctorDetailsViewModel>();
-            var specsViewModel = await GetDoctorSpecsViewModel(dto.SpecializationIds);
-
-            return new DoctorManageViewModel
-            {
-                Id = id,
-                Username = await _identityService.GetUserNameAsync(id),
-                IsLockedOut = await _identityService.IsLockedOut(id),
-                DetailsViewModel = detailsViewModel,
-                SpecsViewModel = specsViewModel
-            };
-        }
-
-        private async Task<DoctorProfileViewModel> GetDoctorProfileViewModel(Guid id)
-        {
-            var dto = await _doctorService.GetByIdAsync(id);
-            var detailsViewModel = dto.Adapt<DoctorDetailsViewModel>();
-            var specsViewModel = await GetDoctorSpecsViewModel(dto.SpecializationIds);
-            
-            return new DoctorProfileViewModel
-            {
-                Username = await _identityService.GetUserNameAsync(id),
-                DetailsViewModel = detailsViewModel,
-                SpecsViewModel = specsViewModel
-            };
-        }
-
-        private async Task<DoctorEditProfileViewModel> GetDoctorEditProfileViewModel(Guid id)
-        {
-            var dto = await _doctorService.GetByIdAsync(id);
-            var detailsViewModel = dto.Adapt<DoctorDetailsViewModel>();
-            return new DoctorEditProfileViewModel
-            {
-                UserName = await _identityService.GetUserNameAsync(id),
-                DetailsViewModel = detailsViewModel
-            };
-        }
-
-        private async Task<DoctorSpecsViewModel> GetDoctorSpecsViewModel(IEnumerable<Guid> specIds)
-        {
-            var dtos = await _specializationService.GetAllAsync();
-            var specs = dtos
-                .Where(s => specIds.Contains(s.Id))
-                .Select(s => s.Name);
-
-            return new DoctorSpecsViewModel
-            {
-                Specializations = specs
-            };
-        }
-
-        private HashSet<Guid> GetSelectedSpecIds(IEnumerable<DoctorEditSpecViewModel> models)
-        {
-            return models
-                .Where(s => s.IsSelected)
-                .Select(s => s.Id)
-                .ToHashSet();
-        }
-
-        private DoctorEditSpecViewModel[] GetEditSpecViewModels()
-        {
-            var specializations = _specializationService.GetAllAsync().Result;
-
-            return specializations
-                    .Select(s => new DoctorEditSpecViewModel
-                    {
-                        Id = s.Id,
-                        Name = s.Name,
-                        IsSelected = false
-                    })
-                    .ToArray();
-        }
-
-        private DoctorEditSpecViewModel[] GetEditSpecViewModels(IEnumerable<Guid>? specIds)
-        {
-            var specializations = _specializationService.GetAllAsync().Result;
-
-            return specializations
-                    .Select(s => new DoctorEditSpecViewModel
-                    {
-                        Id = s.Id,
-                        Name = s.Name,
-                        IsSelected = specIds.Contains(s.Id)
-                    })
-                    .ToArray();
         }
     }
 }

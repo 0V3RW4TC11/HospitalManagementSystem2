@@ -6,7 +6,7 @@
 
 <h1>Profile @Model.Username</h1>
 <br />
-<partial name="_AdminDetailsPartial" for="DetailsViewModel" />
+<partial name="_AdminPartial" for="AdminViewModel" />
 <div>
     <a asp-action="@nameof(AdminsController.Dashboard)" class="btn btn-secondary">Back</a>
     <a asp-action="@nameof(AdminsController.EditProfile)" class="btn btn-primary">Edit</a>

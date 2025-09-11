@@ -1,4 +1,7 @@
-﻿namespace Presentation.Models.Doctor
+﻿using Services.Dtos.Doctor;
+using Services.Dtos.Specialization;
+
+namespace Presentation.Models.Doctor
 {
     public class DoctorManageViewModel
     {
@@ -8,8 +11,24 @@
 
         public bool IsLockedOut { get; set; }
 
-        public DoctorDetailsViewModel DetailsViewModel { get; set; }
+        public DoctorAndSpecsViewModel DoctorAndSpecs { get; set; }
 
-        public DoctorSpecsViewModel SpecsViewModel { get; set; }
+        public DoctorManageViewModel()
+        {
+            
+        }
+
+        public DoctorManageViewModel(
+            Guid id, 
+            string userName, 
+            bool isLockedOut, 
+            DoctorDto doctor, 
+            IEnumerable<SpecializationDto> specializations)
+        {
+            Id = id;
+            Username = userName;
+            IsLockedOut = isLockedOut;
+            DoctorAndSpecs = new DoctorAndSpecsViewModel(doctor, specializations);
+        }
     }
 }

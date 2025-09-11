@@ -2,8 +2,8 @@
 {
     public class AdminProfileViewModel
     {
-        public string Username { get; set; }
+        public AdminViewModel AdminViewModel { get; set; }
 
-        public AdminDetailsViewModel DetailsViewModel { get; set; }
+        public string Username { get; set; }
     }
 }
