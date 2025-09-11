@@ -26,6 +26,7 @@ namespace Presentation.Controllers
         {
             var specializations = await _specializationService.GetAllAsync();
             var model = new DoctorCreateViewModel(await _specializationService.GetAllAsync());
+            
             return View(model);
         }
 
@@ -101,9 +102,9 @@ namespace Presentation.Controllers
             try
             {
                 var model = new DoctorManageViewModel(
-                    await _doctorService.GetByIdAsync(id),
                     await _identityService.GetUserNameAsync(id),
                     await _identityService.IsLockedOutAsync(id),
+                    await _doctorService.GetByIdAsync(id),
                     await _specializationService.GetAllAsync());
                
                 return View(model);
@@ -121,7 +122,6 @@ namespace Presentation.Controllers
             try
             {
                 var model = new DoctorEditByIdViewModel(
-                    id, 
                     await _identityService.GetUserNameAsync(id), 
                     await _doctorService.GetByIdAsync(id),
                     await _specializationService.GetAllAsync());
@@ -162,7 +162,6 @@ namespace Presentation.Controllers
             try
             {
                 var id = await _identityService.GetLoggedInUserId();
-                
                 var model = new DoctorEditProfileViewModel(
                     await _identityService.GetUserNameAsync(id),
                     await _doctorService.GetByIdAsync(id),
@@ -186,6 +185,7 @@ namespace Presentation.Controllers
                 {
                     var dto = model.Dto(await _identityService.GetLoggedInUserId());
                     await _doctorService.UpdateAsync(dto);
+                    
                     return RedirectToAction(nameof(Profile));
                 }
                 catch (Exception ex)
@@ -209,7 +209,7 @@ namespace Presentation.Controllers
                     await _specializationService.GetAllAsync(),
                     await _identityService.GetUserNameAsync(id)
                 );
-
+                
                 return View(model);
             }
             catch (Exception ex)

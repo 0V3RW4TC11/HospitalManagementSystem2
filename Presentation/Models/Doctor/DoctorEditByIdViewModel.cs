@@ -29,12 +29,11 @@ namespace Presentation.Models.Doctor
         }
 
         public DoctorEditByIdViewModel(
-            Guid id, 
-            string userName, 
-            DoctorDto doctor, 
+            string userName,
+            DoctorDto doctor,
             IEnumerable<SpecializationDto> specializations)
         {
-            Id = id;
+            Id = doctor.Id;
             UserName = userName;
             Edit = new DoctorEditViewModel(doctor, specializations);
         }
