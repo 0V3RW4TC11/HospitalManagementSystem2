@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Models.Patient;
 using Services.Abstractions;
-using Services.Dtos.Patient;
 using X.PagedList.Extensions;
 
 namespace Presentation.Controllers
@@ -34,9 +33,7 @@ namespace Presentation.Controllers
             {
                 try
                 {
-                    var dto = model.DetailsViewModel.Adapt<PatientCreateDto>();
-                    dto.Password = model.PasswordViewModel.Password;
-                    await _patientService.CreateAsync(dto);
+                    await _patientService.CreateAsync(model.Dto);
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)
@@ -98,13 +95,10 @@ namespace Presentation.Controllers
         {
             try
             {
-                var model = new PatientManageViewModel
-                {
-                    Id = id,
-                    UserName = await _identityService.GetUserNameAsync(id),
-                    IsLockedOut = await _identityService.IsLockedOut(id),
-                    DetailsViewModel = await GetPatientDetailsViewModel(id)
-                };
+                var model = new PatientManageViewModel(
+                    await _identityService.GetUserNameAsync(id),
+                    await _identityService.IsLockedOutAsync(id),
+                    await _patientService.GetByIdAsync(id));
 
                 return View(model);
             }
@@ -120,12 +114,9 @@ namespace Presentation.Controllers
         {
             try
             {
-                var model = new PatientEditViewModel
-                {
-                    Id = id,
-                    UserName = await _identityService.GetUserNameAsync(id),
-                    DetailsViewModel = await GetPatientDetailsViewModel(id)
-                };
+                var model = new PatientEditByIdViewModel(
+                    await _identityService.GetUserNameAsync(id),
+                    await _patientService.GetByIdAsync(id));
 
                 return View(model);
             }
@@ -137,15 +128,13 @@ namespace Presentation.Controllers
 
         [HttpPost]
         [Authorize(Roles = Constants.AuthRoles.Admin)]
-        public async Task<IActionResult> Edit(PatientEditViewModel model)
+        public async Task<IActionResult> Edit(PatientEditByIdViewModel model)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var dto = model.DetailsViewModel.Adapt<PatientDto>();
-                    dto.Id = model.Id;
-                    await _patientService.UpdateAsync(dto);
+                    await _patientService.UpdateAsync(model.Dto);
                     return RedirectToAction(nameof(Manage), new { id = model.Id });
                 }
                 catch (Exception ex)
@@ -164,12 +153,10 @@ namespace Presentation.Controllers
         {
             try
             {
-                var userId = await _identityService.GetLoggedInUserId();
-                var model = new PatientEditProfileViewModel
-                {
-                    UserName = await _identityService.GetUserNameAsync(userId),
-                    DetailsViewModel = await GetPatientDetailsViewModel(userId)
-                };
+                var id = await _identityService.GetLoggedInUserId();
+                var model = new PatientProfileViewModel(
+                    await _identityService.GetUserNameAsync(id),
+                    await _patientService.GetByIdAsync(id));
 
                 return View(model);
             }
@@ -181,15 +168,15 @@ namespace Presentation.Controllers
 
         [HttpPost]
         [Authorize(Roles = Constants.AuthRoles.Patient)]
-        public async Task<IActionResult> EditProfile(PatientEditProfileViewModel model)
+        public async Task<IActionResult> EditProfile(PatientProfileViewModel model)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var dto = model.DetailsViewModel.Adapt<PatientDto>();
-                    dto.Id = await _identityService.GetLoggedInUserId();
-                    await _patientService.UpdateAsync(dto);
+                    var id = await _identityService.GetLoggedInUserId();
+                    await _patientService.UpdateAsync(model.Dto(id));
+                    
                     return RedirectToAction(nameof(Profile));
                 }
                 catch (Exception ex)
@@ -207,12 +194,10 @@ namespace Presentation.Controllers
         {
             try
             {
-                var userId = await _identityService.GetLoggedInUserId();
-                var model = new PatientProfileViewModel
-                {
-                    UserName = await _identityService.GetUserNameAsync(userId),
-                    DetailsViewModel = await GetPatientDetailsViewModel(userId)
-                };
+                var id = await _identityService.GetLoggedInUserId();
+                var model = new PatientProfileViewModel(
+                    await _identityService.GetUserNameAsync(id),
+                    await _patientService.GetByIdAsync(id));
 
                 return View(model);
             }
@@ -220,12 +205,6 @@ namespace Presentation.Controllers
             {
                 throw;
             }
-        }
-
-        private async Task<PatientDetailsViewModel> GetPatientDetailsViewModel(Guid id)
-        {
-            var patient = await _patientService.GetByIdAsync(id);
-            return patient.Adapt<PatientDetailsViewModel>();
         }
     }
 }

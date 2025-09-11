@@ -3,24 +3,31 @@ using Services.Dtos.Patient;
 
 namespace Presentation.Models.Patient
 {
-    public class PatientManageViewModel
+    public class PatientEditByIdViewModel
     {
         public Guid Id { get; set; }
 
         public string UserName { get; set; }
 
-        public bool IsLockedOut { get; set; }
-
         public PatientViewModel Patient { get; set; }
 
-        public PatientManageViewModel() { }
+        public PatientEditByIdViewModel() { }
 
-        public PatientManageViewModel(string userName, bool isLockedOut, PatientDto patientDto)
+        public PatientEditByIdViewModel(string userName, PatientDto patientDto)
         {
             Id = patientDto.Id;
             UserName = userName;
-            IsLockedOut = isLockedOut;
             Patient = patientDto.Adapt<PatientViewModel>();
+        }
+
+        public PatientDto Dto
+        {
+            get
+            {
+                var dto = Patient.Adapt<PatientDto>();
+                dto.Id = Id;
+                return dto;
+            }
         }
     }
 }

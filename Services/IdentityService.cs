@@ -54,7 +54,7 @@ namespace Services
                 enabled);
         }
 
-        public async Task<bool> IsLockedOut(Guid userId)
+        public async Task<bool> IsLockedOutAsync(Guid userId)
         {
             return await _identityProvider.IsLockedOut(
                 await _accountService.GetIdentityIdFromUserId(userId));

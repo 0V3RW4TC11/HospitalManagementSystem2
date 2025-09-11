@@ -1,4 +1,4 @@
-﻿@model Doctor.DoctorEditViewModel
+﻿@model Doctor.DoctorEditByIdViewModel
 
 @{
     ViewData["Title"] = "Edit " + Model.UserName;
@@ -10,8 +10,7 @@
         <form asp-action="@nameof(DoctorsController.Edit)" method="post">
             <input type="hidden" asp-for="Id" />
             <input type="hidden" asp-for="UserName" />
-            <partial name="_DoctorEditPartial" for="DetailsViewModel" />
-            <partial name="_DoctorEditSpecializationsPartial" for="EditSpecViewModels" />
+            <partial name="_DoctorEditPartial" for="Edit" />
             <br />
             <div class="form-group">
                 <a asp-action="@nameof(AdminsController.Manage)" asp-route-id="@Model.Id" class="btn btn-secondary">Cancel</a>

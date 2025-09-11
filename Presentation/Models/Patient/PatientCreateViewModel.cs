@@ -1,9 +1,22 @@
-﻿namespace Presentation.Models.Patient
+﻿using Mapster;
+using Services.Dtos.Patient;
+
+namespace Presentation.Models.Patient
 {
     public class PatientCreateViewModel
     {
-        public PatientDetailsViewModel DetailsViewModel { get; set; }
+        public PatientViewModel Patient { get; set; }
 
-        public PasswordCreateViewModel PasswordViewModel { get; set; }
+        public PasswordCreateViewModel PasswordCreate { get; set; }
+
+        public PatientCreateDto Dto
+        {
+            get
+            {
+                var dto = Patient.Adapt<PatientCreateDto>();
+                dto.Password = PasswordCreate.Password;
+                return dto;
+            }
+        }
     }
 }

@@ -1,11 +1,24 @@
-﻿namespace Presentation.Models.Doctor
+﻿using Services.Dtos.Doctor;
+using Services.Dtos.Specialization;
+
+namespace Presentation.Models.Doctor
 {
     public class DoctorProfileViewModel
     {
-        public string Username { get; set; }
+        public string UserName { get; set; }
 
-        public DoctorDetailsViewModel DetailsViewModel { get; set; }
+        public DoctorAndSpecsViewModel DoctorAndSpecs { get; set; }
 
-        public DoctorSpecsViewModel SpecsViewModel { get; set; }
+        public DoctorProfileViewModel()
+        {
+            
+        }
+
+        public DoctorProfileViewModel(DoctorDto doctor, IEnumerable<SpecializationDto> specializations, string userName)
+        {
+            DoctorAndSpecs = new DoctorAndSpecsViewModel(doctor, specializations);
+
+            UserName = userName;
+        }
     }
 }

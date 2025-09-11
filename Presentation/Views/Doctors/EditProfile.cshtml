@@ -9,7 +9,7 @@
     <div class="col-md-4">
         <form asp-action="@nameof(DoctorsController.EditProfile)" method="post">
             <input type="hidden" asp-for="UserName" />
-            <partial name="_DoctorEditPartial" for="DetailsViewModel" />
+            <partial name="_DoctorEditPartial" for="Edit" />
             <br />
             <div class="form-group">
                 <a asp-action="@nameof(AdminsController.Profile)" class="btn btn-secondary">Cancel</a>
