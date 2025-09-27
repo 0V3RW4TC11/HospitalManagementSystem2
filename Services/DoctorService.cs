@@ -139,7 +139,7 @@ internal sealed class DoctorService : IDoctorService
             throw new Exception("Doctor must have at least one specialization.");
 
         var isValidIds = await _repositoryManager.SpecializationRepository
-            .ContainsAllAsync(specializationIds);
+            .IsExistingIdsAsync(specializationIds);
         if (isValidIds is false)
             throw new Exception("One or more Specialization Ids are invalid");
     }

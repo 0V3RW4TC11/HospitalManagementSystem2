@@ -6,6 +6,8 @@ public interface ISpecializationService
 {
     Task<IEnumerable<SpecializationDto>> GetAllAsync(CancellationToken cancellationToken = default);
 
+    Task<IEnumerable<SpecializationDto>> SearchByNameAsync(string name, CancellationToken cancellationToken = default);
+
     Task CreateAsync(SpecializationCreateDto specializationCreateDto, CancellationToken cancellationToken = default);
 
     Task UpdateAsync(SpecializationDto specializationDto, CancellationToken cancellationToken = default);

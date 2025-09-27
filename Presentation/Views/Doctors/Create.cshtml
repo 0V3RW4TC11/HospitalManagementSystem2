@@ -6,7 +6,7 @@
 <h1>Create Doctor</h1>
 <div class="row">
     <div class="col-md-12">
-        <form method="post">
+        <form method="post" id="doctorCreate">
             <partial name="_DoctorEditPartial" for="Edit"/>
             <partial name="_PasswordCreatePartial" for="PasswordCreate" />
             <br /><hr />
@@ -17,3 +17,12 @@
         </form>
     </div>
 </div>
+
+<script type="module">
+    import { DoctorSpecsEditor } from '/js/doctor/doctor-specs-editor.js';
+    new DoctorSpecsEditor(
+        '/Specializations/Search?name=',
+        'Edit_JsonSpecializations',
+        'doctorCreate',
+        'specEditor')
+</script>
