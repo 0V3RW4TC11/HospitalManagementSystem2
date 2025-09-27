@@ -76,4 +76,12 @@ internal sealed class SpecializationService : ISpecializationService
         if (exists)
             throw new SpecializationDuplicationException("A specialization with the same name already exists.");
     }
+
+    public async Task<IEnumerable<SpecializationDto>> SearchByNameAsync(string name, CancellationToken cancellationToken = default)
+    {
+        var result = await _repositoryManager.SpecializationRepository
+            .ContainsNameAsync(name);
+
+        return result.Select(s => s.Adapt<SpecializationDto>());
+    }
 }

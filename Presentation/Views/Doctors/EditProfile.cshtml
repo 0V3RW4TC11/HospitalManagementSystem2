@@ -6,8 +6,8 @@
 
 <h1>Edit @Model.UserName</h1>
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="@nameof(DoctorsController.EditProfile)" method="post">
+    <div class="col-md-12">
+        <form asp-action="@nameof(DoctorsController.EditProfile)" method="post" id="doctorUpdate">
             <input type="hidden" asp-for="UserName" />
             <partial name="_DoctorEditPartial" for="Edit" />
             <br />
@@ -18,3 +18,12 @@
         </form>
     </div>
 </div>
+
+<script type="module">
+    import { DoctorSpecsEditor } from '/js/doctor/doctor-specs-editor.js';
+    new DoctorSpecsEditor(
+        '/Specializations/Search?name=',
+        'Edit_JsonSpecializations',
+        'doctorUpdate',
+        'specEditor')
+</script>

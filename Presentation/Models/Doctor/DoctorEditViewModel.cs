@@ -1,49 +1,46 @@
 ﻿using Mapster;
 using Services.Dtos.Doctor;
 using Services.Dtos.Specialization;
+using System.Text.Json;
 
 namespace Presentation.Models.Doctor
 {
     public class DoctorEditViewModel
     {
+        private JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        };
+
         public DoctorViewModel Doctor { get; set; }
 
-        public DoctorEditSpecViewModel[] Specializations { get; set; }
+        public string JsonSpecializations { get; set; }
 
-        public HashSet<Guid> SelectedSpecs => Specializations
-            .Where(s => s.IsSelected)
+        public HashSet<Guid> SelectedSpecs => JsonSerializer.Deserialize<IEnumerable<SpecializationDto>>(JsonSpecializations, _jsonOptions)?
             .Select(s => s.Id)
-            .ToHashSet();
+            .ToHashSet() ?? throw new Exception("Failed to parse " + nameof(JsonSpecializations));
 
         public DoctorEditViewModel() 
         {
 
         }
 
+        // TODO: Remove this constructor
         public DoctorEditViewModel(IEnumerable<SpecializationDto> allSpecs)
         {
-            Specializations = allSpecs
-                .Select(s => new DoctorEditSpecViewModel
-                {
-                    Id = s.Id,
-                    Name = s.Name,
-                    IsSelected = false
-                })
-                .ToArray();
+            
         }
 
         public DoctorEditViewModel(DoctorDto doctor, IEnumerable<SpecializationDto> allSpecs)
         {
             Doctor = doctor.Adapt<DoctorViewModel>();
 
-            Specializations = allSpecs
-                .Select(s => new DoctorEditSpecViewModel
-                {
-                    Id = s.Id,
-                    Name = s.Name,
-                    IsSelected = doctor.SpecializationIds.Contains(s.Id)
-                })
+            var specs = allSpecs
+                .Where(s => doctor.SpecializationIds.Contains(s.Id))
                 .ToArray();
+
+            JsonSpecializations = 
+                JsonSerializer.Serialize(specs, _jsonOptions);
         }
     }
 }

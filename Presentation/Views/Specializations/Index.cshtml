@@ -1,0 +1,56 @@
+﻿@model Services.Dtos.Specialization.SpecializationDto
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<style>
+    .dropdown-menu {
+        width: 50%;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .search-container {
+        max-width: 500px;
+        margin: 50px auto;
+    }
+
+    #selectedItems {
+        list-style-type: none;
+        padding-left: 0;
+    }
+</style>
+
+<h1>Index</h1>
+<div class="search-container">
+    <div class="input-group">
+        <input type="text" id="searchInput" class="form-control" placeholder="Search items..." autocomplete="off" />
+    </div>
+    <div id="searchDropdown" class="dropdown-menu">
+        <!-- Search results will be appended here -->
+    </div>
+    <br />
+    <h5>Selected Items</h5>
+    <a id="clearSelected" class="btn btn-primary">Clear</a>
+    <ul id="selectedItems">
+        <!-- Selected items will be displayed here -->
+    </ul>
+</div>
+
+@section Scripts{
+    <script type="module">
+        import { DoctorSpecEditor } from './js/doctor-spec-editor.js';
+
+        let editor = new DoctorSpecEditor(
+            'searchInput',
+            'searchDropdown',
+            'selectedItems',
+            'clearSelected',
+            'selected-item',
+            '/Specializations/Search?name=',
+            300);
+
+        editor.initialize();
+    </script>
+}
