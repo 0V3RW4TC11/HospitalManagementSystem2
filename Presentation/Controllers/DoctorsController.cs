@@ -24,10 +24,7 @@ namespace Presentation.Controllers
         [Authorize(Roles = Constants.AuthRoles.Admin)]
         public async Task<IActionResult> Create()
         {
-            var specializations = await _specializationService.GetAllAsync();
-            var model = new DoctorCreateViewModel(await _specializationService.GetAllAsync());
-            
-            return View(model);
+            return View();
         }
 
         [HttpPost]

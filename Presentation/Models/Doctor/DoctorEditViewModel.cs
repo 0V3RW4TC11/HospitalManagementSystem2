@@ -25,12 +25,6 @@ namespace Presentation.Models.Doctor
 
         }
 
-        // TODO: Remove this constructor
-        public DoctorEditViewModel(IEnumerable<SpecializationDto> allSpecs)
-        {
-            
-        }
-
         public DoctorEditViewModel(DoctorDto doctor, IEnumerable<SpecializationDto> allSpecs)
         {
             Doctor = doctor.Adapt<DoctorViewModel>();

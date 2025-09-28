@@ -25,10 +25,5 @@ namespace Presentation.Models.Doctor
         {
             
         }
-
-        public DoctorCreateViewModel(IEnumerable<SpecializationDto> specializations)
-        {
-            Edit = new DoctorEditViewModel(specializations);
-        }
     }
 }
