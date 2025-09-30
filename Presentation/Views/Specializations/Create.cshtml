@@ -1,0 +1,20 @@
+﻿@model Services.Dtos.Specialization.SpecializationCreateDto
+
+@{
+    ViewData["Title"] = "Create Specialization";
+}
+
+<h1>Create Specialization</h1>
+<br />
+<form asp-action="@nameof(SpecializationsController.Create)" method="post">
+    <div class="form-group">
+        <label asp-for="Name" class="control-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <br />
+    <div class="form-group">
+        <a asp-action="@nameof(SpecializationsController.Index)" class="btn btn-secondary">Back</a>
+        <input type="submit" value="Create" class="btn btn-primary" />
+    </div>
+</form>

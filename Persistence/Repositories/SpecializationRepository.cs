@@ -1,6 +1,7 @@
 ﻿using Domain.Entities;
 using Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Persistence.Helpers;
 
 namespace Persistence.Repositories;
 
@@ -13,19 +14,16 @@ internal sealed class SpecializationRepository : ISpecializationRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<Specialization>> GetAllAsync()
+    public void Add(Specialization specialization)
     {
-        return await _context.Specializations.ToArrayAsync();
+        _context.Specializations.Add(specialization);
     }
 
-    public async Task<IEnumerable<Specialization>> GetFromIdsAsync(IEnumerable<Guid> ids)
+    public async Task<IEnumerable<Specialization>> ContainsNameAsync(string name)
     {
-        return await _context.Specializations.Where(s => ids.Contains(s.Id)).ToArrayAsync();
-    }
-
-    public async Task<Specialization?> FindByIdAsync(Guid id)
-    {
-        return await _context.Specializations.SingleOrDefaultAsync(s => s.Id == id);
+        return await _context.Specializations
+            .Where(s => s.Name.ToLower().Contains(name.ToLower()))
+            .ToArrayAsync();
     }
 
     public async Task<bool> ExistsAsync(Guid id)
@@ -38,14 +36,19 @@ internal sealed class SpecializationRepository : ISpecializationRepository
         return await _context.Specializations.AnyAsync(s => s.Name == name);
     }
 
-    public void Add(Specialization specialization)
+    public async Task<Specialization?> FindByIdAsync(Guid id)
     {
-        _context.Specializations.Add(specialization);
+        return await _context.Specializations.SingleOrDefaultAsync(s => s.Id == id);
     }
 
-    public void Remove(Specialization specialization)
+    public async Task<IEnumerable<Specialization>> GetAllAsync()
     {
-        _context.Specializations.Remove(specialization);   
+        return await _context.Specializations.ToArrayAsync();
+    }
+
+    public async Task<IEnumerable<Specialization>> GetFromIdsAsync(IEnumerable<Guid> ids)
+    {
+        return await _context.Specializations.Where(s => ids.Contains(s.Id)).ToArrayAsync();
     }
 
     public async Task<bool> IsExistingIdsAsync(IEnumerable<Guid> ids)
@@ -54,10 +57,22 @@ internal sealed class SpecializationRepository : ISpecializationRepository
             .CountAsync(s => ids.Contains(s.Id)) == ids.Count();
     }
 
-    public async Task<IEnumerable<Specialization>> ContainsNameAsync(string name)
+    public void Remove(Specialization specialization)
     {
-        return await _context.Specializations
-            .Where(s => s.Name.ToLower().Contains(name.ToLower()))
-            .ToArrayAsync();
+        _context.Specializations.Remove(specialization);   
+    }
+
+    public async Task<IEnumerable<Specialization>> SpecializationsPaged(int pageNumber, int pageSize)
+    {
+        return await PagedListHelper.GetPagedList(
+            _context.Specializations,
+            s => s.Id,
+            pageNumber,
+            pageSize);
+    }
+
+    public async Task<int> TotalCount()
+    {
+        return await _context.Specializations.CountAsync();
     }
 }
