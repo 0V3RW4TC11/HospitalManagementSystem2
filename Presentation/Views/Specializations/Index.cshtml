@@ -1,56 +1,48 @@
-﻿@model Services.Dtos.Specialization.SpecializationDto
+﻿@using X.PagedList.Mvc.Core
+@model X.PagedList.IPagedList<Services.Dtos.Specialization.SpecializationDto>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Specializations";
 }
 
-<style>
-    .dropdown-menu {
-        width: 50%;
-        max-height: 200px;
-        overflow-y: auto;
-    }
+@section Scripts {
+    <script src="~/js/specializations/delete-spec.js"></script>
+}
 
-    .search-container {
-        max-width: 500px;
-        margin: 50px auto;
-    }
+<h1>Specializations</h1>
+<br />
+<p>
+    <a asp-action="@nameof(SpecializationsController.Create)" class="btn btn-primary">Create</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(m => m.First().Name)</th>
+        </tr>
+    </thead>
+    <tbody id="specList">
+        @foreach (var spec in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(item => spec.Name)</td>
+                <td>
+                    <a asp-action="@nameof(SpecializationsController.Edit)" asp-route-id="@spec.Id" class="btn btn-outline-primary">Edit</a>
+                    <a class="btn btn-outline-danger" onclick="deleteSpec('@spec.Id')">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
 
-    #selectedItems {
-        list-style-type: none;
-        padding-left: 0;
-    }
-</style>
-
-<h1>Index</h1>
-<div class="search-container">
-    <div class="input-group">
-        <input type="text" id="searchInput" class="form-control" placeholder="Search items..." autocomplete="off" />
-    </div>
-    <div id="searchDropdown" class="dropdown-menu">
-        <!-- Search results will be appended here -->
-    </div>
-    <br />
-    <h5>Selected Items</h5>
-    <a id="clearSelected" class="btn btn-primary">Clear</a>
-    <ul id="selectedItems">
-        <!-- Selected items will be displayed here -->
-    </ul>
+<!-- Pagination controls -->
+<div>
+    @Html.PagedListPager(Model, page => Url.Action(nameof(SpecializationsController.Index), new { page = page }),
+    new PagedListRenderOptions {
+        LiElementClasses = new string[] { "page-item" },
+        PageClasses = new string[] { "page-link" }})
 </div>
 
-@section Scripts{
-    <script type="module">
-        import { DoctorSpecEditor } from './js/doctor-spec-editor.js';
-
-        let editor = new DoctorSpecEditor(
-            'searchInput',
-            'searchDropdown',
-            'selectedItems',
-            'clearSelected',
-            'selected-item',
-            '/Specializations/Search?name=',
-            300);
-
-        editor.initialize();
-    </script>
-}
+<!-- Page information -->
+<p>
+    Showing @Model.FirstItemOnPage to @Model.LastItemOnPage of @Model.TotalItemCount Specializations
+</p>

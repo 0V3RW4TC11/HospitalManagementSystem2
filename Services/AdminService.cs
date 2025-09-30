@@ -28,7 +28,6 @@ internal sealed class AdminService : IAdminService
     {
         var admins = await _repositoryManager.AdminRepository.GetAdmins(pageNumber, pageSize);
         int totalCount = await _repositoryManager.AdminRepository.GetTotalCount();
-
         var dtos = admins.Select(a => a.Adapt<AdminDto>()).ToArray();
 
         return (List: dtos, TotalCount: totalCount);
