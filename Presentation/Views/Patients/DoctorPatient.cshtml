@@ -1,0 +1,15 @@
+﻿@model Patient.DoctorPatientViewModel
+@{
+    ViewData["Title"] = "Patient " + Model.UserName;
+}
+
+<h1>Patient @Model.UserName</h1>
+<br />
+<partial name="_PatientPartial" for="Patient" />
+<div>
+    <a class="btn btn-secondary" asp-action="@nameof(PatientsController.DoctorPatientIndex)">Back</a>
+    <a class="btn btn-primary">Attendances</a>
+    <a class="btn btn-outline-primary">New Attendance</a>
+</div>
+
+

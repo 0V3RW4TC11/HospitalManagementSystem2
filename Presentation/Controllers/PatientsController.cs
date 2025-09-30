@@ -1,6 +1,7 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Presentation.Models.Patient;
 using Services.Abstractions;
 using X.PagedList.Extensions;
@@ -72,15 +73,9 @@ namespace Presentation.Controllers
         [Authorize(Roles = Constants.AuthRoles.Admin)]
         public async Task<IActionResult> Index(int? page)
         {
-            int pageNum = page ?? 1;
-            int pageSize = 10;
-
             try
             {
-                var patients = await _patientService.Patients(pageNum, pageSize);
-                var pagedResults = patients.List
-                    .Select(p => p.Adapt<PatientListItemViewModel>())
-                    .ToPagedList(pageNum, pageSize, patients.TotalCount);
+                var pagedResults = await GetPagedPatients(page);
                 return View(pagedResults);
             }
             catch (Exception ex)
@@ -205,6 +200,51 @@ namespace Presentation.Controllers
             {
                 throw;
             }
+        }
+
+        [Authorize(Roles = Constants.AuthRoles.Doctor)]
+        [HttpGet]
+        public async Task<IActionResult> DoctorPatientIndex(int? page)
+        {
+            try
+            {
+                var pagedResults = await GetPagedPatients(page);
+                return View(pagedResults);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        [Authorize(Roles = Constants.AuthRoles.Doctor)]
+        [HttpGet]
+        public async Task<IActionResult> DoctorPatient(Guid id)
+        {
+            try
+            {
+                var model = new DoctorPatientViewModel(
+                    await _patientService.GetByIdAsync(id),
+                    await _identityService.GetUserNameAsync(id));
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        private async Task<X.PagedList.IPagedList<PatientListItemViewModel>> GetPagedPatients(int? page)
+        {
+            int pageNum = page ?? 1;
+            int pageSize = 10;
+
+            var patients = await _patientService.Patients(pageNum, pageSize);
+            var pagedResults = patients.List
+                .Select(p => p.Adapt<PatientListItemViewModel>())
+                .ToPagedList(pageNum, pageSize, patients.TotalCount);
+            
+            return pagedResults;
         }
     }
 }
