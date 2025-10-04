@@ -8,8 +8,8 @@
 <partial name="_PatientPartial" for="Patient" />
 <div>
     <a class="btn btn-secondary" asp-action="@nameof(PatientsController.DoctorPatientIndex)">Back</a>
-    <a class="btn btn-primary">Attendances</a>
-    <a class="btn btn-outline-primary">New Attendance</a>
+    <a asp-controller="Attendances" asp-action="@nameof(AttendancesController.AttendancesByPatientId)" asp-route-id="@Model.PatientId" class="btn btn-primary">Attendances</a>
+    <a asp-controller="Attendances" asp-action="@nameof(AttendancesController.Create)" asp-route-patientId="@Model.PatientId" class="btn btn-outline-primary">New Attendance</a>
 </div>
 
 

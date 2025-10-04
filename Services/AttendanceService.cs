@@ -1,9 +1,10 @@
-﻿using Services.Dtos.Attendance;
-using Domain.Entities;
+﻿using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Repositories;
 using Mapster;
 using Services.Abstractions;
+using Services.Dtos.Attendance;
+using System.Linq.Expressions;
 
 namespace Services;
 
@@ -21,32 +22,38 @@ internal sealed class AttendanceService : IAttendanceService
         await ValidateAttendanceCreateDto(attendanceCreateDto);
         
         var attendance = attendanceCreateDto.Adapt<Attendance>();
-        
+        attendance.DateTime = DateTime.UtcNow;
+
         _repositoryManager.AttendanceRepository.Add(attendance);
         
         await _repositoryManager.UnitOfWork.SaveChangesAsync();
     }
 
-    public async Task<(AttendanceDto[] List, int TotalCount)> AttendancesByPatientIdAsync(Guid patientId, int pageNumber, int pageSize)
+    public async Task DeleteAsync(Guid id)
     {
-        var attendances = await _repositoryManager.AttendanceRepository.AttendancesByPatientIdAsync(patientId, pageNumber, pageSize);
-        var dtos = attendances.List
-            .Select(a => a.Adapt<AttendanceDto>())
-            .ToArray();
+        var attendance = await GetAttendanceFromIdAsync(id);
 
-        return (List: dtos, attendances.TotalCount);
+        _repositoryManager.AttendanceRepository.Remove(attendance);
+
+        await _repositoryManager.UnitOfWork.SaveChangesAsync();
     }
 
-    public async Task<(AttendanceDto[] List, int TotalCount)> AttendancesByDoctorIdAsync(Guid doctorId, int pageNumber, int pageSize)
+    public async Task<(DoctorAttendanceSearchResultDto[] List, int TotalCount)> FindAttendancesByDoctorPagedAsync(Guid doctorId, int pageNumber, int pageSize)
     {
-        var attendances = await _repositoryManager.AttendanceRepository.AttendancesByDoctorIdAsync(doctorId, pageNumber, pageSize);
-        var dtos = attendances.List
-            .Select(a => a.Adapt<AttendanceDto>())
-            .ToArray();
+        Expression<Func<Attendance, bool>> filter = a => a.DoctorId == doctorId;
+        Expression<Func<Attendance, DoctorAttendanceSearchResultDto>> selector = a => new() { AttendanceId = a.Id, PatientId = a.PatientId, DateTime = a.DateTime };
 
-        return (List: dtos, attendances.TotalCount);
+        return await _repositoryManager.AttendanceRepository.GetPagedListAsync(filter, selector, pageNumber, pageSize);
     }
-    
+
+    public async Task<(PatientAttendanceSearchResultDto[] List, int TotalCount)> FindAttendancesByPatientPagedAsync(Guid patientId, int pageNumber, int pageSize)
+    {
+        Expression<Func<Attendance, bool>> filter = a => a.PatientId == patientId;
+        Expression<Func<Attendance, PatientAttendanceSearchResultDto>> selector = a => new() { AttendanceId = a.Id, DoctorId = a.DoctorId, DateTime = a.DateTime };
+
+        return await _repositoryManager.AttendanceRepository.GetPagedListAsync(filter, selector, pageNumber, pageSize);
+    }
+
     public async Task<AttendanceDto> GetByIdAsync(Guid id)
     {
         var attendance = await GetAttendanceFromIdAsync(id);
@@ -69,14 +76,11 @@ internal sealed class AttendanceService : IAttendanceService
         
         await _repositoryManager.UnitOfWork.SaveChangesAsync();
     }
-
-    public async Task DeleteAsync(Guid id)
+    private static void ValidateAttendanceDetails(AttendanceCreateDto dto)
     {
-        var attendance = await GetAttendanceFromIdAsync(id);
-        
-        _repositoryManager.AttendanceRepository.Remove(attendance);
-        
-        await _repositoryManager.UnitOfWork.SaveChangesAsync();
+        ArgumentException.ThrowIfNullOrWhiteSpace(dto.Diagnosis, nameof(dto.Diagnosis));
+        ArgumentException.ThrowIfNullOrWhiteSpace(dto.Remarks, nameof(dto.Remarks));
+        ArgumentException.ThrowIfNullOrWhiteSpace(dto.Therapy, nameof(dto.Therapy));
     }
 
     private async Task<Attendance> GetAttendanceFromIdAsync(Guid id)
@@ -101,6 +105,13 @@ internal sealed class AttendanceService : IAttendanceService
         await ValidatePatientIdAsync(dto.PatientId);
     }
 
+    private async Task ValidateDoctorIdAsync(Guid id)
+    {
+        var exists = await _repositoryManager.DoctorRepository.ExistsAsync(d => d.Id == id);
+        if (!exists)
+            throw new DoctorNotFoundException();
+    }
+
     private async Task ValidateNotDuplicateAsync(AttendanceCreateDto dto)
     {
         var exists = await _repositoryManager.AttendanceRepository.ExistsAsync(a =>
@@ -111,28 +122,11 @@ internal sealed class AttendanceService : IAttendanceService
         if (exists)
             throw new AttendanceDuplicationException("An Attendance with the same details already exists.");
     }
-    
-    private async Task ValidateDoctorIdAsync(Guid id)
-    {
-        var exists = await _repositoryManager.DoctorRepository.ExistsAsync(d => d.Id == id);
-        if (!exists)
-            throw new DoctorNotFoundException();
-    }
 
     private async Task ValidatePatientIdAsync(Guid id)
     {
         var exists = await _repositoryManager.PatientRepository.ExistsAsync(p => p.Id == id);
         if (!exists)
             throw new PatientNotFoundException();
-    }
-
-    private static void ValidateAttendanceDetails(AttendanceCreateDto dto)
-    {
-        if (dto.DateTime < DateTime.Now)
-            throw new ArgumentException("DateTime cannot be in the past");
-        
-        ArgumentException.ThrowIfNullOrWhiteSpace(dto.Diagnosis, nameof(dto.Diagnosis));
-        ArgumentException.ThrowIfNullOrWhiteSpace(dto.Remarks, nameof(dto.Remarks));
-        ArgumentException.ThrowIfNullOrWhiteSpace(dto.Therapy, nameof(dto.Therapy));
     }
 }
