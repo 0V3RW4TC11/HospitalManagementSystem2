@@ -8,5 +8,5 @@
     <a asp-action="@nameof(DoctorsController.Profile)" class="btn btn-primary mb-2">My Profile</a>
     <br />
     <a asp-controller="Patients" asp-action="@nameof(PatientsController.DoctorPatientIndex)" class="btn btn-primary mb-2">Patients</a>
-    <a class="btn btn-primary mb-2">My Attendances</a>
+    <a asp-controller="Attendances" asp-action="@nameof(AttendancesController.DoctorAttendances)" class="btn btn-primary mb-2">My Attendances</a>
 </div>

@@ -5,7 +5,7 @@ namespace Presentation.Models.Patient
 {
     public class DoctorPatientViewModel
     {
-        public Guid Id { get; set; }
+        public Guid PatientId { get; set; }
 
         public string UserName { get; set; }
 
@@ -18,7 +18,7 @@ namespace Presentation.Models.Patient
 
         public DoctorPatientViewModel(PatientDto dto, string userName)
         {
-            Id = dto.Id;
+            PatientId = dto.Id;
             Patient = dto.Adapt<PatientViewModel>();
             UserName = userName;
         }

@@ -73,4 +73,28 @@ internal sealed class AttendanceRepository : IAttendanceRepository
 
         return (List: attendances, TotalCount: totalCount);
     }
+
+    public async Task<(TResult[] List, int TotalCount)> GetPagedListAsync<TResult>(
+        Expression<Func<Attendance, bool>> predicate, 
+        Expression<Func<Attendance, TResult>> selector, 
+        int pageNumber, 
+        int pageSize)
+    {
+        pageNumber = pageNumber < 1 ? 1 : pageNumber;
+        pageSize = pageSize < 0 ? 10 : pageSize;
+
+        var results = await _context.Attendances
+            .Where(predicate)
+            .OrderBy(a => a.Id)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .Select(selector)
+            .ToArrayAsync();
+
+        var totalCount = await _context.Attendances
+            .Where(predicate)
+            .CountAsync();
+
+        return (List: results,  TotalCount: totalCount);
+    }
 }
