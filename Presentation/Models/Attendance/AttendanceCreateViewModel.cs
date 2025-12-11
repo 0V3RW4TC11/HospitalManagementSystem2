@@ -33,7 +33,7 @@ namespace Presentation.Models.Attendance
         {
             DoctorId = DoctorId,
             PatientId = PatientId,
-            DateTime = DateTime.UtcNow,
+            DateTime = Attendance.DateTime,
             Diagnosis = Attendance.Diagnosis,
             Remarks = Attendance.Remarks,
             Therapy = Attendance.Therapy

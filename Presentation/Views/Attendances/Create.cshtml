@@ -14,6 +14,11 @@
         <input asp-for="PatientName" class="form-control" readonly />
     </div>
     <div class="form-group">
+        <label asp-for="Attendance.DateTime" class="control-label"></label>
+        <input asp-for="Attendance.DateTime" class="form-control"></>
+        <span asp-validation-for="Attendance.DateTime" class="text-danger"></span>
+    </div>
+    <div class="form-group">
         <label asp-for="Attendance.Diagnosis" class="control-label"></label>
         <textarea asp-for="Attendance.Diagnosis" class="form-control"></textarea>
         <span asp-validation-for="Attendance.Diagnosis" class="text-danger"></span>
