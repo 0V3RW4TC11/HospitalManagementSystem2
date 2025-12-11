@@ -11,6 +11,7 @@ namespace Services;
 internal sealed class AttendanceService : IAttendanceService
 {
     private readonly IRepositoryManager _repositoryManager;
+    private static readonly TimeSpan AttendanceDateTolerance = TimeSpan.FromHours(6);
 
     public AttendanceService(IRepositoryManager repositoryManager)
     {
@@ -19,10 +20,11 @@ internal sealed class AttendanceService : IAttendanceService
 
     public async Task CreateAsync(AttendanceCreateDto attendanceCreateDto)
     {
-        await ValidateAttendanceCreateDto(attendanceCreateDto);
-        
+        await ThrowOnInvalidAttendanceAsync(attendanceCreateDto);
+
+        await ThrowOnDuplicateAsync(attendanceCreateDto);
+
         var attendance = attendanceCreateDto.Adapt<Attendance>();
-        attendance.DateTime = DateTime.UtcNow;
 
         _repositoryManager.AttendanceRepository.Add(attendance);
         
@@ -63,10 +65,10 @@ internal sealed class AttendanceService : IAttendanceService
 
     public async Task UpdateAsync(AttendanceDto attendanceDto)
     {
+        await ThrowOnInvalidAttendanceAsync(attendanceDto);
+
         var attendance = await GetAttendanceFromIdAsync(attendanceDto.Id);
-        
-        await ValidateAttendanceCreateDto(attendanceDto);
-        
+
         attendance.Diagnosis = attendanceDto.Diagnosis;
         attendance.Remarks = attendanceDto.Remarks;
         attendance.Therapy = attendanceDto.Therapy;
@@ -76,57 +78,66 @@ internal sealed class AttendanceService : IAttendanceService
         
         await _repositoryManager.UnitOfWork.SaveChangesAsync();
     }
-    private static void ValidateAttendanceDetails(AttendanceCreateDto dto)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(dto.Diagnosis, nameof(dto.Diagnosis));
-        ArgumentException.ThrowIfNullOrWhiteSpace(dto.Remarks, nameof(dto.Remarks));
-        ArgumentException.ThrowIfNullOrWhiteSpace(dto.Therapy, nameof(dto.Therapy));
-    }
 
     private async Task<Attendance> GetAttendanceFromIdAsync(Guid id)
     {
-        var attendance = await _repositoryManager.AttendanceRepository.FindByIdAsync(id);
-        if (attendance is null)
-            throw new AttendanceNotFoundException();
+        var attendance = await _repositoryManager.AttendanceRepository.FindByIdAsync(id) 
+            ?? throw new AttendanceNotFoundException();
         
         return attendance;
     }
 
-    private async Task ValidateAttendanceCreateDto(AttendanceCreateDto dto)
+    private async Task ThrowOnDuplicateAsync(AttendanceBaseDto dto)
     {
-        await ValidateNotDuplicateAsync(dto);
-        await ValidateAttendanceDto(dto);
+        var exists = await _repositoryManager.AttendanceRepository.ExistsAsync(a =>
+            IsSameDate(a.DateTime, dto.DateTime) &&
+            a.DoctorId == dto.DoctorId &&
+            a.PatientId == dto.PatientId);
+
+        if (exists)
+            throw new AttendanceDuplicationException("An Attendance with similar details already exists.");
     }
 
-    private async Task ValidateAttendanceDto(AttendanceCreateDto dto)
+    private async Task ThrowOnInvalidAttendanceAsync(AttendanceBaseDto dto)
     {
-        ValidateAttendanceDetails(dto);
-        await ValidateDoctorIdAsync(dto.DoctorId);
-        await ValidatePatientIdAsync(dto.PatientId);
+        await ThrowOnInvalidDoctorIdAsync(dto.DoctorId);
+        await ThrowOnInvalidPatientIdAsync(dto.PatientId);
+        ThrowOnInvalidDate(dto.DateTime);
+        ThrowOnInvalidText(dto);
     }
 
-    private async Task ValidateDoctorIdAsync(Guid id)
+    private async Task ThrowOnInvalidDoctorIdAsync(Guid id)
     {
         var exists = await _repositoryManager.DoctorRepository.ExistsAsync(d => d.Id == id);
         if (!exists)
             throw new DoctorNotFoundException();
     }
 
-    private async Task ValidateNotDuplicateAsync(AttendanceCreateDto dto)
-    {
-        var exists = await _repositoryManager.AttendanceRepository.ExistsAsync(a =>
-            a.DateTime == dto.DateTime && 
-            a.DoctorId == dto.DoctorId && 
-            a.PatientId == dto.PatientId);
-        
-        if (exists)
-            throw new AttendanceDuplicationException("An Attendance with the same details already exists.");
-    }
-
-    private async Task ValidatePatientIdAsync(Guid id)
+    private async Task ThrowOnInvalidPatientIdAsync(Guid id)
     {
         var exists = await _repositoryManager.PatientRepository.ExistsAsync(p => p.Id == id);
         if (!exists)
             throw new PatientNotFoundException();
+    }
+
+    private static void ThrowOnInvalidDate(DateTime dateTime)
+    {
+        if (dateTime > DateTime.UtcNow)
+            throw new AttendanceInvalidException("Attendance date cannot be in the future.");
+    }
+
+    private static void ThrowOnInvalidText(AttendanceBaseDto dto)
+    {
+        if (string.IsNullOrWhiteSpace(dto.Diagnosis))
+            throw new AttendanceInvalidException("Diagnosis cannot be empty.");
+        if (string.IsNullOrWhiteSpace(dto.Remarks))
+            throw new AttendanceInvalidException("Remarks cannot be empty.");
+        if (string.IsNullOrWhiteSpace(dto.Therapy))
+            throw new AttendanceInvalidException("Therapy cannot be empty.");
+    }
+
+    private static bool IsSameDate(DateTime a, DateTime b)
+    {
+        return Math.Abs((a - b).TotalHours) <= AttendanceDateTolerance.TotalHours;
     }
 }
