@@ -1,6 +1,6 @@
 ﻿namespace Services.Dtos.Attendance;
 
-public class AttendanceDto : AttendanceCreateDto
+public class AttendanceDto : AttendanceBaseDto
 {
     public Guid Id { get; set; }
 }

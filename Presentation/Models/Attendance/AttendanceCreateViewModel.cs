@@ -1,4 +1,5 @@
-﻿using Presentation.Models.Helpers;
+﻿using Mapster;
+using Presentation.Models.Helpers;
 using Services.Dtos.Attendance;
 using Services.Dtos.Patient;
 using System.ComponentModel.DataAnnotations;
@@ -29,14 +30,15 @@ namespace Presentation.Models.Attendance
             Attendance = new AttendanceViewModel();
         }
 
-        public AttendanceCreateDto Dto => new AttendanceCreateDto
+        public AttendanceCreateDto Dto
         {
-            DoctorId = DoctorId,
-            PatientId = PatientId,
-            DateTime = DateTime.UtcNow,
-            Diagnosis = Attendance.Diagnosis,
-            Remarks = Attendance.Remarks,
-            Therapy = Attendance.Therapy
-        };
+            get
+            {
+                var dto = Attendance.Adapt<AttendanceCreateDto>();
+                dto.DoctorId = DoctorId;
+                dto.PatientId = PatientId;
+                return dto;
+            }
+        }
     }
 }
