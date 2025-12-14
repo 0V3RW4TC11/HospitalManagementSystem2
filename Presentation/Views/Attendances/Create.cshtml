@@ -13,26 +13,7 @@
         <label asp-for="PatientName" class="control-label"></label>
         <input asp-for="PatientName" class="form-control" readonly />
     </div>
-    <div class="form-group">
-        <label asp-for="Attendance.DateTime" class="control-label"></label>
-        <input asp-for="Attendance.DateTime" class="form-control"></>
-        <span asp-validation-for="Attendance.DateTime" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="Attendance.Diagnosis" class="control-label"></label>
-        <textarea asp-for="Attendance.Diagnosis" class="form-control"></textarea>
-        <span asp-validation-for="Attendance.Diagnosis" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="Attendance.Remarks" class="control-label"></label>
-        <textarea asp-for="Attendance.Remarks" class="form-control"></textarea>
-        <span asp-validation-for="Attendance.Remarks" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="Attendance.Therapy" class="control-label"></label>
-        <textarea asp-for="Attendance.Therapy" class="form-control"></textarea>
-        <span asp-validation-for="Attendance.Therapy" class="text-danger"></span>
-    </div>
+    <partial name="_AttendancePartial" for="Attendance" />
     <div class="form-group mt-3">
         <a asp-controller="Patients" asp-action="DoctorPatient" asp-route-id="@Model.PatientId" class="btn btn-secondary">Cancel</a>
         <button type="submit" class="btn btn-primary">Create</button>

@@ -21,13 +21,11 @@ internal sealed class AttendanceService : IAttendanceService
     public async Task CreateAsync(AttendanceCreateDto attendanceCreateDto)
     {
         await ThrowOnInvalidAttendanceAsync(attendanceCreateDto);
-
         await ThrowOnDuplicateAsync(attendanceCreateDto);
 
         var attendance = attendanceCreateDto.Adapt<Attendance>();
-
-        _repositoryManager.AttendanceRepository.Add(attendance);
         
+        _repositoryManager.AttendanceRepository.Add(attendance);
         await _repositoryManager.UnitOfWork.SaveChangesAsync();
     }
 
@@ -66,6 +64,7 @@ internal sealed class AttendanceService : IAttendanceService
     public async Task UpdateAsync(AttendanceDto attendanceDto)
     {
         await ThrowOnInvalidAttendanceAsync(attendanceDto);
+        await ThrowOnDuplicateAsync(attendanceDto);
 
         var attendance = await GetAttendanceFromIdAsync(attendanceDto.Id);
 
@@ -89,10 +88,14 @@ internal sealed class AttendanceService : IAttendanceService
 
     private async Task ThrowOnDuplicateAsync(AttendanceBaseDto dto)
     {
+        var dateLowerBounds = dto.DateTime.AddHours(-AttendanceDateTolerance.TotalHours);
+        var dateUpperBounds = dto.DateTime.AddHours(AttendanceDateTolerance.TotalHours);
+
         var exists = await _repositoryManager.AttendanceRepository.ExistsAsync(a =>
-            IsSameDate(a.DateTime, dto.DateTime) &&
             a.DoctorId == dto.DoctorId &&
-            a.PatientId == dto.PatientId);
+            a.PatientId == dto.PatientId &&
+            a.DateTime >= dateLowerBounds &&
+            a.DateTime <= dateUpperBounds);
 
         if (exists)
             throw new AttendanceDuplicationException("An Attendance with similar details already exists.");
@@ -134,10 +137,5 @@ internal sealed class AttendanceService : IAttendanceService
             throw new AttendanceInvalidException("Remarks cannot be empty.");
         if (string.IsNullOrWhiteSpace(dto.Therapy))
             throw new AttendanceInvalidException("Therapy cannot be empty.");
-    }
-
-    private static bool IsSameDate(DateTime a, DateTime b)
-    {
-        return Math.Abs((a - b).TotalHours) <= AttendanceDateTolerance.TotalHours;
     }
 }
