@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace Seeding
+namespace Seeding.Seeders
 {
-    internal static class AuthenticationRoles
+    internal static class AuthenticationRolesSeeder
     {
         public static async Task Seed(RoleManager<IdentityRole> roleManager)
         {

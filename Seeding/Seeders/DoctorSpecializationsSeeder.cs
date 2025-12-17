@@ -1,9 +1,9 @@
 ﻿using Domain.Exceptions;
 using Services.Abstractions;
 
-namespace Seeding
+namespace Seeding.Seeders
 {
-    internal static class Specializations
+    internal static class DoctorSpecializationsSeeder
     {
         public static async Task Seed(ISpecializationService service, string pathToCsv)
         {
