@@ -40,7 +40,7 @@ namespace Seeding.Seeders
                 async (adminsToBatch, ct) =>
                 {
                     // EXAMPLE!
-                    // TODO: Use batching into Admins table and Identity framework core bulk extensions for better performance
+                    // TODO: Need to populate both Admin and Account tables and Identity tables
                     var admins = _faker.Generate(adminsToBatch);
                     await using var db = await factory.CreateDbContextAsync(ct);
                     db.Set<Admin>().AddRange(admins);
