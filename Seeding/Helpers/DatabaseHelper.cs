@@ -63,5 +63,11 @@ namespace Seeding.Helpers
             services.AddScoped<IRepositoryManager, RepositoryManager>();
             services.AddScoped<IServiceManager, ServiceManager>();
         }
+
+        public static async Task<bool> HasDataAsync<T>(IDbContextFactory<RepositoryDbContext> factory) where T : class
+        {
+            using var db = await factory.CreateDbContextAsync();
+            return await db.Set<T>().AnyAsync();
+        }
     }
 }
