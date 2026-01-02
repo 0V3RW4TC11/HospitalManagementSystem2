@@ -1,0 +1,9 @@
+﻿select count(*) as AdminCount from Admins
+select count(*) as DoctorCount from Doctors
+select count(*) as PatientCount from Patients
+select count(*) as AccountCount from Accounts
+select count(*) as SpecCount from Specializations
+select count(*) as DocSpecCount from DoctorSpecializations
+select count(*) as IdentUserCount from AspNetUsers
+select count(*) as IdentRoleCount from AspNetRoles
+select count(*) as IdentUserRoleCount from AspNetUserRoles

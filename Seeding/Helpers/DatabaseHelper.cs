@@ -47,6 +47,9 @@ namespace Seeding.Helpers
             services.AddDbContext<RepositoryDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
+            services.AddDbContextFactory<RepositoryDbContext>(options =>
+                options.UseSqlServer(connectionString));
+
             // Add null logging
             services.AddLogging(builder =>
             {
