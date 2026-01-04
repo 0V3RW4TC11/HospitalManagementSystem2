@@ -1,14 +1,10 @@
-﻿using Domain.Repositories;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Persistence;
-using Persistence.Repositories;
-using Services;
-using Services.Abstractions;
 
 namespace Seeding.Helpers
 {
@@ -61,16 +57,42 @@ namespace Seeding.Helpers
             services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<RepositoryDbContext>()
                 .AddDefaultTokenProviders();
-
-            // Add application services
-            services.AddScoped<IRepositoryManager, RepositoryManager>();
-            services.AddScoped<IServiceManager, ServiceManager>();
         }
 
-        public static async Task<bool> HasDataAsync<T>(IDbContextFactory<RepositoryDbContext> factory) where T : class
+        public static async Task<bool> HasDataAsync(RepositoryDbContext context)
         {
-            using var db = await factory.CreateDbContextAsync();
-            return await db.Set<T>().AnyAsync();
+            if (await context.Accounts.AnyAsync())
+                return true;
+            if (await context.Admins.AnyAsync())
+                return true;
+            if (await context.Patients.AnyAsync())
+                return true;
+            if (await context.Doctors.AnyAsync())
+                return true;
+            if (await context.DoctorSpecializations.AnyAsync())
+                return true;
+            if (await context.Specializations.AnyAsync())
+                return true;
+            if (await context.Attendances.AnyAsync())
+                return true;
+            if (await context.Users.AnyAsync())
+                return true;
+            
+            return false;
+        }
+
+        public static async Task ResetDatabase(RepositoryDbContext context)
+        {
+            await Task.WhenAll(
+                context.Accounts.ExecuteDeleteAsync(),
+                context.Admins.ExecuteDeleteAsync(),
+                context.Patients.ExecuteDeleteAsync(),
+                context.Doctors.ExecuteDeleteAsync(),
+                context.DoctorSpecializations.ExecuteDeleteAsync(),
+                context.Specializations.ExecuteDeleteAsync(),
+                context.Attendances.ExecuteDeleteAsync(),
+                context.Users.ExecuteDeleteAsync()
+            );
         }
     }
 }
