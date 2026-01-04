@@ -8,5 +8,5 @@ public static class AuthRoles
     
     public const string Patient = "Patient";
 
-    public static string[] AsList() => [Admin, Doctor, Patient];
+    public static string[] AsArray() => [Admin, Doctor, Patient];
 }

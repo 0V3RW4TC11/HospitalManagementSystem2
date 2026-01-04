@@ -5,7 +5,7 @@ using System.Collections.Concurrent;
 
 namespace Seeding.Seeders
 {
-    internal class IdentityRolesSeeder
+    internal class IdentityUserRolesSeeder
     {
         private readonly ConcurrentBag<IdentityUserRole<string>> _identityUserRolesBag = new();
 

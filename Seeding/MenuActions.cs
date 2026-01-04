@@ -27,7 +27,7 @@ namespace Seeding
                 await AnsiConsole.Status()
                     .StartAsync("Clearing database...", async ctx =>
                     {
-                        await DatabaseHelper.ResetDatabase(_context);
+                        await ContextHelper.ResetDatabase(_context);
                     });
 
                 AnsiConsole.MarkupLine("[green]Database cleared successfully![/]");
@@ -107,8 +107,7 @@ namespace Seeding
 
             var password = AnsiConsole.Prompt(
                 new TextPrompt<string>("Enter [green]password[/] for seeded accounts:")
-                    .PromptStyle("green")
-                    .Secret());
+                    .PromptStyle("green"));
 
             if (string.IsNullOrWhiteSpace(password))
             {

@@ -1,0 +1,75 @@
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Persistence;
+
+namespace Seeding
+{
+    internal class DatabaseManager
+    {
+        public IServiceProvider Services { get; }
+
+        public DatabaseManager()
+        {
+            // Create configuration
+            var config = CreateConfiguration();
+            // Create service provider
+            var services = CreateServiceProvider(config);
+            
+            Services = services;
+        }
+
+        public async Task InitializeDatabase()
+        {
+            Console.WriteLine("Initializing database. Please wait");
+            var database = Services.GetRequiredService<RepositoryDbContext>().Database;
+            await database.MigrateAsync();
+        }
+
+        private static IConfiguration CreateConfiguration()
+        {
+            var webProjectDir = Path.Combine(AppContext.BaseDirectory, "../../../..", "Web");
+            return new ConfigurationBuilder()
+                .SetBasePath(webProjectDir)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
+        }
+
+        private static ServiceProvider CreateServiceProvider(IConfiguration config)
+        {
+            // Create service collection
+            var services = new ServiceCollection();
+
+            // Get connection string
+            var connectionName = "DefaultConnection";
+            var connectionString = config.GetConnectionString(connectionName) ??
+                throw new InvalidOperationException($"Connection string '{connectionName}' not found.");
+
+            // Add null logging
+            services.AddLogging(builder =>
+            {
+                builder.ClearProviders();
+                builder.AddProvider(NullLoggerProvider.Instance);
+            });
+
+            // Add DbContext
+            services.AddDbContext<RepositoryDbContext>(options =>
+                options.UseSqlServer(connectionString));
+
+            // Add DbContextFactory
+            services.AddDbContextFactory<RepositoryDbContext>(options =>
+                options.UseSqlServer(connectionString));
+
+            // Add Asp Identity Middleware
+            services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<RepositoryDbContext>()
+                .AddDefaultTokenProviders();
+
+            // Build and return service provider
+            return services.BuildServiceProvider();
+        }
+    }
+}

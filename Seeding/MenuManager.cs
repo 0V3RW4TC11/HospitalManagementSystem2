@@ -17,7 +17,7 @@ namespace Seeding
 
         public async Task<Dictionary<string, Func<Task>>> GetSeedingMenuAsync()
         {
-            var hasData = await DatabaseHelper.HasDataAsync(_context);
+            var hasData = await ContextHelper.HasDataAsync(_context);
 
             if (hasData)
             {

@@ -16,7 +16,7 @@ namespace Seeding.Seeders
         private readonly Func<T, string> _emailAccessor;
         private readonly ConcurrentBag<T> _entitiesBag = new();
         private readonly Faker<T> _faker;
-        private readonly IdentityRolesSeeder _identityRolesSeeder = new();
+        private readonly IdentityUserRolesSeeder _identityRolesSeeder = new();
         private readonly IdentityUsersSeeder _identityUsersSeeder = new();
         private readonly string _passwordHash;
         private readonly string _roleId;
