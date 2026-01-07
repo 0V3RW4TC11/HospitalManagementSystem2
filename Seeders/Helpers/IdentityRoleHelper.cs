@@ -15,7 +15,10 @@ namespace Seeders.Helpers
 
         public async Task<string> GetRoleIdAsync(string roleName)
         {
-            return await _roleManager.GetRoleIdAsync(new IdentityRole(roleName));
+            var role = await _roleManager.FindByNameAsync(roleName)
+                ?? throw new InvalidOperationException($"Role '{roleName}' has not been seeded.");
+
+            return role.Id;
         }
     }
 }
