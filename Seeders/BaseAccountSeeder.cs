@@ -37,7 +37,7 @@ namespace Seeders
         public async Task SeedAsync(int amount)
         {
             int parallelism = Math.Max(1, Environment.ProcessorCount / 2);
-            int batchSize = Math.Min(1000, amount / parallelism);
+            int batchSize = Math.Min(1000, Math.Max(1, amount / parallelism));
             int numBatches = (amount + batchSize - 1) / batchSize;
 
             Parallel.ForEach(

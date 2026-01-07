@@ -59,7 +59,8 @@ namespace Seeders.Services
                 context.DoctorSpecializations.ExecuteDeleteAsync(),
                 context.Specializations.ExecuteDeleteAsync(),
                 context.Attendances.ExecuteDeleteAsync(),
-                context.Users.ExecuteDeleteAsync()
+                context.Users.ExecuteDeleteAsync(),
+                context.UserRoles.ExecuteDeleteAsync()
             );
         }
 
