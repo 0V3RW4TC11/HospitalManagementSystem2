@@ -70,23 +70,6 @@ namespace Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Attendances",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    PatientId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    DoctorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    DateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Diagnosis = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Remarks = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Therapy = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Attendances", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Doctors",
                 columns: table => new
                 {
@@ -261,6 +244,35 @@ namespace Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Attendances",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PatientId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    DoctorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    DateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Diagnosis = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Remarks = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Therapy = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Attendances", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Attendances_Doctors_DoctorId",
+                        column: x => x.DoctorId,
+                        principalTable: "Doctors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Attendances_Patients_PatientId",
+                        column: x => x.PatientId,
+                        principalTable: "Patients",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "DoctorSpecializations",
                 columns: table => new
                 {
@@ -330,6 +342,16 @@ namespace Persistence.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Attendances_DoctorId",
+                table: "Attendances",
+                column: "DoctorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Attendances_PatientId",
+                table: "Attendances",
+                column: "PatientId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_DoctorSpecializations_SpecializationId",
                 table: "DoctorSpecializations",
                 column: "SpecializationId");
@@ -366,13 +388,13 @@ namespace Persistence.Migrations
                 name: "DoctorSpecializations");
 
             migrationBuilder.DropTable(
-                name: "Patients");
-
-            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Patients");
 
             migrationBuilder.DropTable(
                 name: "Doctors");

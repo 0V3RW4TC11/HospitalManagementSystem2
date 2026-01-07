@@ -115,10 +115,8 @@ public class IdentityProvider : IIdentityProvider
     {
         var identity = await GetIdentityAsync(identityId);
         
-        if (enabled)
-            identity.LockoutEnd = DateTimeOffset.MaxValue;
-        else
-            identity.LockoutEnd = null;
+        identity.LockoutEnabled = enabled;
+        identity.LockoutEnd = enabled ? DateTimeOffset.MaxValue : null;
 
         var result = await _userManager.UpdateAsync(identity);
         IdentityResultThrowOnFail(result);

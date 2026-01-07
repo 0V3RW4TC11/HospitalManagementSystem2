@@ -37,7 +37,7 @@ namespace Persistence.Migrations
                     b.HasIndex("IdentityUserId")
                         .IsUnique();
 
-                    b.ToTable("Accounts", (string)null);
+                    b.ToTable("Accounts");
                 });
 
             modelBuilder.Entity("Domain.Entities.Admin", b =>
@@ -75,7 +75,7 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Admins", (string)null);
+                    b.ToTable("Admins");
                 });
 
             modelBuilder.Entity("Domain.Entities.Attendance", b =>
@@ -111,7 +111,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("Attendances", (string)null);
+                    b.ToTable("Attendances");
                 });
 
             modelBuilder.Entity("Domain.Entities.Doctor", b =>
@@ -149,7 +149,7 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Doctors", (string)null);
+                    b.ToTable("Doctors");
                 });
 
             modelBuilder.Entity("Domain.Entities.DoctorSpecialization", b =>
@@ -164,7 +164,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("SpecializationId");
 
-                    b.ToTable("DoctorSpecializations", (string)null);
+                    b.ToTable("DoctorSpecializations");
                 });
 
             modelBuilder.Entity("Domain.Entities.Patient", b =>
@@ -205,7 +205,7 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Patients", (string)null);
+                    b.ToTable("Patients");
                 });
 
             modelBuilder.Entity("Domain.Entities.Specialization", b =>
@@ -220,7 +220,7 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Specializations", (string)null);
+                    b.ToTable("Specializations");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

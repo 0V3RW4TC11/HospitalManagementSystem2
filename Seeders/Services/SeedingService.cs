@@ -1,0 +1,139 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Persistence;
+using Seeders.Helpers;
+
+namespace Seeders.Services
+{
+    public class SeedingService : ISeedingService
+    {
+        private DatabaseService _databaseService;
+        private IdentityRoleHelper _roleHelper;
+
+        private SeedingService()
+        { }
+
+        public static async Task<SeedingService> CreateAsync()
+        {
+            var service = new SeedingService();
+            await service.InitializeAsync();
+            return service;
+        }
+
+        public async Task<bool> HasDataAsync()
+        {
+            var context = _databaseService.Services.GetRequiredService<RepositoryDbContext>();
+
+            if (await context.Accounts.AnyAsync())
+                return true;
+            if (await context.Admins.AnyAsync())
+                return true;
+            if (await context.Patients.AnyAsync())
+                return true;
+            if (await context.Doctors.AnyAsync())
+                return true;
+            if (await context.DoctorSpecializations.AnyAsync())
+                return true;
+            if (await context.Specializations.AnyAsync())
+                return true;
+            if (await context.Attendances.AnyAsync())
+                return true;
+            if (await context.Users.AnyAsync())
+                return true;
+
+            return false;
+        }
+
+        public async Task ResetDatabaseAsync()
+        {
+            if (_databaseService is null)
+                throw new InvalidOperationException("Service is not initialized.");
+
+            var context = _databaseService.Services.GetRequiredService<RepositoryDbContext>();
+
+            await Task.WhenAll(
+                context.Accounts.ExecuteDeleteAsync(),
+                context.Admins.ExecuteDeleteAsync(),
+                context.Patients.ExecuteDeleteAsync(),
+                context.Doctors.ExecuteDeleteAsync(),
+                context.DoctorSpecializations.ExecuteDeleteAsync(),
+                context.Specializations.ExecuteDeleteAsync(),
+                context.Attendances.ExecuteDeleteAsync(),
+                context.Users.ExecuteDeleteAsync()
+            );
+        }
+
+        public async Task SeedAdminsAsync(int amount, string password)
+        {
+            var adminSeeder = await CreateAdminSeederAsync(password);
+            await adminSeeder.SeedAsync(amount);
+        }
+
+        public async Task SeedAllAsync(int amount, string password)
+        {
+            var seeders = new List<ISeeder>
+            {
+                await CreateAdminSeederAsync(password),
+                await CreatePatientSeederAsync(password),
+                await CreateDoctorSeederAsync(password)
+            };
+
+            seeders.ForEach(async s => await s.SeedAsync(amount));
+        }
+
+        public async Task SeedDoctorsAsync(int amount, string password)
+        {
+            var doctorSeeder = await CreateDoctorSeederAsync(password);
+            await doctorSeeder.SeedAsync(amount);
+        }
+
+        public async Task SeedPatientsAsync(int amount, string password)
+        {
+            var patientSeeder = await CreatePatientSeederAsync(password);
+            await patientSeeder.SeedAsync(amount);
+        }
+
+        private async Task<AdminSeeder> CreateAdminSeederAsync(string password)
+        {
+            var roleId = await _roleHelper.GetRoleIdAsync(Constants.AuthRoles.Admin);
+            return new AdminSeeder(_databaseService.Services, roleId, password);
+        }
+
+        private async Task<DoctorSeeder> CreateDoctorSeederAsync(string password)
+        {
+            var roleId = await _roleHelper.GetRoleIdAsync(Constants.AuthRoles.Doctor);
+            var services = _databaseService.Services;
+            var context = services.GetRequiredService<RepositoryDbContext>();
+            var specIds = await SpecializationsSeeder.SeedAsync(
+                context,
+                Path.Combine(AppContext.BaseDirectory, "Data", "specializations.csv"));
+
+            return new DoctorSeeder(services, specIds, roleId, password);
+        }
+
+        private async Task<PatientSeeder> CreatePatientSeederAsync(string password)
+        {
+            var roleId = await _roleHelper.GetRoleIdAsync(Constants.AuthRoles.Patient);
+            return new PatientSeeder(_databaseService.Services, roleId, password);
+        }
+
+        private async Task InitializeAsync()
+        {
+            _databaseService = new DatabaseService();
+
+            Console.Write("Initializing database...");
+            await _databaseService.InitializeDatabaseAsync();
+            Console.WriteLine("OK!");
+
+            Console.Write("Seeding Roles...");
+            await IdentityRolesSeeder.SeedAsync(_databaseService.Services);
+            Console.WriteLine("OK!");
+
+            _roleHelper = new IdentityRoleHelper(_databaseService.Services);
+
+            Console.WriteLine("\nSeeding service initialization complete.");
+            Console.WriteLine("Press any key to continue...");
+            Console.ReadKey();
+        }
+    }
+}
