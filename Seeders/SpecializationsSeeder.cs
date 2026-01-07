@@ -1,6 +1,6 @@
 ﻿using Persistence;
 
-namespace Seeding.Seeders
+namespace Seeders
 {
     internal static class SpecializationsSeeder
     {

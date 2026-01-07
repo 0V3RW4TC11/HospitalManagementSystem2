@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Persistence;
 using System.Collections.Concurrent;
 
-namespace Seeding.Seeders
+namespace Seeders
 {
     internal class IdentityUserRolesSeeder
     {

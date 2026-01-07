@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Seeding.Helpers
+namespace Seeders.Helpers
 {
     internal static class IdentityPasswordHashHelper
     {

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Persistence;
 using System.Collections.Concurrent;
 
-namespace Seeding.Seeders
+namespace Seeders
 {
     internal class AccountSeeder
     {

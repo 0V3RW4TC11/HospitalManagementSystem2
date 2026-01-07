@@ -1,8 +1,7 @@
-﻿using Seeding;
-using Seeding.Helpers;
+﻿using Menu;
+using Seeders.Services;
 
-var dbManager = new DatabaseManager();
-await dbManager.InitializeDatabase();
-
-var menuController = new MenuController(dbManager.Services);
-await menuController.RunMenuAsync();
+var seedingService = await SeedingService.CreateAsync();
+var menuActions = new MenuActions(seedingService);
+var menuController = new MenuController(menuActions);
+await menuController.RunMenuAsync(); 

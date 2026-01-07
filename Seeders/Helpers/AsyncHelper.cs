@@ -1,4 +1,4 @@
-﻿namespace Seeding.Helpers
+﻿namespace Seeders.Helpers
 {
     internal static class AsyncHelper
     {

@@ -2,13 +2,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Persistence;
 
-namespace Seeding.Seeders
+namespace Seeders
 {
-    internal class IdentityRolesManager
+    internal static class IdentityRolesSeeder
     {
-        public Dictionary<string, string> RoleIds { get; } = new();
-
-        public async Task SeedAsync(IServiceProvider services)
+        public static async Task SeedAsync(IServiceProvider services)
         {
             var context = services.GetRequiredService<RepositoryDbContext>();
             var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
@@ -19,9 +17,7 @@ namespace Seeding.Seeders
 
             foreach (var role in rolesToInsert)
             {
-                var identityRole = new IdentityRole(role!);
-                await roleManager.CreateAsync(identityRole);
-                RoleIds[role!] = identityRole.Id;
+                await roleManager.CreateAsync(new IdentityRole(role!));
             }
         }
     }

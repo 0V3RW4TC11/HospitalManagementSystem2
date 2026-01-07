@@ -1,22 +1,41 @@
-using Microsoft.Extensions.DependencyInjection;
-using Persistence;
-using Seeding.Helpers;
+using Seeders.Services;
 using Spectre.Console;
 
-namespace Seeding
+namespace Menu
 {
     internal class MenuActions
     {
-        private readonly RepositoryDbContext _context;
-        private readonly SeedingManager _seedingManager;
+        private readonly ISeedingService _seedingService;
 
-        public MenuActions(IServiceProvider services)
+        public MenuActions(ISeedingService seedingService)
         {
-            _context = services.GetRequiredService<RepositoryDbContext>();
-            _seedingManager = new SeedingManager(services);
+            _seedingService = seedingService;
         }
 
-        public async Task ResetDatabaseAsync()
+        public async Task<Dictionary<string, Func<Task>>> GetActionsAsync()
+        {
+            if (await _seedingService.HasDataAsync())
+            {
+                return new Dictionary<string, Func<Task>>
+                {
+                    ["Clear All Database Data"] = ResetDatabaseAsync,
+                    ["Exit"] = () => Task.CompletedTask
+                };
+            }
+            else
+            {
+                return new Dictionary<string, Func<Task>>
+                {
+                    ["Seed Admins"] = SeedAdminsAsync,
+                    ["Seed Patients"] = SeedPatientsAsync,
+                    ["Seed Doctors"] = SeedDoctorsAsync,
+                    ["Seed All"] = SeedAllAsync,
+                    ["Exit"] = () => Task.CompletedTask
+                };
+            }
+        }
+
+        private async Task ResetDatabaseAsync()
         {
             AnsiConsole.MarkupLine("[yellow]WARNING: This will delete all data from the database![/]");
             
@@ -27,7 +46,7 @@ namespace Seeding
                 await AnsiConsole.Status()
                     .StartAsync("Clearing database...", async ctx =>
                     {
-                        await ContextHelper.ResetDatabase(_context);
+                        await _seedingService.ResetDatabaseAsync();
                     });
 
                 AnsiConsole.MarkupLine("[green]Database cleared successfully![/]");
@@ -47,7 +66,7 @@ namespace Seeding
             await AnsiConsole.Status()
                 .StartAsync($"Seeding {amount} admin(s)...", async ctx =>
                 {
-                    await _seedingManager.SeedAdminsAsync(amount, password);
+                    await _seedingService.SeedAdminsAsync(amount, password);
                 });
 
             AnsiConsole.MarkupLine($"[green]Successfully seeded {amount} admin(s)[/]");
@@ -61,7 +80,7 @@ namespace Seeding
             await AnsiConsole.Status()
                 .StartAsync($"Seeding {amount} patient(s)...", async ctx =>
                 {
-                    await _seedingManager.SeedPatientsAsync(amount, password);
+                    await _seedingService.SeedPatientsAsync(amount, password);
                 });
 
             AnsiConsole.MarkupLine($"[green]Successfully seeded {amount} patient(s)[/]");
@@ -75,7 +94,7 @@ namespace Seeding
             await AnsiConsole.Status()
                 .StartAsync($"Seeding {amount} doctor(s)...", async ctx =>
                 {
-                    await _seedingManager.SeedDoctorsAsync(amount, password);
+                    await _seedingService.SeedDoctorsAsync(amount, password);
                 });
 
             AnsiConsole.MarkupLine($"[green]Successfully seeded {amount} doctor(s)[/]");
@@ -89,7 +108,7 @@ namespace Seeding
             await AnsiConsole.Status()
                 .StartAsync($"Seeding {amount} of each user type...", async ctx =>
                 {
-                    await _seedingManager.SeedAllAsync(amount, password);
+                    await _seedingService.SeedAllAsync(amount, password);
                 });
 
             AnsiConsole.MarkupLine($"[green]Successfully seeded {amount} of each user type[/]");

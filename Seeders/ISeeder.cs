@@ -1,4 +1,4 @@
-﻿namespace Seeding.Seeders
+﻿namespace Seeders
 {
     internal interface ISeeder
     {

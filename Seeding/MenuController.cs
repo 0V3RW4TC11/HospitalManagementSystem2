@@ -1,14 +1,14 @@
 using Spectre.Console;
 
-namespace Seeding
+namespace Menu
 {
     internal class MenuController
     {
-        private readonly MenuManager _menuManager;
+        private readonly MenuActions _menuActions;
 
-        public MenuController(IServiceProvider services)
+        public MenuController(MenuActions menuActions)
         {
-            _menuManager = new MenuManager(services);
+            _menuActions = menuActions;
         }
 
         public async Task RunMenuAsync()
@@ -26,7 +26,7 @@ namespace Seeding
                             .LeftJustified());
                     AnsiConsole.WriteLine();
 
-                    var menuOptions = await _menuManager.GetSeedingMenuAsync();
+                    var menuOptions = await _menuActions.GetActionsAsync();
 
                     var choice = AnsiConsole.Prompt(
                         new SelectionPrompt<string>()

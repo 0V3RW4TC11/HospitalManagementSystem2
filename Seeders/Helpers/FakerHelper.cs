@@ -1,6 +1,6 @@
 ﻿using static Bogus.DataSets.Name;
 
-namespace Seeding.Helpers
+namespace Seeders.Helpers
 {
     internal static class FakerHelper
     {

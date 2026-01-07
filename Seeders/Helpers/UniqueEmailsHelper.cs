@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 
-namespace Seeding.Helpers
+namespace Seeders.Helpers
 {
     internal class UniqueEmailsHelper
     {

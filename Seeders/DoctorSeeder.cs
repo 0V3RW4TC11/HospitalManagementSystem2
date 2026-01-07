@@ -1,10 +1,10 @@
 ﻿using Bogus;
 using Domain.Entities;
-using Seeding.Helpers;
+using Seeders.Helpers;
 using static Bogus.DataSets.Name;
-using static Seeding.Helpers.FakerHelper;
+using static Seeders.Helpers.FakerHelper;
 
-namespace Seeding.Seeders
+namespace Seeders
 {
     internal class DoctorSeeder : BaseAccountSeeder<Doctor>
     {

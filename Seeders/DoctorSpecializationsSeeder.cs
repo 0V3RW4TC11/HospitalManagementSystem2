@@ -4,7 +4,7 @@ using Persistence;
 using System.Collections.Concurrent;
 using Bogus;
 
-namespace Seeding.Seeders
+namespace Seeders
 {
     internal class DoctorSpecializationsSeeder
     {

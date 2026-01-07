@@ -1,20 +1,23 @@
 ﻿using Bogus;
 using Domain.Entities;
+using Seeders.Helpers;
 using static Bogus.DataSets.Name;
-using static Seeding.Helpers.FakerHelper;
+using static Seeders.Helpers.FakerHelper;
 
-namespace Seeding.Seeders
+namespace Seeders
 {
-    internal class PatientSeeder : BaseAccountSeeder<Patient>
+    internal class AdminSeeder : BaseAccountSeeder<Admin>
     {
-        public PatientSeeder(IServiceProvider services, string roleId, string password) : base(
+        private readonly UniqueEmailsHelper _emailHelper = new(Constants.DomainNames.Organization);
+
+        public AdminSeeder(IServiceProvider services, string roleId, string password) : base(
             services,
             roleId,
             password,
             x => x.Email!)
         { }
 
-        protected override Faker<Patient> CreateFaker() => new Faker<Patient>()
+        protected override Faker<Admin> CreateFaker() => new Faker<Admin>()
             .RuleFor(x => x.Id, f => Guid.NewGuid())
             .RuleFor(x => x.Gender, f => f.PickRandom<Gender>() == Gender.Male ? "Male" : "Female")
             .RuleFor(x => x.Title, (f, x) => f.Name.Prefix(GetGender(x.Gender!)))
@@ -23,7 +26,6 @@ namespace Seeding.Seeders
             .RuleFor(x => x.Address, f => f.Address.FullAddress())
             .RuleFor(x => x.Phone, f => f.Phone.PhoneNumber())
             .RuleFor(x => x.DateOfBirth, f => DateOnly.FromDateTime(f.Person.DateOfBirth))
-            .RuleFor(x => x.Email, (f, x) => f.Internet.Email(x.FirstName, x.LastName, null, f.UniqueIndex.ToString()))
-            .RuleFor(x => x.BloodType, f => f.PickRandom<Constants.BloodType>());
+            .RuleFor(x => x.Email, (f, x) => _emailHelper.Create(x.FirstName, x.LastName!));
     }
 }

@@ -6,13 +6,13 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Persistence;
 
-namespace Seeding
+namespace Seeders.Services
 {
-    internal class DatabaseManager
+    internal class DatabaseService
     {
         public IServiceProvider Services { get; }
 
-        public DatabaseManager()
+        public DatabaseService()
         {
             // Create configuration
             var config = CreateConfiguration();
@@ -22,9 +22,8 @@ namespace Seeding
             Services = services;
         }
 
-        public async Task InitializeDatabase()
+        public async Task InitializeDatabaseAsync()
         {
-            Console.WriteLine("Initializing database. Please wait");
             var database = Services.GetRequiredService<RepositoryDbContext>().Database;
             await database.MigrateAsync();
         }

@@ -4,10 +4,10 @@ using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Persistence;
-using Seeding.Helpers;
+using Seeders.Helpers;
 using System.Collections.Concurrent;
 
-namespace Seeding.Seeders
+namespace Seeders
 {
     internal abstract class BaseAccountSeeder<T> : ISeeder where T : Entity
     {
