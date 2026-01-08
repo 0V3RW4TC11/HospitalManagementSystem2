@@ -5,7 +5,7 @@ using System.Collections.Concurrent;
 
 namespace Seeders
 {
-    internal class IdentityUserRolesSeeder
+    internal class IdentityUserRolesSeeder : IDisposable
     {
         private readonly ConcurrentBag<IdentityUserRole<string>> _identityUserRolesBag = new();
 
@@ -33,6 +33,11 @@ namespace Seeders
             }).ToList();
 
             identityUserRoles.ForEach(_identityUserRolesBag.Add);
+        }
+
+        public void Dispose()
+        {
+            _identityUserRolesBag.Clear();
         }
     }
 }

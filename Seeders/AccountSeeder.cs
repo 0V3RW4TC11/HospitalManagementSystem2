@@ -7,7 +7,7 @@ using System.Collections.Concurrent;
 
 namespace Seeders
 {
-    internal class AccountSeeder
+    internal class AccountSeeder : IDisposable
     {
         private readonly ConcurrentBag<Account> _accountsBag = new();
 
@@ -25,6 +25,11 @@ namespace Seeders
         public async Task BulkInsertAsync(RepositoryDbContext context)
         {
             await context.BulkInsertAsync(_accountsBag, new BulkConfig { PreserveInsertOrder = false });
+        }
+
+        public void Dispose()
+        {
+            _accountsBag.Clear();
         }
     }
 }

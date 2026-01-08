@@ -9,12 +9,11 @@ namespace Seeders
     internal class DoctorSeeder : BaseAccountSeeder<Doctor>
     {
         private readonly DoctorSpecializationsSeeder _docSpecsSeeder;
-        private readonly UniqueEmailsHelper _emailHelper = new(Constants.DomainNames.Organization);
 
         public DoctorSeeder(
-            IServiceProvider services, 
+            IServiceProvider services,
             IEnumerable<Guid> specializationIds,
-            string roleId, 
+            string roleId,
             string password) : base(
             services,
             roleId,
@@ -39,7 +38,7 @@ namespace Seeders
             .RuleFor(x => x.Address, f => f.Address.FullAddress())
             .RuleFor(x => x.Phone, f => f.Phone.PhoneNumber())
             .RuleFor(x => x.DateOfBirth, f => DateOnly.FromDateTime(f.Person.DateOfBirth))
-            .RuleFor(x => x.Email, (f, x) => _emailHelper.Create(x.FirstName, x.LastName!));
+            .RuleFor(x => x.Email, (f, x) => f.Internet.Email(x.FirstName, x.LastName, Constants.DomainNames.Organization, f.UniqueIndex.ToString()));
 
         protected override List<Task> CreateInsertTasks()
         {
@@ -51,6 +50,12 @@ namespace Seeders
                     await _docSpecsSeeder.BulkInsertAsync(context);
                 }));
             return tasks;
+        }
+
+        public override void Dispose()
+        {
+            _docSpecsSeeder.Dispose();
+            base.Dispose();
         }
     }
 }

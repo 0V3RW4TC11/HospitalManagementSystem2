@@ -66,31 +66,43 @@ namespace Seeders.Services
 
         public async Task SeedAdminsAsync(int amount, string password)
         {
-            var adminSeeder = await CreateAdminSeederAsync(password);
+            using var adminSeeder = await CreateAdminSeederAsync(password);
             await adminSeeder.SeedAsync(amount);
         }
 
         public async Task SeedAllAsync(int amount, string password)
         {
-            var seeders = new List<ISeeder>
+            // Execute seeders sequentially to avoid memory pressure
+            using (var adminSeeder = await CreateAdminSeederAsync(password))
             {
-                await CreateAdminSeederAsync(password),
-                await CreatePatientSeederAsync(password),
-                await CreateDoctorSeederAsync(password)
-            };
+                await adminSeeder.SeedAsync(amount);
+            }
+            
+            using (var patientSeeder = await CreatePatientSeederAsync(password))
+            {
+                await patientSeeder.SeedAsync(amount);
+            }
+            
+            using (var doctorSeeder = await CreateDoctorSeederAsync(password))
+            {
+                await doctorSeeder.SeedAsync(amount);
+            }
 
-            seeders.ForEach(async s => await s.SeedAsync(amount));
+            // Force garbage collection to clean up Bogus internal state
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
         }
 
         public async Task SeedDoctorsAsync(int amount, string password)
         {
-            var doctorSeeder = await CreateDoctorSeederAsync(password);
+            using var doctorSeeder = await CreateDoctorSeederAsync(password);
             await doctorSeeder.SeedAsync(amount);
         }
 
         public async Task SeedPatientsAsync(int amount, string password)
         {
-            var patientSeeder = await CreatePatientSeederAsync(password);
+            using var patientSeeder = await CreatePatientSeederAsync(password);
             await patientSeeder.SeedAsync(amount);
         }
 

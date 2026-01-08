@@ -6,27 +6,28 @@ using Bogus;
 
 namespace Seeders
 {
-    internal class DoctorSpecializationsSeeder
+    internal class DoctorSpecializationsSeeder : IDisposable
     {
         private readonly ConcurrentBag<DoctorSpecialization> _doctorSpecializationsBag;
-        private readonly Faker _faker;
         private readonly Guid[] _specializationIds;
 
         public DoctorSpecializationsSeeder(IEnumerable<Guid> specializationIds)
         {
             _doctorSpecializationsBag = new();
-            _faker = new Faker();
             _specializationIds = specializationIds.ToArray();
         }
 
         public void Create(IEnumerable<Doctor> doctors)
         {
             var doctorSpecializations = new List<DoctorSpecialization>();
+            
+            // Create a thread-local Faker to avoid memory accumulation
+            var faker = new Faker();
 
             foreach (var doctor in doctors)
             {
                 // Pick 1 to 5 random specializations for each doctor
-                var selectedIds = _faker.PickRandom(_specializationIds, _faker.Random.Int(1, 5));
+                var selectedIds = faker.PickRandom(_specializationIds, faker.Random.Int(1, 5));
                 
                 foreach (var id in selectedIds)
                 {
@@ -49,6 +50,11 @@ namespace Seeders
                 {
                     PreserveInsertOrder = false
                 });
+        }
+
+        public void Dispose()
+        {
+            _doctorSpecializationsBag.Clear();
         }
     }
 }

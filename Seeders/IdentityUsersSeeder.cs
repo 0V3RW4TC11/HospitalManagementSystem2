@@ -5,7 +5,7 @@ using System.Collections.Concurrent;
 
 namespace Seeders
 {
-    internal class IdentityUsersSeeder
+    internal class IdentityUsersSeeder : IDisposable
     {
         private readonly ConcurrentBag<IdentityUser> _identityUsersBag = new();
 
@@ -49,6 +49,11 @@ namespace Seeders
             identityUsers.ForEach(_identityUsersBag.Add);
 
             return identityUsers;
+        }
+
+        public void Dispose()
+        {
+            _identityUsersBag.Clear();
         }
     }
 }

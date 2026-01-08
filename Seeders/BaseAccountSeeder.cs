@@ -15,7 +15,6 @@ namespace Seeders
         private readonly AccountSeeder _accountSeeder = new();
         private readonly Func<T, string> _emailAccessor;
         private readonly ConcurrentBag<T> _entitiesBag = new();
-        private readonly Faker<T> _faker;
         private readonly IdentityUserRolesSeeder _identityRolesSeeder = new();
         private readonly IdentityUsersSeeder _identityUsersSeeder = new();
         private readonly string _passwordHash;
@@ -29,7 +28,6 @@ namespace Seeders
         {
             _contextFactory = services.GetRequiredService<IDbContextFactory<RepositoryDbContext>>();
             _emailAccessor = emailAccessor;
-            _faker = CreateFaker();
             _passwordHash = IdentityPasswordHashHelper.HashPassword(services, password);
             _roleId = roleId;
         }
@@ -60,7 +58,9 @@ namespace Seeders
 
         protected virtual List<T> BatchFunc(int batchAmount)
         {
-            return _faker.Generate(batchAmount);
+            // Create a new Faker instance per batch to avoid memory accumulation
+            var faker = CreateFaker();
+            return faker.Generate(batchAmount);
         }
 
         protected abstract Faker<T> CreateFaker();
@@ -90,6 +90,14 @@ namespace Seeders
                     await _accountSeeder.BulkInsertAsync(context);
                 })
             };
+        }
+
+        public virtual void Dispose()
+        {
+            _entitiesBag.Clear();
+            _identityUsersSeeder.Dispose();
+            _identityRolesSeeder.Dispose();
+            _accountSeeder.Dispose();
         }
     }
 }

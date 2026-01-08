@@ -8,8 +8,6 @@ namespace Seeders
 {
     internal class AdminSeeder : BaseAccountSeeder<Admin>
     {
-        private readonly UniqueEmailsHelper _emailHelper = new(Constants.DomainNames.Organization);
-
         public AdminSeeder(IServiceProvider services, string roleId, string password) : base(
             services,
             roleId,
@@ -26,6 +24,6 @@ namespace Seeders
             .RuleFor(x => x.Address, f => f.Address.FullAddress())
             .RuleFor(x => x.Phone, f => f.Phone.PhoneNumber())
             .RuleFor(x => x.DateOfBirth, f => DateOnly.FromDateTime(f.Person.DateOfBirth))
-            .RuleFor(x => x.Email, (f, x) => _emailHelper.Create(x.FirstName, x.LastName!));
+            .RuleFor(x => x.Email, (f, x) => f.Internet.Email(x.FirstName, x.LastName, Constants.DomainNames.Organization, f.UniqueIndex.ToString()));
     }
 }
