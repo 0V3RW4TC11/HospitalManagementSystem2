@@ -1,8 +1,10 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.Models.Admin;
 using Presentation.Models.Doctor;
 using Services.Abstractions;
+using X.PagedList;
 using X.PagedList.Extensions;
 
 namespace Presentation.Controllers
@@ -80,11 +82,15 @@ namespace Presentation.Controllers
 
             try
             {
-                var doctors = await _doctorService.Doctors(pageNum, pageSize);
-                var pagedResults = doctors.List
-                    .Select(p => p.Adapt<DoctorListItemViewModel>())
-                    .ToPagedList(pageNum, pageSize, doctors.TotalCount);
-                return View(pagedResults);
+                var paginated = await _doctorService.Doctors(pageNum, pageSize);
+                var models = paginated.List.Select(a => a.Adapt<DoctorListItemViewModel>());
+                var results = new StaticPagedList<DoctorListItemViewModel>(
+                    models,
+                    pageNum,
+                    pageSize,
+                    paginated.TotalCount);
+
+                return View(results);
             }
             catch (Exception ex)
             {
