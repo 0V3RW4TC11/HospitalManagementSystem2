@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Models.Admin;
 using Services.Abstractions;
+using X.PagedList;
 using X.PagedList.Extensions;
 
 namespace Presentation.Controllers
@@ -144,11 +145,15 @@ namespace Presentation.Controllers
 
             try
             {
-                var admins = await _adminService.Admins(pageNum, pageSize);
-                var pagedResults = admins.List
-                    .Select(a => a.Adapt<AdminListItemViewModel>())
-                    .ToPagedList(pageNum, pageSize, admins.TotalCount);
-                return View(pagedResults);
+                var paginated = await _adminService.Admins(pageNum, pageSize);
+                var models = paginated.List.Select(a => a.Adapt<AdminListItemViewModel>());
+                var results = new StaticPagedList<AdminListItemViewModel>(
+                    models,
+                    pageNum,
+                    pageSize,
+                    paginated.TotalCount);
+
+                return View(results);
             }
             catch (Exception ex)
             {

@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Presentation.Models.Admin;
 using Presentation.Models.Patient;
 using Services.Abstractions;
+using X.PagedList;
 using X.PagedList.Extensions;
 
 namespace Presentation.Controllers
@@ -73,10 +75,20 @@ namespace Presentation.Controllers
         [Authorize(Roles = Constants.AuthRoles.Admin)]
         public async Task<IActionResult> Index(int? page)
         {
+            int pageNum = page ?? 1;
+            int pageSize = 10;
+
             try
             {
-                var pagedResults = await GetPagedPatients(page);
-                return View(pagedResults);
+                var paginated = await _patientService.Patients(pageNum, pageSize);
+                var models = paginated.List.Select(a => a.Adapt<PatientListItemViewModel>());
+                var results = new StaticPagedList<PatientListItemViewModel>(
+                    models,
+                    pageNum,
+                    pageSize,
+                    paginated.TotalCount);
+
+                return View(results);
             }
             catch (Exception ex)
             {

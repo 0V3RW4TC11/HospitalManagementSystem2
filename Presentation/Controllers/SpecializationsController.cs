@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 using Services.Dtos.Specialization;
+using X.PagedList;
 using X.PagedList.Extensions;
 
 namespace Presentation.Controllers
@@ -101,8 +102,13 @@ namespace Presentation.Controllers
 
             try
             {
-                var specs = await _specializationService.SpecializationsPaged(pageNum, pageSize);
-                return View(specs.List.ToPagedList(pageNum, pageSize, specs.TotalCount));
+                var paginated = await _specializationService.SpecializationsPaged(pageNum, pageSize);
+                var results = new StaticPagedList<SpecializationDto>(
+                    paginated.List,
+                    pageNum,
+                    pageSize,
+                    paginated.TotalCount);
+                return View(results);
             }
             catch (Exception ex)
             {
