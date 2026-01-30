@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Commands.Admin.CreateAdmin
 {
-    public record CreateAdminCommand(AdminDto Dto, string Password) : IRequest<Guid>;
+    public record CreateAdminCommand(AdminDto Dto, string Password) : IRequest;
 }

@@ -7,10 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Attendance\" />
-    <Folder Include="Doctor\" />
-    <Folder Include="Specialization\" />
-    <Folder Include="Patient\" />
+    <Compile Remove="Attendance\**" />
+    <Compile Remove="Doctor\**" />
+    <Compile Remove="Patient\**" />
+    <Compile Remove="Specialization\**" />
+    <EmbeddedResource Remove="Attendance\**" />
+    <EmbeddedResource Remove="Doctor\**" />
+    <EmbeddedResource Remove="Patient\**" />
+    <EmbeddedResource Remove="Specialization\**" />
+    <None Remove="Attendance\**" />
+    <None Remove="Doctor\**" />
+    <None Remove="Patient\**" />
+    <None Remove="Specialization\**" />
   </ItemGroup>
 
 </Project>

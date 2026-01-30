@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Dtos.Admin;
 
-public class AdminDto
+public record AdminDto
 {
     public string? Title { get; set; }
 
