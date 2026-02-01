@@ -11,12 +11,12 @@ namespace Commands.Doctor
         IRequestHandler<UpdateDoctorCommand>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly DoctorSpecializationHandler _docSpecHandler;
+        private readonly DoctorSpecializationHelper _docSpecHandler;
 
         public DoctorHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _docSpecHandler = new DoctorSpecializationHandler(_unitOfWork.DoctorSpecializations);
+            _docSpecHandler = new DoctorSpecializationHelper(_unitOfWork.DoctorSpecializations);
         }
 
         public async Task Handle(CreateDoctorCommand request, CancellationToken cancellationToken)

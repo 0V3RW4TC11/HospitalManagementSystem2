@@ -2,6 +2,7 @@
 using Commands.Admin;
 using FluentValidation;
 using Specifications.Admin;
+using Validation.Shared;
 
 namespace Validation.Admin
 {
@@ -15,16 +16,8 @@ namespace Validation.Admin
             _unitOfWork = unitOfWork;
 
             // Correctness
-            RuleFor(c => c.Dto)
-                .NotNull()
-                .SetValidator(new AdminCorrectnessValidator());
-            RuleFor(c => c.Id).NotEmpty().WithMessage("Id is required.");
-
-            // Existence
-            RuleFor(c => c.Id)
-                .SetValidator(new AdminExistenceValidator(_unitOfWork));
-
-            // Uniqueness
+            RuleFor(c => c.Dto).SetValidator(new AdminCorrectnessValidator());
+            RuleFor(c => c.Id).SetValidator(new EntityValidator<Domain.Entities.Admin>(_unitOfWork.Admins));
             RuleFor(c => c.Dto.Email)
                 .MustAsync(EmailMustBeUniqueForThisAdmin)
                 .WithMessage("This email is already used by another Admin");

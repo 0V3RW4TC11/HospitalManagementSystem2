@@ -14,15 +14,9 @@ namespace Validation.Patient
         {
             _unitOfWork = unitOfWork;
 
-            // Correctness
-            RuleFor(c => c.Dto)
-                .NotNull()
-                .SetValidator(new PatientCorrectnessValidator());
+            RuleFor(c => c.Dto).SetValidator(new PatientCorrectnessValidator());
             RuleFor(c => c.Password).NotEmpty().WithMessage("Password is required.");
-
-            // Uniqueness
-            RuleFor(c => c.Dto.Email)
-                .MustAsync(EmailMustBeUniqueForThisPatient);
+            RuleFor(c => c.Dto.Email).MustAsync(EmailMustBeUniqueForThisPatient);
         }
 
         private async Task<bool> EmailMustBeUniqueForThisPatient(

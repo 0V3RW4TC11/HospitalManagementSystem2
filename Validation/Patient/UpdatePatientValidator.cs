@@ -1,8 +1,8 @@
 ﻿using Abstractions;
 using Commands.Patient.UpdatePatient;
 using FluentValidation;
-using Specifications.Entity;
 using Specifications.Patient;
+using Validation.Shared;
 
 namespace Validation.Patient
 {
@@ -15,17 +15,8 @@ namespace Validation.Patient
         {
             _unitOfWork = unitOfWork;
 
-            // Correctness
-            RuleFor(c => c.Dto)
-                .NotNull()
-                .SetValidator(new PatientCorrectnessValidator());
-            RuleFor(c => c.Id).NotEmpty().WithMessage("Id is required.");
-
-            // Existence
-            RuleFor(c => c.Id)
-                .SetValidator(new PatientExistenceValidator(_unitOfWork));
-
-            // Uniqueness
+            RuleFor(c => c.Dto).SetValidator(new PatientCorrectnessValidator());
+            RuleFor(c => c.Id).SetValidator(new EntityValidator<Domain.Entities.Patient>(_unitOfWork.Patients));
             RuleFor(c => c.Dto.Email)
                 .MustAsync(EmailMustBeUniqueForThisPatient)
                 .WithMessage("This email is already used by another Patient");

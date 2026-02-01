@@ -4,11 +4,11 @@ using Specifications.Doctor;
 
 namespace Commands.Doctor
 {
-    internal class DoctorSpecializationHandler
+    internal class DoctorSpecializationHelper
     {
         private readonly IRepository<DoctorSpecialization> _repository;
 
-        public DoctorSpecializationHandler(IRepository<DoctorSpecialization> repository)
+        public DoctorSpecializationHelper(IRepository<DoctorSpecialization> repository)
         {
             _repository = repository;
         }

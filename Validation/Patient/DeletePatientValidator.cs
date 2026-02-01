@@ -1,6 +1,7 @@
 ﻿using Abstractions;
 using Commands.Patient;
 using FluentValidation;
+using Validation.Shared;
 
 namespace Validation.Patient
 {
@@ -8,12 +9,7 @@ namespace Validation.Patient
     {
         public DeletePatientValidator(IUnitOfWork unitOfWork)
         {
-            // Correctness
-            RuleFor(c => c.Id).NotEmpty().WithMessage("Id is required.");
-
-            // Existence
-            RuleFor(c => c.Id)
-                .SetValidator(new PatientExistenceValidator(unitOfWork));
+            RuleFor(c => c.Id).SetValidator(new EntityValidator<Domain.Entities.Patient>(unitOfWork.Patients));
         }
     }
 }

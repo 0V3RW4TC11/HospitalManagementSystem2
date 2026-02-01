@@ -1,6 +1,7 @@
 ﻿using Abstractions;
 using Commands.Admin;
 using FluentValidation;
+using Validation.Shared;
 
 namespace Validation.Admin
 {
@@ -8,12 +9,7 @@ namespace Validation.Admin
     {
         public DeleteAdminValidator(IUnitOfWork unitOfWork)
         {
-            // Correctness
-            RuleFor(c => c.Id).NotEmpty().WithMessage("Id is required.");
-
-            // Existence
-            RuleFor(c => c.Id)
-                .SetValidator(new AdminExistenceValidator(unitOfWork));
+            RuleFor(c => c.Id).SetValidator(new EntityValidator<Domain.Entities.Admin>(unitOfWork.Admins));
         }
     }
 }
