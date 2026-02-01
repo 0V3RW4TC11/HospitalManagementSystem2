@@ -15,7 +15,7 @@ namespace Validation.Doctor
             RuleFor(c => c.Dto).SetValidator(new DoctorCorrectnessValidator());
             RuleFor(c => c.Password).NotEmpty().WithMessage("Password is required.");
             RuleFor(c => c.Dto.Email).MustAsync(EmailMustBeUniqueForThisDoctor);
-            // validate specializations
+            RuleFor(c => c.SpecializationIds).SetValidator(new DoctorSpecializationExistenceValidator(_unitOfWork));
         }
 
         private async Task<bool> EmailMustBeUniqueForThisDoctor(string email, CancellationToken ct)

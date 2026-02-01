@@ -11,12 +11,12 @@ namespace Commands.Doctor
         IRequestHandler<UpdateDoctorCommand>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly DoctorSpecializationHelper _docSpecHandler;
+        private readonly DoctorSpecializationHelper _docSpecHelper;
 
         public DoctorHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _docSpecHandler = new DoctorSpecializationHelper(_unitOfWork.DoctorSpecializations);
+            _docSpecHelper = new DoctorSpecializationHelper(_unitOfWork.DoctorSpecializations);
         }
 
         public async Task Handle(CreateDoctorCommand request, CancellationToken cancellationToken)
@@ -26,7 +26,7 @@ namespace Commands.Doctor
                 var doctor = request.Dto.Adapt<Domain.Entities.Doctor>();
                 await _unitOfWork.Doctors.AddAsync(doctor, ct);
                 await _unitOfWork.SaveChangesAsync(ct);
-                await _docSpecHandler.UpdateAsync(doctor.Id, request.SpecializationIds, ct);
+                await _docSpecHelper.UpdateAsync(doctor.Id, request.SpecializationIds, ct);
                 await _unitOfWork.SaveChangesAsync(ct);
                 await _unitOfWork.IdentityProvider.IdentityManager.CreateAsync(doctor, request.Password, ct);
             }, cancellationToken);
@@ -49,7 +49,7 @@ namespace Commands.Doctor
             doctor.Id = request.Id;
 
             await _unitOfWork.Doctors.UpdateAsync(doctor, cancellationToken);
-            await _docSpecHandler.UpdateAsync(doctor.Id, request.SpecializationIds, cancellationToken);
+            await _docSpecHelper.UpdateAsync(doctor.Id, request.SpecializationIds, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }

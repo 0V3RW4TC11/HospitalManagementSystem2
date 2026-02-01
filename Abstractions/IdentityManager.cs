@@ -28,17 +28,6 @@ namespace Abstractions
 
         protected abstract Task CreateIdentityAsync(Guid id, string userName, string password, string role, CancellationToken ct);
 
-        private async Task<string> CreateStaffUsername(string firstName, string? lastName, CancellationToken ct)
-        {
-            var name = lastName == null ? firstName : $"{firstName}.{lastName}";
-            var pattern = GenerateRegexPattern(name);
-            int count = await CountMatchingEmails(pattern, ct);
-
-            return count == 0 ?
-                $"{name}@{Constants.DomainNames.Organization}" :
-                $"{name}{count + 1}@{Constants.DomainNames.Organization}";
-        }
-
         private static Regex GenerateRegexPattern(string name)
         {
             string escapedName = Regex.Escape(name);
@@ -48,6 +37,17 @@ namespace Abstractions
                 $@"^{escapedName}(\d+)?@{escapedDomain}$";
 
             return new Regex(pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        }
+
+        private async Task<string> CreateStaffUsername(string firstName, string? lastName, CancellationToken ct)
+        {
+            var name = lastName == null ? firstName : $"{firstName}.{lastName}";
+            var pattern = GenerateRegexPattern(name);
+            int count = await CountMatchingEmails(pattern, ct);
+
+            return count == 0 ?
+                $"{name}@{Constants.DomainNames.Organization}" :
+                $"{name}{count + 1}@{Constants.DomainNames.Organization}";
         }
     }
 }

@@ -18,9 +18,7 @@ namespace Validation.Admin
             // Correctness
             RuleFor(c => c.Dto).SetValidator(new AdminCorrectnessValidator());
             RuleFor(c => c.Id).SetValidator(new EntityValidator<Domain.Entities.Admin>(_unitOfWork.Admins));
-            RuleFor(c => c.Dto.Email)
-                .MustAsync(EmailMustBeUniqueForThisAdmin)
-                .WithMessage("This email is already used by another Admin");
+            RuleFor(c => c.Dto.Email).MustAsync(EmailMustBeUniqueForThisAdmin).WithMessage("This email is already used by another Admin");
         }
 
         private async Task<bool> EmailMustBeUniqueForThisAdmin(UpdateAdminCommand command, string email, CancellationToken cancellationToken)
