@@ -4,8 +4,7 @@ namespace Abstractions
 {
     public interface IUnitOfWork
     {
-        // SEE DOMAIN / ENTITIES
-        //IRepository<Account> Accounts { get; } 
+        //IRepository<Account> Accounts { get; }    See Domain/Entities/Account.cs
 
         IRepository<Admin> Admins { get; }
 

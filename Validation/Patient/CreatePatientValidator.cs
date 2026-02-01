@@ -1,35 +1,35 @@
 ﻿using Abstractions;
+using Commands.Patient;
 using FluentValidation;
-using Specifications.Admin;
-using Validation.Admin;
+using Specifications.Patient;
 
-namespace Commands.Admin.CreateAdmin
+namespace Validation.Patient
 {
     // TODO: use DB contraint in favor of uniqueness check to avoid potential race condition
-    public class CreateAdminValidator : AbstractValidator<CreateAdminCommand>
+    public class CreatePatientValidator : AbstractValidator<CreatePatientCommand>
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public CreateAdminValidator(IUnitOfWork unitOfWork)
+        public CreatePatientValidator(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
 
             // Correctness
             RuleFor(c => c.Dto)
                 .NotNull()
-                .SetValidator(new AdminCorrectnessValidator());
+                .SetValidator(new PatientCorrectnessValidator());
             RuleFor(c => c.Password).NotEmpty().WithMessage("Password is required.");
 
             // Uniqueness
             RuleFor(c => c.Dto.Email)
-                .MustAsync(EmailMustBeUniqueForThisAdmin);
+                .MustAsync(EmailMustBeUniqueForThisPatient);
         }
 
-        private async Task<bool> EmailMustBeUniqueForThisAdmin(
-            string email, 
+        private async Task<bool> EmailMustBeUniqueForThisPatient(
+            string email,
             CancellationToken ct)
         {
-            return !await _unitOfWork.Admins.AnyAsync(new AdminExistsWithEmailSpec(email), ct);
+            return !await _unitOfWork.Patients.AnyAsync(new PatientExistsWithEmailSpec(email), ct);
         }
     }
 }

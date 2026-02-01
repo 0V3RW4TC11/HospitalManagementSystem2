@@ -8,17 +8,18 @@
 
   <ItemGroup>
     <Compile Remove="Attendance\**" />
-    <Compile Remove="Doctor\**" />
-    <Compile Remove="Patient\**" />
+    <Compile Remove="Patinet\**" />
     <Compile Remove="Specialization\**" />
     <EmbeddedResource Remove="Attendance\**" />
-    <EmbeddedResource Remove="Doctor\**" />
-    <EmbeddedResource Remove="Patient\**" />
+    <EmbeddedResource Remove="Patinet\**" />
     <EmbeddedResource Remove="Specialization\**" />
     <None Remove="Attendance\**" />
-    <None Remove="Doctor\**" />
-    <None Remove="Patient\**" />
+    <None Remove="Patinet\**" />
     <None Remove="Specialization\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Constants\Constants.csproj" />
   </ItemGroup>
 
 </Project>

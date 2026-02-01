@@ -1,11 +1,17 @@
-﻿namespace Abstractions
+﻿using Ardalis.Specification;
+
+namespace Abstractions
 {
-    public interface IRepository<T> where T : class
+    public interface IRepository<T> : IRepositoryBase<T> where T : class
     {
-        Task AddAsync(T entity, CancellationToken cancellationToken);
+        Task<T?> IReadRepositoryBase<T>.GetByIdAsync<TId>(TId id, CancellationToken cancellationToken)
+        {
+            throw new NotSupportedException("GetByIdAsync is not supported. Use FirstOrDefault or SingleOrDefault instead.");
+        }
 
-        Task RemoveAsync(T entity, CancellationToken cancellationToken);
-
-        Task UpdateAsync(T entity, CancellationToken cancellationToken);
+        Task<int> IRepositoryBase<T>.SaveChangesAsync(CancellationToken cancellationToken)
+        {
+            throw new NotSupportedException("SaveChangesAsync is not supported. Use SaveChangesAsync in UnitOfWork instead.");
+        }
     }
 }
