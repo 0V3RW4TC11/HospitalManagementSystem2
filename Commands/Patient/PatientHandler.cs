@@ -25,7 +25,12 @@ namespace Commands.Patient
                 var patient = request.Adapt<Domain.Entities.Patient>();
                 await _unitOfWork.Patients.AddAsync(patient, ct);
                 await _unitOfWork.SaveChangesAsync(ct);
-                await _unitOfWork.IdentityProvider.IdentityManager.CreateAsync(patient, request.Password, ct);
+                await _unitOfWork.IdentityService.CreateIdentityAsync(
+                    patient.Id,
+                    patient.Email,
+                    request.Password,
+                    Constants.AuthRoles.Patient,
+                    ct);
             }, cancellationToken);
         }
 
@@ -36,7 +41,7 @@ namespace Commands.Patient
                 var patient = await _unitOfWork.Patients.SingleOrDefaultAsync(new EntityByIdSpec<Domain.Entities.Patient>(request.Id), ct)
                     ?? throw new Exception("Patient not found with Id " + request.Id);
                 await _unitOfWork.Patients.DeleteAsync(patient, ct);
-                await _unitOfWork.IdentityProvider.IdentityManager.DeleteAsync(patient.Id, ct);
+                await _unitOfWork.IdentityService.DeleteIdentityAsync(patient.Id, ct);
             }, cancellationToken);
         }
 

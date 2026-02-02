@@ -11,10 +11,12 @@ namespace Commands.Admin
         IRequestHandler<UpdateAdminCommand>
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly StaffService _staffService;
 
-        public AdminHandler(IUnitOfWork unitOfWork)
+        public AdminHandler(IUnitOfWork unitOfWork, StaffService staffService)
         {
             _unitOfWork = unitOfWork;
+            _staffService = staffService;
         }
 
         public async Task Handle(CreateAdminCommand request, CancellationToken cancellationToken)
@@ -24,7 +26,14 @@ namespace Commands.Admin
                 var admin = request.Adapt<Domain.Entities.Admin>();
                 await _unitOfWork.Admins.AddAsync(admin, ct);
                 await _unitOfWork.SaveChangesAsync(ct);
-                await _unitOfWork.IdentityProvider.IdentityManager.CreateAsync(admin, request.Password, ct);
+
+                var userName = await _staffService.CreateStaffUsernameAsync(admin.FirstName, admin.LastName, ct);
+                await _unitOfWork.IdentityService.CreateIdentityAsync(
+                    admin.Id, 
+                    userName,
+                    request.Password,
+                    Constants.AuthRoles.Admin,
+                    ct);
             }, cancellationToken);
         }
 
@@ -35,7 +44,7 @@ namespace Commands.Admin
                 var admin = await _unitOfWork.Admins.SingleOrDefaultAsync(new EntityByIdSpec<Domain.Entities.Admin>(request.Id), ct)
                     ?? throw new Exception("Admin not found with Id " + request.Id);
                 await _unitOfWork.Admins.DeleteAsync(admin, ct);
-                await _unitOfWork.IdentityProvider.IdentityManager.DeleteAsync(admin.Id, ct);
+                await _unitOfWork.IdentityService.DeleteIdentityAsync(admin.Id, ct);
             }, cancellationToken);
         }
 
