@@ -14,7 +14,7 @@ namespace Validation.Patient
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(c => c).SetValidator(new PatientCorrectnessValidator());
+            RuleFor(c => c).SetValidator(new PatientValidator());
             RuleFor(c => c.Password)
                 .NotEmpty()
                 .WithMessage("Password is required.");

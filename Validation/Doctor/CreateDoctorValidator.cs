@@ -14,7 +14,7 @@ namespace Validation.Doctor
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(c => c).SetValidator(new DoctorCorrectnessValidator());
+            RuleFor(c => c).SetValidator(new DoctorValidator());
             RuleFor(c => c.Password).NotEmpty().WithMessage("Password is required.");
             RuleFor(c => c.Email).MustAsync(EmailMustBeUniqueForThisDoctor).WithMessage("This email is already used by another Doctor.");
             RuleFor(c => c.SpecializationIds).SetValidator(new DoctorSpecializationExistenceValidator(_unitOfWork));

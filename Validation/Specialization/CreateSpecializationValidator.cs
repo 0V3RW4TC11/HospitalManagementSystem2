@@ -13,7 +13,7 @@ namespace Validation.Specialization
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(c => c).SetValidator(new SpecializationCorrectnessValidator());
+            RuleFor(c => c).SetValidator(new SpecializationValidator());
             RuleFor(c => c.Name).MustAsync(NameMustBeUniqueForThisSpecialization).WithMessage("This name is already used by another Specialization.");
         }
 

@@ -14,7 +14,7 @@ namespace Commands.Admin.CreateAdmin
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(c => c).SetValidator(new AdminCorrectnessValidator());
+            RuleFor(c => c).SetValidator(new AdminValidator());
             RuleFor(c => c.Password).NotEmpty().WithMessage("Password is required.");
             RuleFor(c => c.Email).MustAsync(EmailMustBeUniqueForThisAdmin).WithMessage("This email is already used by another Admin");
         }

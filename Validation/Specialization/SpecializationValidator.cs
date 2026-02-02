@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace Validation.Specialization
 {
-    internal class SpecializationCorrectnessValidator : AbstractValidator<CreateSpecializationCommand>
+    internal class SpecializationValidator : AbstractValidator<CreateSpecializationCommand>
     {
-        public SpecializationCorrectnessValidator()
+        public SpecializationValidator()
         {
             RuleFor(c => c.Name).NotEmpty().WithMessage("Name is required.");
         }

@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace Validation.Patient
 {
-    internal class PatientCorrectnessValidator : AbstractValidator<PatientBaseCommand>
+    internal class PatientValidator : AbstractValidator<PatientBaseCommand>
     {
-        public PatientCorrectnessValidator()
+        public PatientValidator()
         {
             RuleFor(p => p).NotNull().WithMessage("Patient details are required");
             RuleFor(p => p.FirstName).NotEmpty().WithMessage("First name is required");
