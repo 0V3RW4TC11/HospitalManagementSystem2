@@ -19,7 +19,7 @@ namespace Validation.Doctor
 
         private async Task<bool> AllSpecIdsMustExistAsync(IEnumerable<Guid> specIds, CancellationToken ct)
         {
-            int matchingIdsCount = await _unitOfWork.Specializations.CountAsync(new EntityByIdsSpec<Specialization>(specIds), ct);
+            int matchingIdsCount = await _unitOfWork.Specializations.CountAsync(new EntityByIdsSpec<Domain.Entities.Specialization>(specIds), ct);
             return specIds.Count() == matchingIdsCount;
         }
     }

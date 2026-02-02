@@ -5,6 +5,7 @@ using Specifications.Doctor;
 
 namespace Validation.Doctor
 {
+    // TODO: use DB contraint in favor of uniqueness check to avoid potential race condition
     public class UpdateDoctorValidator : AbstractValidator<UpdateDoctorCommand>
     {
         private readonly IUnitOfWork _unitOfWork;
