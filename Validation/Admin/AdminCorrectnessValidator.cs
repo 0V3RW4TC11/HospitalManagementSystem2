@@ -1,9 +1,9 @@
-﻿using Dtos.Admin;
+﻿using Commands.Admin;
 using FluentValidation;
 
 namespace Validation.Admin
 {
-    internal class AdminCorrectnessValidator : AbstractValidator<AdminDto>
+    internal class AdminCorrectnessValidator : AbstractValidator<AdminBaseCommand>
     {
         public AdminCorrectnessValidator()
         {

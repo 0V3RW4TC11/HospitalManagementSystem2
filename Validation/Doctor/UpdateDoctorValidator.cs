@@ -5,23 +5,23 @@ using Specifications.Doctor;
 
 namespace Validation.Doctor
 {
-    public class CreateDoctorValidator : AbstractValidator<CreateDoctorCommand>
+    public class UpdateDoctorValidator : AbstractValidator<UpdateDoctorCommand>
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public CreateDoctorValidator(IUnitOfWork unitOfWork)
+        public UpdateDoctorValidator(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
 
             RuleFor(c => c).SetValidator(new DoctorCorrectnessValidator());
-            RuleFor(c => c.Password).NotEmpty().WithMessage("Password is required.");
             RuleFor(c => c.Email).MustAsync(EmailMustBeUniqueForThisDoctor).WithMessage("This email is already used by another Doctor.");
             RuleFor(c => c.SpecializationIds).SetValidator(new DoctorSpecializationExistenceValidator(_unitOfWork));
         }
 
-        private async Task<bool> EmailMustBeUniqueForThisDoctor(string email, CancellationToken ct)
+        private async Task<bool> EmailMustBeUniqueForThisDoctor(UpdateDoctorCommand command, string email, CancellationToken ct)
         {
-            return !await _unitOfWork.Doctors.AnyAsync(new DoctorByEmailSpec(email), ct);
+            Guid idFromEmail = await _unitOfWork.Doctors.SingleOrDefaultAsync(new DoctorIdByEmailSpec(email), ct);
+            return (idFromEmail == Guid.Empty) || (idFromEmail == command.Id);
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Abstractions;
-using Commands.Helpers;
 using Mapster;
 using MediatR;
 using Specifications.Entity;
@@ -22,7 +21,7 @@ namespace Commands.Admin
         {
             await _unitOfWork.RunInTransactionAsync(async (ct) =>
             {
-                var admin = request.Dto.Adapt<Domain.Entities.Admin>();
+                var admin = request.Adapt<Domain.Entities.Admin>();
                 await _unitOfWork.Admins.AddAsync(admin, ct);
                 await _unitOfWork.SaveChangesAsync(ct);
                 await _unitOfWork.IdentityProvider.IdentityManager.CreateAsync(admin, request.Password, ct);
@@ -42,8 +41,7 @@ namespace Commands.Admin
 
         public async Task Handle(UpdateAdminCommand request, CancellationToken cancellationToken)
         {
-            var admin = request.Dto.Adapt<Domain.Entities.Admin>();
-            admin.Id = request.Id;
+            var admin = request.Adapt<Domain.Entities.Admin>();
 
             await _unitOfWork.Admins.UpdateAsync(admin, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);

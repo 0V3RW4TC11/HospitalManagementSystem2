@@ -22,7 +22,7 @@ namespace Commands.Patient
         {
             await _unitOfWork.RunInTransactionAsync(async (ct) =>
             {
-                var patient = request.Dto.Adapt<Domain.Entities.Patient>();
+                var patient = request.Adapt<Domain.Entities.Patient>();
                 await _unitOfWork.Patients.AddAsync(patient, ct);
                 await _unitOfWork.SaveChangesAsync(ct);
                 await _unitOfWork.IdentityProvider.IdentityManager.CreateAsync(patient, request.Password, ct);
@@ -42,8 +42,7 @@ namespace Commands.Patient
 
         public async Task Handle(UpdatePatientCommand request, CancellationToken cancellationToken)
         {
-            var patient = request.Dto.Adapt<Domain.Entities.Patient>();
-            patient.Id = request.Id;
+            var patient = request.Adapt<Domain.Entities.Patient>();
 
             await _unitOfWork.Patients.UpdateAsync(patient, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);

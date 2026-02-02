@@ -5,11 +5,11 @@ using Specifications.Entity;
 
 namespace Validation.Shared
 {
-    internal class EntityValidator<TEntity> : AbstractValidator<Guid> where TEntity : Entity
+    internal class EntityExistenceValidator<TEntity> : AbstractValidator<Guid> where TEntity : Entity
     {
         private readonly IRepository<TEntity> _repository;
 
-        public EntityValidator(IRepository<TEntity> repository)
+        public EntityExistenceValidator(IRepository<TEntity> repository)
         {
             _repository = repository;
 

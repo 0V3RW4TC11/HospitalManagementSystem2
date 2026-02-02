@@ -23,7 +23,7 @@ namespace Commands.Doctor
         {
             await _unitOfWork.RunInTransactionAsync(async (ct) =>
             {
-                var doctor = request.Dto.Adapt<Domain.Entities.Doctor>();
+                var doctor = request.Adapt<Domain.Entities.Doctor>();
                 await _unitOfWork.Doctors.AddAsync(doctor, ct);
                 await _unitOfWork.SaveChangesAsync(ct);
                 await _docSpecHelper.UpdateAsync(doctor.Id, request.SpecializationIds, ct);
@@ -45,8 +45,7 @@ namespace Commands.Doctor
 
         public async Task Handle(UpdateDoctorCommand request, CancellationToken cancellationToken)
         {
-            var doctor = request.Dto.Adapt<Domain.Entities.Doctor>();
-            doctor.Id = request.Id;
+            var doctor = request.Adapt<Domain.Entities.Doctor>();
 
             await _unitOfWork.Doctors.UpdateAsync(doctor, cancellationToken);
             await _docSpecHelper.UpdateAsync(doctor.Id, request.SpecializationIds, cancellationToken);

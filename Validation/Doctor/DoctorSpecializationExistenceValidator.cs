@@ -1,5 +1,4 @@
 ﻿using Abstractions;
-using Domain.Entities;
 using FluentValidation;
 using Specifications.Entity;
 

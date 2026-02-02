@@ -9,13 +9,10 @@
   <ItemGroup>
     <Compile Remove="Attendance\**" />
     <Compile Remove="DoctorSpecialization\**" />
-    <Compile Remove="Specialization\**" />
     <EmbeddedResource Remove="Attendance\**" />
     <EmbeddedResource Remove="DoctorSpecialization\**" />
-    <EmbeddedResource Remove="Specialization\**" />
     <None Remove="Attendance\**" />
     <None Remove="DoctorSpecialization\**" />
-    <None Remove="Specialization\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,7 +22,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Abstractions\Abstractions.csproj" />
-    <ProjectReference Include="..\Dtos\Dtos.csproj" />
     <ProjectReference Include="..\Specifications\Specifications.csproj" />
   </ItemGroup>
 

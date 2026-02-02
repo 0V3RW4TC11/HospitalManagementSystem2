@@ -2,9 +2,9 @@
 
 namespace Specifications.Admin
 {
-    public class GetAdminIdByEmailSpec : SingleResultSpecification<Domain.Entities.Admin, Guid>
+    public class AdminIdByEmailSpec : SingleResultSpecification<Domain.Entities.Admin, Guid>
     {
-        public GetAdminIdByEmailSpec(string email)
+        public AdminIdByEmailSpec(string email)
         {
             var normalizedEmail = email.ToLower();
 

@@ -1,10 +1,4 @@
-﻿using Dtos.Doctor;
-using MediatR;
-
-namespace Commands.Doctor
+﻿namespace Commands.Doctor
 {
-    public record UpdateDoctorCommand(
-        DoctorDto Dto,
-        IEnumerable<Guid> SpecializationIds,
-        Guid Id) : IRequest;
+    public record UpdateDoctorCommand(Guid Id) : DoctorBaseCommand;
 }

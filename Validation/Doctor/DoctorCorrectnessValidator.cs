@@ -1,9 +1,9 @@
-﻿using Dtos.Doctor;
+﻿using Commands.Doctor;
 using FluentValidation;
 
 namespace Validation.Doctor
 {
-    internal class DoctorCorrectnessValidator : AbstractValidator<DoctorDto>
+    internal class DoctorCorrectnessValidator : AbstractValidator<DoctorBaseCommand>
     {
         public DoctorCorrectnessValidator()
         {

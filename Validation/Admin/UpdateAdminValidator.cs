@@ -16,14 +16,14 @@ namespace Validation.Admin
             _unitOfWork = unitOfWork;
 
             // Correctness
-            RuleFor(c => c.Dto).SetValidator(new AdminCorrectnessValidator());
-            RuleFor(c => c.Id).SetValidator(new EntityValidator<Domain.Entities.Admin>(_unitOfWork.Admins));
-            RuleFor(c => c.Dto.Email).MustAsync(EmailMustBeUniqueForThisAdmin).WithMessage("This email is already used by another Admin");
+            RuleFor(c => c).SetValidator(new AdminCorrectnessValidator());
+            RuleFor(c => c.Id).SetValidator(new EntityExistenceValidator<Domain.Entities.Admin>(_unitOfWork.Admins));
+            RuleFor(c => c.Email).MustAsync(EmailMustBeUniqueForThisAdmin).WithMessage("This email is already used by another Admin");
         }
 
         private async Task<bool> EmailMustBeUniqueForThisAdmin(UpdateAdminCommand command, string email, CancellationToken cancellationToken)
         {
-            Guid idFromEmail = await _unitOfWork.Admins.SingleOrDefaultAsync(new GetAdminIdByEmailSpec(email), cancellationToken);
+            Guid idFromEmail = await _unitOfWork.Admins.SingleOrDefaultAsync(new AdminIdByEmailSpec(email), cancellationToken);
 
             return (idFromEmail == Guid.Empty) || (idFromEmail == command.Id);
         }

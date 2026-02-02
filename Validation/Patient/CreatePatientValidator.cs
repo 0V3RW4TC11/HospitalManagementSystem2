@@ -14,16 +14,18 @@ namespace Validation.Patient
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(c => c.Dto).SetValidator(new PatientCorrectnessValidator());
-            RuleFor(c => c.Password).NotEmpty().WithMessage("Password is required.");
-            RuleFor(c => c.Dto.Email).MustAsync(EmailMustBeUniqueForThisPatient);
+            RuleFor(c => c).SetValidator(new PatientCorrectnessValidator());
+            RuleFor(c => c.Password)
+                .NotEmpty()
+                .WithMessage("Password is required.");
+            RuleFor(c => c.Email)
+                .MustAsync(EmailMustBeUniqueForThisPatient)
+                .WithMessage("This email is already used by another Patient");
         }
 
-        private async Task<bool> EmailMustBeUniqueForThisPatient(
-            string email,
-            CancellationToken ct)
+        private async Task<bool> EmailMustBeUniqueForThisPatient(string email, CancellationToken ct)
         {
-            return !await _unitOfWork.Patients.AnyAsync(new PatientExistsWithEmailSpec(email), ct);
+            return !await _unitOfWork.Patients.AnyAsync(new PatientByEmailSpec(email), ct);
         }
     }
 }

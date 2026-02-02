@@ -15,16 +15,16 @@ namespace Validation.Patient
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(c => c.Dto).SetValidator(new PatientCorrectnessValidator());
-            RuleFor(c => c.Id).SetValidator(new EntityValidator<Domain.Entities.Patient>(_unitOfWork.Patients));
-            RuleFor(c => c.Dto.Email)
+            RuleFor(c => c).SetValidator(new PatientCorrectnessValidator());
+            RuleFor(c => c.Id).SetValidator(new EntityExistenceValidator<Domain.Entities.Patient>(_unitOfWork.Patients));
+            RuleFor(c => c.Email)
                 .MustAsync(EmailMustBeUniqueForThisPatient)
                 .WithMessage("This email is already used by another Patient");
         }
 
         private async Task<bool> EmailMustBeUniqueForThisPatient(UpdatePatientCommand command, string email, CancellationToken cancellationToken)
         {
-            Guid idFromEmail = await _unitOfWork.Patients.SingleOrDefaultAsync(new GetPatientIdByEmailSpec(email), cancellationToken);
+            Guid idFromEmail = await _unitOfWork.Patients.SingleOrDefaultAsync(new PatientIdByEmailSpec(email), cancellationToken);
 
             return (idFromEmail == Guid.Empty) || (idFromEmail == command.Id);
         }

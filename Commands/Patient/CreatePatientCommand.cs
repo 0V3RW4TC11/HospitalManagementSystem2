@@ -1,7 +1,4 @@
-﻿using Dtos.Patient;
-using MediatR;
-
-namespace Commands.Patient
+﻿namespace Commands.Patient
 {
-    public record CreatePatientCommand(PatientDto Dto, string Password) : IRequest;
+    public record CreatePatientCommand(string Password) : PatientBaseCommand;
 }

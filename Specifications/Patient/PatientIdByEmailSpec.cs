@@ -2,9 +2,9 @@
 
 namespace Specifications.Patient
 {
-    public class GetPatientIdByEmailSpec : SingleResultSpecification<Domain.Entities.Patient, Guid>
+    public class PatientIdByEmailSpec : SingleResultSpecification<Domain.Entities.Patient, Guid>
     {
-        public GetPatientIdByEmailSpec(string email)
+        public PatientIdByEmailSpec(string email)
         {
             var normalizedEmail = email.ToLower();
 

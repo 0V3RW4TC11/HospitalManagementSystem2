@@ -2,9 +2,9 @@
 
 namespace Specifications.Patient
 {
-    public class PatientExistsWithEmailSpec : Specification<Domain.Entities.Patient>
+    public class PatientByEmailSpec : Specification<Domain.Entities.Patient>
     {
-        public PatientExistsWithEmailSpec(string email)
+        public PatientByEmailSpec(string email)
         {
             var normalizedEmail = email.ToLower();
             Query.Where(p => p.Email.ToLower() == normalizedEmail);

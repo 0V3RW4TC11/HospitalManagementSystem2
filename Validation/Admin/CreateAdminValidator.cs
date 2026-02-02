@@ -14,14 +14,14 @@ namespace Commands.Admin.CreateAdmin
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(c => c.Dto).SetValidator(new AdminCorrectnessValidator());
+            RuleFor(c => c).SetValidator(new AdminCorrectnessValidator());
             RuleFor(c => c.Password).NotEmpty().WithMessage("Password is required.");
-            RuleFor(c => c.Dto.Email).MustAsync(EmailMustBeUniqueForThisAdmin).WithMessage("This email is already used by another Admin");
+            RuleFor(c => c.Email).MustAsync(EmailMustBeUniqueForThisAdmin).WithMessage("This email is already used by another Admin");
         }
 
         private async Task<bool> EmailMustBeUniqueForThisAdmin(string email, CancellationToken ct)
         {
-            return !await _unitOfWork.Admins.AnyAsync(new AdminExistsWithEmailSpec(email), ct);
+            return !await _unitOfWork.Admins.AnyAsync(new AdminByEmailSpec(email), ct);
         }
     }
 }

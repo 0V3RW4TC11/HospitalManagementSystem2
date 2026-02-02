@@ -1,10 +1,4 @@
-﻿using Dtos.Doctor;
-using MediatR;
-
-namespace Commands.Doctor
+﻿namespace Commands.Doctor
 {
-    public record CreateDoctorCommand(
-        DoctorDto Dto, 
-        IEnumerable<Guid> SpecializationIds,
-        string Password) : IRequest;
+    public record CreateDoctorCommand(string Password) : DoctorBaseCommand;
 }
