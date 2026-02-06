@@ -7,10 +7,10 @@ namespace Validation.Admin
     {
         public AdminValidator()
         {
-            RuleFor(a => a).NotNull().WithMessage("Admin details are required.");
-            RuleFor(a => a.FirstName).NotEmpty().WithMessage("First name is required");
-            RuleFor(a => a.Phone).NotEmpty().WithMessage("Phone number is required");
-            RuleFor(a => a.Email).NotEmpty().WithMessage("Email is required");
+            RuleFor(c => c).NotNull().WithMessage("Admin details are required.");
+            RuleFor(c => c.FirstName).NotEmpty().WithMessage("First name is required");
+            RuleFor(c => c.Phone).NotEmpty().WithMessage("Phone number is required");
+            RuleFor(c => c.Email).NotEmpty().WithMessage("Email is required");
         }
     }
 }

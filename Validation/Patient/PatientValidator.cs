@@ -7,10 +7,10 @@ namespace Validation.Patient
     {
         public PatientValidator()
         {
-            RuleFor(p => p).NotNull().WithMessage("Patient details are required");
-            RuleFor(p => p.FirstName).NotEmpty().WithMessage("First name is required");
-            RuleFor(p => p.Gender).NotEmpty().WithMessage("Gender is required");
-            RuleFor(p => p.Email).NotEmpty().WithMessage("Email is required");
+            RuleFor(c => c).NotNull().WithMessage("Patient details are required");
+            RuleFor(c => c.FirstName).NotEmpty().WithMessage("First name is required");
+            RuleFor(c => c.Gender).NotEmpty().WithMessage("Gender is required");
+            RuleFor(c => c.Email).NotEmpty().WithMessage("Email is required");
         }
     }
 }
