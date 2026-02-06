@@ -1,9 +1,10 @@
 ﻿using Abstractions;
+using Commands.Specialization;
 using Mapster;
 using MediatR;
 using Specifications.Entity;
 
-namespace Commands.Specialization
+namespace Handlers
 {
     public class SpecializationHandler :
         IRequestHandler<CreateSpecializationCommand>,

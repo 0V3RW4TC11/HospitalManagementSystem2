@@ -16,7 +16,7 @@ namespace Validation.Doctor
 
             RuleFor(c => c).SetValidator(new DoctorValidator());
             RuleFor(c => c.Email).MustAsync(EmailMustBeUniqueForThisDoctor).WithMessage("This email is already used by another Doctor.");
-            RuleFor(c => c.SpecializationIds).SetValidator(new DoctorSpecializationExistenceValidator(_unitOfWork));
+            RuleFor(c => c.SpecializationIds).SetValidator(new DoctorSpecializationValidator(_unitOfWork));
         }
 
         private async Task<bool> EmailMustBeUniqueForThisDoctor(UpdateDoctorCommand command, string email, CancellationToken ct)

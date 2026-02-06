@@ -7,13 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="DoctorSpecialization\**" />
-    <EmbeddedResource Remove="DoctorSpecialization\**" />
-    <None Remove="DoctorSpecialization\**" />
+    <PackageReference Include="Mapster" Version="7.4.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MediatR" Version="12.5.0" />
+    <ProjectReference Include="..\Abstractions\Abstractions.csproj" />
+    <ProjectReference Include="..\Commands\Commands.csproj" />
+    <ProjectReference Include="..\Specifications\Specifications.csproj" />
   </ItemGroup>
 
 </Project>

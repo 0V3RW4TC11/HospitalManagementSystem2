@@ -1,9 +1,10 @@
 ﻿using Abstractions;
+using Commands.Attendance;
 using Mapster;
 using MediatR;
 using Specifications.Entity;
 
-namespace Commands.Attendance
+namespace Handlers
 {
     public class AttendanceHandler :
         IRequestHandler<CreateAttendanceCommand>,

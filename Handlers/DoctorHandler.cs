@@ -1,9 +1,10 @@
 ﻿using Abstractions;
+using Commands.Doctor;
 using Mapster;
 using MediatR;
 using Specifications.Entity;
 
-namespace Commands.Doctor
+namespace Handlers
 {
     public class DoctorHandler :
         IRequestHandler<CreateDoctorCommand>,

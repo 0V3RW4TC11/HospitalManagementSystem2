@@ -1,9 +1,10 @@
 ﻿using Abstractions;
+using Commands.Admin;
 using Mapster;
 using MediatR;
 using Specifications.Entity;
 
-namespace Commands.Admin
+namespace Handlers
 {
     public class AdminHandler :
         IRequestHandler<CreateAdminCommand>,

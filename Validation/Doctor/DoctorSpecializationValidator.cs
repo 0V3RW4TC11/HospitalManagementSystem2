@@ -4,11 +4,11 @@ using Specifications.Entity;
 
 namespace Validation.Doctor
 {
-    internal class DoctorSpecializationExistenceValidator : AbstractValidator<IEnumerable<Guid>>
+    internal class DoctorSpecializationValidator : AbstractValidator<IEnumerable<Guid>>
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public DoctorSpecializationExistenceValidator(IUnitOfWork unitOfWork)
+        public DoctorSpecializationValidator(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
 

@@ -1,10 +1,11 @@
 ﻿using Abstractions;
+using Commands.Patient;
 using Commands.Patient.UpdatePatient;
 using Mapster;
 using MediatR;
 using Specifications.Entity;
 
-namespace Commands.Patient
+namespace Handlers
 {
     public class PatientHandler :
         IRequestHandler<CreatePatientCommand>,
