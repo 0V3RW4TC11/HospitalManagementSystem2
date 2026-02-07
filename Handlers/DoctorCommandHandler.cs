@@ -6,7 +6,7 @@ using Specifications.Entity;
 
 namespace Handlers
 {
-    public class DoctorHandler :
+    public class DoctorCommandHandler :
         IRequestHandler<CreateDoctorCommand>,
         IRequestHandler<DeleteDoctorCommand>,
         IRequestHandler<UpdateDoctorCommand>
@@ -15,7 +15,7 @@ namespace Handlers
         private readonly StaffService _staffService;
         private readonly DoctorSpecializationHelper _docSpecHelper;
 
-        public DoctorHandler(IUnitOfWork unitOfWork, StaffService staffService)
+        public DoctorCommandHandler(IUnitOfWork unitOfWork, StaffService staffService)
         {
             _unitOfWork = unitOfWork;
             _staffService = staffService;

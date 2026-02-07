@@ -7,14 +7,14 @@ using Specifications.Entity;
 
 namespace Handlers
 {
-    public class PatientHandler :
+    public class PatientCommandHandler :
         IRequestHandler<CreatePatientCommand>,
         IRequestHandler<DeletePatientCommand>,
         IRequestHandler<UpdatePatientCommand>
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public PatientHandler(IUnitOfWork unitOfWork)
+        public PatientCommandHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }

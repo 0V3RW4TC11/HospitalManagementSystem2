@@ -5,7 +5,7 @@ using Persistence.Helpers;
 
 namespace Persistence.Handlers
 {
-    public sealed class IdentityHandler :
+    public sealed class IdentityCommandHandler :
         IRequestHandler<ChangePasswordCommand>,
         IRequestHandler<LoginCommand>,
         IRequestHandler<LogoutCommand>,
@@ -15,7 +15,7 @@ namespace Persistence.Handlers
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
 
-        public IdentityHandler(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        public IdentityCommandHandler(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;

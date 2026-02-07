@@ -6,14 +6,14 @@ using Specifications.Entity;
 
 namespace Handlers
 {
-    public class AttendanceHandler :
+    public class AttendanceCommandHandler :
         IRequestHandler<CreateAttendanceCommand>,
         IRequestHandler<DeleteAttendanceCommand>,
         IRequestHandler<UpdateAttendanceCommand>
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public AttendanceHandler(IUnitOfWork unitOfWork)
+        public AttendanceCommandHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }

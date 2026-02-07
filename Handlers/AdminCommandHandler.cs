@@ -6,7 +6,7 @@ using Specifications.Entity;
 
 namespace Handlers
 {
-    public class AdminHandler :
+    public class AdminCommandHandler :
         IRequestHandler<CreateAdminCommand>,
         IRequestHandler<DeleteAdminCommand>,
         IRequestHandler<UpdateAdminCommand>
@@ -14,7 +14,7 @@ namespace Handlers
         private readonly IUnitOfWork _unitOfWork;
         private readonly StaffService _staffService;
 
-        public AdminHandler(IUnitOfWork unitOfWork, StaffService staffService)
+        public AdminCommandHandler(IUnitOfWork unitOfWork, StaffService staffService)
         {
             _unitOfWork = unitOfWork;
             _staffService = staffService;

@@ -6,14 +6,14 @@ using Specifications.Entity;
 
 namespace Handlers
 {
-    public class SpecializationHandler :
+    public class SpecializationCommandHandler :
         IRequestHandler<CreateSpecializationCommand>,
         IRequestHandler<DeleteSpecializationCommand>,
         IRequestHandler<UpdateSpecializationCommand>
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public SpecializationHandler(IUnitOfWork unitOfWork)
+        public SpecializationCommandHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
