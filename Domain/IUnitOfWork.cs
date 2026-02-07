@@ -14,7 +14,7 @@ namespace Domain
 
         IRepository<DoctorSpecialization> DoctorSpecializations { get; }
 
-        IIdentityProvider IdentityProvider { get; }
+        IIdentityProviderOld IdentityProvider { get; }
 
         IRepository<Patient> Patients { get; }
 

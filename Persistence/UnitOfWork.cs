@@ -1,4 +1,4 @@
-﻿using Domain;
+﻿using Abstractions;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 
@@ -16,11 +16,7 @@ namespace Persistence
         private readonly Lazy<IRepository<Patient>> _lazyPatients;
         private readonly Lazy<IRepository<Specialization>> _lazySpecializations;
 
-        public UnitOfWork(
-            RepositoryDbContext context,
-            UserManager<IdentityUser> userManager,
-            RoleManager<IdentityRole> roleManager,
-            SignInManager<IdentityUser> signInManager)
+        public UnitOfWork(RepositoryDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
             _lazyAccounts = new Lazy<IRepository<Account>>(() => new Repository<Account>(_context));
@@ -28,7 +24,7 @@ namespace Persistence
             _lazyAttendances = new Lazy<IRepository<Attendance>>(() => new Repository<Attendance>(_context));
             _lazyDoctors = new Lazy<IRepository<Doctor>>(() => new Repository<Doctor>(_context));
             _lazyDoctorSpecializations = new Lazy<IRepository<DoctorSpecialization>>(() => new Repository<DoctorSpecialization>(_context));
-            _lazyIdentityProvider = new Lazy<IIdentityProvider>(() => new IdentityProvider(userManager, roleManager, signInManager));
+            _lazyIdentityProvider = new Lazy<IIdentityProvider>(() => new IdentityProvider(userManager));
             _lazyPatients = new Lazy<IRepository<Patient>>(() => new Repository<Patient>(_context));
             _lazySpecializations = new Lazy<IRepository<Specialization>>(() => new Repository<Specialization>(_context));
         }

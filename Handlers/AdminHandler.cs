@@ -29,7 +29,7 @@ namespace Handlers
                 await _unitOfWork.SaveChangesAsync(ct);
 
                 var userName = await _staffService.CreateStaffUsernameAsync(admin.FirstName, admin.LastName, ct);
-                await _unitOfWork.IdentityService.CreateIdentityAsync(
+                await _unitOfWork.IdentityProvider.CreateIdentityAsync(
                     admin.Id, 
                     userName,
                     request.Password,
@@ -45,7 +45,7 @@ namespace Handlers
                 var admin = await _unitOfWork.Admins.SingleOrDefaultAsync(new EntityByIdSpec<Domain.Entities.Admin>(request.Id), ct)
                     ?? throw new Exception("Admin not found with Id " + request.Id);
                 await _unitOfWork.Admins.DeleteAsync(admin, ct);
-                await _unitOfWork.IdentityService.DeleteIdentityAsync(admin.Id, ct);
+                await _unitOfWork.IdentityProvider.DeleteIdentityAsync(admin.Id, ct);
             }, cancellationToken);
         }
 

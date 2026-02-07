@@ -26,7 +26,7 @@ namespace Handlers
                 var patient = request.Adapt<Domain.Entities.Patient>();
                 await _unitOfWork.Patients.AddAsync(patient, ct);
                 await _unitOfWork.SaveChangesAsync(ct);
-                await _unitOfWork.IdentityService.CreateIdentityAsync(
+                await _unitOfWork.IdentityProvider.CreateIdentityAsync(
                     patient.Id,
                     patient.Email,
                     request.Password,
@@ -42,7 +42,7 @@ namespace Handlers
                 var patient = await _unitOfWork.Patients.SingleOrDefaultAsync(new EntityByIdSpec<Domain.Entities.Patient>(request.Id), ct)
                     ?? throw new Exception("Patient not found with Id " + request.Id);
                 await _unitOfWork.Patients.DeleteAsync(patient, ct);
-                await _unitOfWork.IdentityService.DeleteIdentityAsync(patient.Id, ct);
+                await _unitOfWork.IdentityProvider.DeleteIdentityAsync(patient.Id, ct);
             }, cancellationToken);
         }
 

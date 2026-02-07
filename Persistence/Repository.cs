@@ -1,8 +1,7 @@
-﻿using Ardalis.Specification;
+﻿using Abstractions;
+using Ardalis.Specification;
 using Ardalis.Specification.EntityFrameworkCore;
-using Domain;
 using Microsoft.EntityFrameworkCore;
-using X.PagedList;
 
 namespace Persistence
 {
@@ -15,14 +14,16 @@ namespace Persistence
             _set = context.Set<T>();
         }
 
-        public async Task AddAsync(T entity, CancellationToken ct = default)
+        public Task<T> AddAsync(T entity, CancellationToken ct = default)
         {
-            await _set.AddAsync(entity, ct);
+            _set.Add(entity);
+            return Task.FromResult(entity);
         }
 
-        public async Task AddRangeAsync(IEnumerable<T> entities, CancellationToken ct = default)
+        public Task<IEnumerable<T>> AddRangeAsync(IEnumerable<T> entities, CancellationToken ct = default)
         {
-            await _set.AddRangeAsync(entities, ct);
+            _set.AddRange(entities);
+            return Task.FromResult(entities);
         }
 
         public async Task<bool> AnyAsync(ISpecification<T> specification, CancellationToken ct = default)
@@ -60,33 +61,6 @@ namespace Persistence
             return await ApplySpecification(specification).FirstOrDefaultAsync(ct);
         }
 
-        Task<T?> IReadRepositoryBase<T>.GetByIdAsync<TId>(TId id, CancellationToken ct)
-        {
-            throw new NotSupportedException("GetByIdAsync<TId> is not supported. Use FirstOrDefaultAsync<T> or SingleOrDefaultAsync<T> instead.");
-        }
-
-        Task<T?> IReadRepositoryBase<T>.GetBySpecAsync(ISpecification<T> specification, CancellationToken ct)
-        {
-            throw new NotSupportedException("GetBySpecAsync is not supported. Use FirstOrDefaultAsync<T> or SingleOrDefaultAsync<T> instead.");
-        }
-
-        Task<TResult?> IReadRepositoryBase<T>.GetBySpecAsync<TResult>(ISpecification<T, TResult> specification, CancellationToken ct) where TResult : default
-        {
-            throw new NotSupportedException("GetBySpecAsync<TResult> is not supported. Use FirstOrDefaultAsync<T> or SingleOrDefaultAsync<T> instead.");
-        }
-
-        public async Task<IPagedList<T>> PagedListAsync(ISpecification<T> specification, int pageNumber, int pageSize, CancellationToken ct = default)
-        {
-            var query = ApplySpecification(specification).AsNoTracking();
-            return await GetPaged(query, pageNumber, pageSize, ct);
-        }
-
-        public async Task<IPagedList<TResult>> PagedListAsync<TResult>(ISpecification<T, TResult> specification, int pageNumber, int pageSize, CancellationToken ct = default)
-        {
-            var query = ApplySpecification(specification);
-            return await GetPaged(query, pageNumber, pageSize, ct);
-        }
-
         public async Task<List<T>> ListAsync(CancellationToken ct = default)
         {
             return await _set.AsNoTracking().ToListAsync(ct);
@@ -102,22 +76,23 @@ namespace Persistence
             return await ApplySpecification(specification).ToListAsync(ct);
         }
 
-        public Task RemoveAsync(T entity, CancellationToken ct = default)
+        public Task<int> DeleteAsync(T entity, CancellationToken ct = default)
         {
             _set.Remove(entity);
-            return Task.CompletedTask;
+            return Task.FromResult(1);
         }
 
-        public Task RemoveRangeAsync(IEnumerable<T> entities, CancellationToken ct = default)
+        public Task<int> DeleteRangeAsync(IEnumerable<T> entities, CancellationToken ct = default)
         {
             _set.RemoveRange(entities);
-            return Task.CompletedTask;
+            return Task.FromResult(entities.Count());
         }
 
-        public async Task RemoveRangeAsync(ISpecification<T> specification, CancellationToken ct = default)
+        public async Task<int> DeleteRangeAsync(ISpecification<T> specification, CancellationToken ct = default)
         {
             var entities = await ApplySpecification(specification).ToListAsync(ct);
             _set.RemoveRange(entities);
+            return entities.Count;
         }
 
         public async Task<T?> SingleOrDefaultAsync(ISingleResultSpecification<T> specification, CancellationToken ct = default)
@@ -130,16 +105,16 @@ namespace Persistence
             return await ApplySpecification(specification).SingleOrDefaultAsync(ct);
         }
 
-        public Task UpdateAsync(T entity, CancellationToken ct = default)
+        public Task<int> UpdateAsync(T entity, CancellationToken ct = default)
         {
             _set.Update(entity);
-            return Task.CompletedTask;
+            return Task.FromResult(1);
         }
 
-        public Task UpdateRangeAsync(IEnumerable<T> entities, CancellationToken ct = default)
+        public Task<int> UpdateRangeAsync(IEnumerable<T> entities, CancellationToken ct = default)
         {
             _set.UpdateRange(entities);
-            return Task.CompletedTask;
+            return Task.FromResult(entities.Count());
         }
 
         private IQueryable<T> ApplySpecification(ISpecification<T> specification)
@@ -150,20 +125,6 @@ namespace Persistence
         private IQueryable<TResult> ApplySpecification<TResult>(ISpecification<T, TResult> specification)
         {
             return SpecificationEvaluator.Default.GetQuery(_set, specification);
-        }
-
-        private static async Task<StaticPagedList<TPaged>> GetPaged<TPaged>(IQueryable<TPaged> query, int pageNumber, int pageSize, CancellationToken ct)
-        {
-            pageNumber = pageNumber < 1 ? 1 : pageNumber;
-            pageSize = pageSize < 0 ? 5 : pageSize;
-
-            var totalCount = await query.CountAsync(ct);
-            var items = await query
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync(ct);
-
-            return new StaticPagedList<TPaged>(items, pageNumber, pageSize, totalCount);
         }
     }
 }

@@ -33,7 +33,7 @@ namespace Handlers
                 await _unitOfWork.SaveChangesAsync(ct);
 
                 var userName = await _staffService.CreateStaffUsernameAsync(doctor.FirstName, doctor.LastName, ct);
-                await _unitOfWork.IdentityService.CreateIdentityAsync(
+                await _unitOfWork.IdentityProvider.CreateIdentityAsync(
                     doctor.Id,
                     userName,
                     request.Password,
@@ -49,7 +49,7 @@ namespace Handlers
                 var doctor = await _unitOfWork.Doctors.SingleOrDefaultAsync(new EntityByIdSpec<Domain.Entities.Doctor>(request.Id), cancellationToken)
                     ?? throw new Exception("Doctor not found with Id " + request.Id);
                 await _unitOfWork.Doctors.DeleteAsync(doctor, ct);
-                await _unitOfWork.IdentityService.DeleteIdentityAsync(doctor.Id, ct);
+                await _unitOfWork.IdentityProvider.DeleteIdentityAsync(doctor.Id, ct);
             }, cancellationToken);
         }
 

@@ -1,6 +1,6 @@
 ﻿namespace Domain;
 
-public interface IIdentityProvider
+public interface IIdentityProviderOld
 {
     Task<string> CreateAsync(string username, string password);
     
