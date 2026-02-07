@@ -1,13 +1,21 @@
 ﻿using Abstractions;
+using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 
 namespace Persistence
 {
     internal sealed class AspIdentityStaffService : StaffService
     {
-        protected override Task<int> CountMatchingEmailsAsync(Regex pattern, CancellationToken ct)
+        private readonly RepositoryDbContext _context;
+
+        public AspIdentityStaffService(RepositoryDbContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
+        }
+
+        protected override async Task<int> CountMatchingUserNamesAsync(Regex pattern, CancellationToken ct)
+        {
+            return await _context.Users.CountAsync(u => pattern.IsMatch(u.UserName!), ct);
         }
     }
 }

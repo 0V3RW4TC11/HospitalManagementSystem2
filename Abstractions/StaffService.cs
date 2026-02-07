@@ -8,14 +8,14 @@ namespace Abstractions
         {
             var name = lastName == null ? firstName : $"{firstName}.{lastName}";
             var pattern = GenerateRegexPattern(name);
-            int count = await CountMatchingEmailsAsync(pattern, ct);
+            int count = await CountMatchingUserNamesAsync(pattern, ct);
 
             return count == 0 ?
                 $"{name}@{Constants.DomainNames.Organization}" :
                 $"{name}{count + 1}@{Constants.DomainNames.Organization}";
         }
 
-        protected abstract Task<int> CountMatchingEmailsAsync(Regex pattern, CancellationToken ct);
+        protected abstract Task<int> CountMatchingUserNamesAsync(Regex pattern, CancellationToken ct);
 
         private static Regex GenerateRegexPattern(string name)
         {
@@ -25,7 +25,7 @@ namespace Abstractions
             string pattern =
                 $@"^{escapedName}(\d+)?@{escapedDomain}$";
 
-            return new Regex(pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+            return new Regex(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         }
     }
 }
