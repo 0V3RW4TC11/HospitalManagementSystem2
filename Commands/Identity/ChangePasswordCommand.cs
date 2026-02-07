@@ -2,5 +2,5 @@
 
 namespace Commands.Identity
 {
-    public record ChangePasswordCommand(Guid HmsUserId, string OldPassword, string NewPassword) : IRequest;
+    public record ChangePasswordCommand(Guid HmsUserId, string CurrentPassword, string NewPassword) : IRequest;
 }

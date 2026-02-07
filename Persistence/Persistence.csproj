@@ -19,6 +19,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Abstractions\Abstractions.csproj" />
+      <ProjectReference Include="..\Commands\Commands.csproj" />
       <ProjectReference Include="..\Domain\Domain.csproj" />
     </ItemGroup>
 

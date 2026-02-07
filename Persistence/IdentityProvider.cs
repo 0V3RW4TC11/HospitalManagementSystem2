@@ -1,7 +1,6 @@
 ﻿using Abstractions;
 using Microsoft.AspNetCore.Identity;
-using Persistence.Constants;
-using System.Security.Claims;
+using Persistence.Helpers;
 
 namespace Persistence
 {
@@ -18,37 +17,25 @@ namespace Persistence
         {
             var user = new IdentityUser { UserName = userName };
             var userResult = await _userManager.CreateAsync(user, password);
-            ResultThrowOnFail(userResult);
+            IdentityHelper.ThrowOnIdentityFail(userResult);
 
             var roleResult = await _userManager.AddToRoleAsync(user, role);
-            ResultThrowOnFail(roleResult);
+            IdentityHelper.ThrowOnIdentityFail(roleResult);
 
-            var claimResult = await _userManager.AddClaimAsync(user, CreateClaim(hmsUserId));
-            ResultThrowOnFail(claimResult);
+            var claimResult = await _userManager.AddClaimAsync(user, IdentityHelper.CreateClaim(hmsUserId));
+            IdentityHelper.ThrowOnIdentityFail(claimResult);
         }
 
         public async Task DeleteIdentityAsync(Guid hmsUserId, CancellationToken cancellationToken)
         {
-            var claim = CreateClaim(hmsUserId);
-            var user = (await _userManager.GetUsersForClaimAsync(claim)).SingleOrDefault()
-                ?? throw new Exception("Identity not found for HMS User with Id " + hmsUserId);
+            var claim = IdentityHelper.CreateClaim(hmsUserId);
+            var user = await IdentityHelper.GetUserFromHmsUserIdAsync(_userManager, hmsUserId);
 
             var claimResult = await _userManager.RemoveClaimAsync(user, claim);
-            ResultThrowOnFail(claimResult);
+            IdentityHelper.ThrowOnIdentityFail(claimResult);
 
             var userResult = await _userManager.DeleteAsync(user);
-            ResultThrowOnFail(userResult);
-        }
-
-        private static Claim CreateClaim(Guid hmsUserId)
-        {
-            return new Claim(ClaimConstants.ClaimType, hmsUserId.ToString());
-        }
-
-        private static void ResultThrowOnFail(IdentityResult result)
-        {
-            if (result.Succeeded is false)
-                throw new Exception(string.Join(", ", result.Errors.Select(x => x.Description)));
+            IdentityHelper.ThrowOnIdentityFail(userResult);
         }
     }
 }
