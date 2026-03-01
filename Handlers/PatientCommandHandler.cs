@@ -1,6 +1,5 @@
 ﻿using Abstractions;
 using Commands.Patient;
-using Commands.Patient.UpdatePatient;
 using Mapster;
 using MediatR;
 using Specifications.Entity;

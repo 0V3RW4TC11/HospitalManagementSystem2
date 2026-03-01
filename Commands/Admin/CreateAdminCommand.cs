@@ -1,4 +1,6 @@
-﻿namespace Commands.Admin
+﻿using MediatR;
+
+namespace Commands.Admin
 {
     public record CreateAdminCommand(
         string? Title,
@@ -9,14 +11,5 @@
         string Phone,
         string Email,
         string Password,
-        DateOnly? DateOfBirth) 
-    : AdminBaseCommand(
-        Title,
-        FirstName,
-        LastName,
-        Gender,
-        Address,
-        Phone,
-        Email,
-        DateOfBirth);
+        DateOnly? DateOfBirth) : IRequest;
 }

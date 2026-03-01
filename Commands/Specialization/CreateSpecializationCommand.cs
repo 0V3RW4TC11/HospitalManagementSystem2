@@ -2,8 +2,5 @@
 
 namespace Commands.Specialization
 {
-    public record CreateSpecializationCommand : IRequest
-    {
-        public string Name { get; init; }
-    }
+    public record CreateSpecializationCommand(string Name) : IRequest;
 }

@@ -1,5 +1,5 @@
 ﻿using Abstractions;
-using Commands.Patient.UpdatePatient;
+using Commands.Patient;
 using FluentValidation;
 using Specifications.Patient;
 using Validation.Shared;
