@@ -7,7 +7,7 @@ namespace Abstractions
         public async Task<string> CreateStaffUsernameAsync(string firstName, string? lastName, CancellationToken ct)
         {
             var name = lastName == null ? firstName : $"{firstName}.{lastName}";
-            var pattern = GenerateRegexPattern(name);
+            var pattern = CreateRegex(name);
             int count = await CountMatchingUserNamesAsync(pattern, ct);
 
             return count == 0 ?
@@ -17,7 +17,7 @@ namespace Abstractions
 
         protected abstract Task<int> CountMatchingUserNamesAsync(Regex pattern, CancellationToken ct);
 
-        private static Regex GenerateRegexPattern(string name)
+        private static Regex CreateRegex(string name)
         {
             string escapedName = Regex.Escape(name);
             string escapedDomain = Regex.Escape(Constants.DomainNames.Organization);

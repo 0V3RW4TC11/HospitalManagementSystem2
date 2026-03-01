@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Presentation.Models.Admin;
-using Presentation.Models.Patient;
+using Presentation.ViewModels.Patient;
 using Services.Abstractions;
 using X.PagedList;
 using X.PagedList.Extensions;

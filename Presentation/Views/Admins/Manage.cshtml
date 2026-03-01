@@ -1,7 +1,8 @@
-﻿@model Admin.AdminManageViewModel
+﻿@using Presentation.ViewModels.Admin
+@model ManageAdminViewModel
 
 @{
-    ViewData["Title"] = "Manage " + Model.Username;
+    ViewData["Title"] = "Manage " + Model.UserName;
 }
 
 @section Scripts {
@@ -10,7 +11,7 @@
 
 @Html.AntiForgeryToken()
 
-<h1>Manage @Model.Username</h1>
+<h1>Manage @Model.UserName</h1>
 <br />
 <partial name="_AdminPartial" for="Admin" />
 <div>

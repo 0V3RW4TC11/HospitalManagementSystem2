@@ -1,7 +1,7 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Presentation.Models.Admin;
+using Presentation.ViewModels.Admin;
 using Services.Abstractions;
 using X.PagedList;
 using X.PagedList.Extensions;
@@ -33,13 +33,13 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(AdminCreateViewModel model)
+        public async Task<IActionResult> Create(CreateAdminViewModel model)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    await _adminService.CreateAsync(model.Dto);
+                    await _adminService.CreateAsync(model.Command);
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)
@@ -82,7 +82,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(AdminManageViewModel model)
+        public async Task<IActionResult> Edit(ManageAdminViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -118,7 +118,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditProfile(AdminProfileViewModel model)
+        public async Task<IActionResult> EditProfile(ProfileAdminViewModel model)
         {
             if (ModelState.IsValid)
             {

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Models.Attendance;
+using Presentation.ViewModels.Attendance;
 using Services.Abstractions;
 using X.PagedList.Extensions;
 

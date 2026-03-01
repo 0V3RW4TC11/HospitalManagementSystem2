@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Models.Admin;
-using Presentation.Models.Doctor;
+using Presentation.ViewModels.Doctor;
 using Services.Abstractions;
 using X.PagedList;
 using X.PagedList.Extensions;

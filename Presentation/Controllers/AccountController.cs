@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Operations;
 using Presentation.Helpers;
-using Presentation.Models.Account;
+using Presentation.ViewModels.Account;
 using Services.Abstractions;
 
 namespace Presentation.Controllers
