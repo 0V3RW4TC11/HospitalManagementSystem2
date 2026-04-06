@@ -15,9 +15,9 @@ namespace Validation.Patient
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(c => c).SetValidator(new PatientValidator());
+            RuleFor(c => c.Data).SetValidator(new PatientValidator());
             RuleFor(c => c.Id).SetValidator(new EntityExistenceValidator<Domain.Entities.Patient>(_unitOfWork.Patients));
-            RuleFor(c => c.Email)
+            RuleFor(c => c.Data.Email)
                 .MustAsync(EmailMustBeUniqueForThisPatient)
                 .WithMessage("This email is already used by another Patient");
         }

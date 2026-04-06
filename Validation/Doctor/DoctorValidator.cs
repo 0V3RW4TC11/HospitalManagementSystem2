@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace Validation.Doctor
 {
-    internal class DoctorValidator : AbstractValidator<DoctorBaseCommand>
+    internal class DoctorValidator : AbstractValidator<DoctorData>
     {
         public DoctorValidator()
         {
@@ -11,6 +11,7 @@ namespace Validation.Doctor
             RuleFor(c => c.FirstName).NotEmpty().WithMessage("First name is required");
             RuleFor(c => c.Phone).NotEmpty().WithMessage("Phone number is required");
             RuleFor(c => c.Email).NotEmpty().WithMessage("Email is required");
+            RuleFor(c => c.SpecializationIds).NotEmpty().WithMessage("A Specialization is required.");
         }
     }
 }

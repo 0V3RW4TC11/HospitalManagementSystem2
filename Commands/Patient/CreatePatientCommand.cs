@@ -2,14 +2,5 @@
 
 namespace Commands.Patient
 {
-    public record CreatePatientCommand(
-        string? Title,
-        string FirstName,
-        string? LastName,
-        string Gender,
-        string? Address,
-        string? Phone,
-        string Email,
-        Constants.BloodType BloodType,
-        DateOnly DateOfBirth) : IRequest;
+    public record CreatePatientCommand(PatientData Data, string Password) : IRequest;
 }

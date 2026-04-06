@@ -7,7 +7,6 @@ namespace Persistence
     internal class UnitOfWork : IUnitOfWork
     {
         private readonly RepositoryDbContext _context;
-        private readonly Lazy<IRepository<Account>> _lazyAccounts;
         private readonly Lazy<IRepository<Admin>> _lazyAdmins;
         private readonly Lazy<IRepository<Attendance>> _lazyAttendances;
         private readonly Lazy<IRepository<Doctor>> _lazyDoctors;
@@ -19,7 +18,6 @@ namespace Persistence
         public UnitOfWork(RepositoryDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
-            _lazyAccounts = new Lazy<IRepository<Account>>(() => new Repository<Account>(_context));
             _lazyAdmins = new Lazy<IRepository<Admin>>(() => new Repository<Admin>(_context));
             _lazyAttendances = new Lazy<IRepository<Attendance>>(() => new Repository<Attendance>(_context));
             _lazyDoctors = new Lazy<IRepository<Doctor>>(() => new Repository<Doctor>(_context));
@@ -28,8 +26,6 @@ namespace Persistence
             _lazyPatients = new Lazy<IRepository<Patient>>(() => new Repository<Patient>(_context));
             _lazySpecializations = new Lazy<IRepository<Specialization>>(() => new Repository<Specialization>(_context));
         }
-
-        public IRepository<Account> Accounts => _lazyAccounts.Value;
 
         public IRepository<Admin> Admins => _lazyAdmins.Value;
 
@@ -57,6 +53,7 @@ namespace Persistence
             catch (Exception)
             {
                 await transaction.RollbackAsync(ct);
+                _context.ChangeTracker.Clear();
                 throw;
             }
         }

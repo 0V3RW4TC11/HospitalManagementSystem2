@@ -17,5 +17,11 @@ namespace Persistence
         {
             return await _context.Users.CountAsync(u => pattern.IsMatch(u.UserName!), ct);
         }
+
+        protected override async Task<bool> IsExisting(string username)
+        {
+            string normalizedUsername = username.ToLower();
+            return await _context.Users.AnyAsync(u => u.UserName!.ToLower() == normalizedUsername);
+        }
     }
 }

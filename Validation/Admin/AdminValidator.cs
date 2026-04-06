@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace Validation.Admin
 {
-    internal class AdminValidator : AbstractValidator<AdminBaseCommand>
+    internal class AdminValidator : AbstractValidator<AdminData>
     {
         public AdminValidator()
         {

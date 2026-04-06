@@ -4,7 +4,7 @@ using Mapster;
 using MediatR;
 using Specifications.Entity;
 
-namespace Handlers
+namespace Commands.Handlers
 {
     public class AdminCommandHandler :
         IRequestHandler<CreateAdminCommand>,

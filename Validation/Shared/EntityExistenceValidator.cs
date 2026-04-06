@@ -15,7 +15,7 @@ namespace Validation.Shared
 
             RuleFor(id => id)
                 .NotEmpty().WithMessage("Id is required.")
-                .MustAsync(EntityMustExistWithId).WithMessage(nameof(TEntity) + " with this Id does not exist.");
+                .MustAsync(EntityMustExistWithId).WithMessage(typeof(TEntity).Name + " with this Id does not exist.");
         }
 
         private async Task<bool> EntityMustExistWithId(Guid id, CancellationToken cancellationToken)

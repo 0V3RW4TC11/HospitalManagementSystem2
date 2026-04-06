@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Queries.Dtos.Admin
 {
-    public class AdminIndexItemDto
+    public class AdminListItemDto
     {
         public Guid Id { get; set; }
 

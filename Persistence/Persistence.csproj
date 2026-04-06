@@ -28,4 +28,8 @@
       <Folder Include="Migrations\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <InternalsVisibleTo Include="Persistence.Tests2" />
+    </ItemGroup>
+
 </Project>

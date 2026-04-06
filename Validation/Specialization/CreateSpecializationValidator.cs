@@ -12,12 +12,11 @@ namespace Validation.Specialization
         public CreateSpecializationValidator(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-
-            RuleFor(c => c).SetValidator(new SpecializationValidator());
+            RuleFor(c => c.Name).NotEmpty().WithMessage("Name is required.");
             RuleFor(c => c.Name).MustAsync(NameMustBeUniqueForThisSpecialization).WithMessage("This name is already used by another Specialization.");
         }
 
-        private async Task<bool> NameMustBeUniqueForThisSpecialization(CreateSpecializationCommand command, string name, CancellationToken ct)
+        private async Task<bool> NameMustBeUniqueForThisSpecialization(string name, CancellationToken ct)
         {
             return !await _unitOfWork.Specializations.AnyAsync(new SpecializationByNameSpec(name), ct);
         }

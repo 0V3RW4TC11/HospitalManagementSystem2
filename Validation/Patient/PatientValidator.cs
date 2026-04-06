@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace Validation.Patient
 {
-    internal class PatientValidator : AbstractValidator<PatientBaseCommand>
+    internal class PatientValidator : AbstractValidator<PatientData>
     {
         public PatientValidator()
         {

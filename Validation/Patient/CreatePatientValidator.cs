@@ -14,11 +14,11 @@ namespace Validation.Patient
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(c => c).SetValidator(new PatientValidator());
+            RuleFor(c => c.Data).SetValidator(new PatientValidator());
             RuleFor(c => c.Password)
                 .NotEmpty()
                 .WithMessage("Password is required.");
-            RuleFor(c => c.Email)
+            RuleFor(c => c.Data.Email)
                 .MustAsync(EmailMustBeUniqueForThisPatient)
                 .WithMessage("This email is already used by another Patient");
         }

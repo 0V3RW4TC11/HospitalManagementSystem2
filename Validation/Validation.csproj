@@ -16,4 +16,8 @@
     <ProjectReference Include="..\Specifications\Specifications.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Validation.Tests" />
+  </ItemGroup>
+
 </Project>

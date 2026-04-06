@@ -1,5 +1,6 @@
 ﻿using Abstractions;
 using Commands.Doctor;
+using Commands.Handlers;
 using Mapster;
 using MediatR;
 using Specifications.Entity;
@@ -29,7 +30,7 @@ namespace Handlers
                 var doctor = request.Adapt<Domain.Entities.Doctor>();
                 await _unitOfWork.Doctors.AddAsync(doctor, ct);
                 await _unitOfWork.SaveChangesAsync(ct);
-                await _docSpecHelper.UpdateAsync(doctor.Id, request.SpecializationIds, ct);
+                await _docSpecHelper.UpdateAsync(doctor.Id, request.Data.SpecializationIds, ct);
                 await _unitOfWork.SaveChangesAsync(ct);
 
                 var userName = await _staffService.CreateStaffUsernameAsync(doctor.FirstName, doctor.LastName, ct);
@@ -58,7 +59,7 @@ namespace Handlers
             var doctor = request.Adapt<Domain.Entities.Doctor>();
 
             await _unitOfWork.Doctors.UpdateAsync(doctor, cancellationToken);
-            await _docSpecHelper.UpdateAsync(doctor.Id, request.SpecializationIds, cancellationToken);
+            await _docSpecHelper.UpdateAsync(doctor.Id, request.Data.SpecializationIds, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }
