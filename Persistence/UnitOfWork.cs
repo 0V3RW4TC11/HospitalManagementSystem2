@@ -11,7 +11,7 @@ namespace Persistence
         private readonly Lazy<IRepository<Attendance>> _lazyAttendances;
         private readonly Lazy<IRepository<Doctor>> _lazyDoctors;
         private readonly Lazy<IRepository<DoctorSpecialization>> _lazyDoctorSpecializations;
-        private readonly Lazy<IIdentityProvider> _lazyIdentityProvider;
+        private readonly Lazy<IIdentityService> _lazyIdentityProvider;
         private readonly Lazy<IRepository<Patient>> _lazyPatients;
         private readonly Lazy<IRepository<Specialization>> _lazySpecializations;
 
@@ -22,7 +22,7 @@ namespace Persistence
             _lazyAttendances = new Lazy<IRepository<Attendance>>(() => new Repository<Attendance>(_context));
             _lazyDoctors = new Lazy<IRepository<Doctor>>(() => new Repository<Doctor>(_context));
             _lazyDoctorSpecializations = new Lazy<IRepository<DoctorSpecialization>>(() => new Repository<DoctorSpecialization>(_context));
-            _lazyIdentityProvider = new Lazy<IIdentityProvider>(() => new IdentityProvider(userManager));
+            _lazyIdentityProvider = new Lazy<IIdentityService>(() => new IdentityService(userManager));
             _lazyPatients = new Lazy<IRepository<Patient>>(() => new Repository<Patient>(_context));
             _lazySpecializations = new Lazy<IRepository<Specialization>>(() => new Repository<Specialization>(_context));
         }
@@ -35,7 +35,7 @@ namespace Persistence
 
         public IRepository<DoctorSpecialization> DoctorSpecializations => _lazyDoctorSpecializations.Value;
 
-        public IIdentityProvider IdentityProvider => _lazyIdentityProvider.Value;
+        public IIdentityService IdentityProvider => _lazyIdentityProvider.Value;
 
         public IRepository<Patient> Patients => _lazyPatients.Value;
 

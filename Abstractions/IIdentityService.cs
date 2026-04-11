@@ -1,6 +1,6 @@
 ﻿namespace Abstractions;
 
-public interface IIdentityProvider
+public interface IIdentityService
 {
     Task CreateIdentityAsync(Guid hmsUserId, string userName, string password, string role, CancellationToken cancellationToken);
 

@@ -14,7 +14,7 @@ namespace Abstractions
 
         IRepository<DoctorSpecialization> DoctorSpecializations { get; }
 
-        IIdentityProvider IdentityProvider { get; }
+        IIdentityService IdentityProvider { get; }
 
         IRepository<Patient> Patients { get; }
 

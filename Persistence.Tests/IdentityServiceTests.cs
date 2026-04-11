@@ -8,13 +8,13 @@ using Microsoft.Extensions.Logging.Abstractions;
 namespace Persistence.Tests
 {
     [TestFixture]
-    internal class IdentityProviderTests
+    internal class IdentityServiceTests
     {
         private ServiceProvider _serviceProvider;
 
         private RoleManager<IdentityRole> RoleManager => _serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
         private UserManager<IdentityUser> UserManager => _serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
-        private IIdentityProvider IdentityProvider => _serviceProvider.GetRequiredService<IIdentityProvider>();
+        private IIdentityService IdentityProvider => _serviceProvider.GetRequiredService<IIdentityService>();
 
         [SetUp]
         public void Setup()
@@ -39,7 +39,7 @@ namespace Persistence.Tests
                 .AddDefaultTokenProviders();
 
             // Add Identity provider
-            services.AddScoped<IIdentityProvider, IdentityProvider>();
+            services.AddScoped<IIdentityService, IdentityService>();
 
             // Build service provider
             _serviceProvider = services.BuildServiceProvider();

@@ -4,11 +4,11 @@ using Persistence.Helpers;
 
 namespace Persistence
 {
-    internal sealed class IdentityProvider : IIdentityProvider
+    internal sealed class IdentityService : IIdentityService
     {
         private readonly UserManager<IdentityUser> _userManager;
 
-        public IdentityProvider(UserManager<IdentityUser> userManager)
+        public IdentityService(UserManager<IdentityUser> userManager)
         {
             _userManager = userManager;
         }
