@@ -11,7 +11,7 @@ using System.Security.Claims;
 namespace Persistence.Tests
 {
     [TestFixture]
-    internal class IdentityQueryHandlerTests
+    internal class GetHmsUserIdFromCurrentUserQueryTests
     {
         [Test]
         public async Task Handle_NoUserSignedIn_ThrowsException()
