@@ -7,7 +7,7 @@ using Validation.Doctor;
 namespace Validation.Tests.Doctor;
 
 [TestFixture]
-public class DoctorSpecializationValidatorTests
+internal class DoctorSpecializationValidatorTests
 {
     private Mock<IUnitOfWork> _unitOfWorkMock;
     private DoctorSpecializationValidator _validator;
@@ -15,8 +15,8 @@ public class DoctorSpecializationValidatorTests
     [SetUp]
     public void SetUp()
     {
-        _unitOfWorkMock = new Mock<IUnitOfWork>();
-        _validator = new DoctorSpecializationValidator(_unitOfWorkMock.Object);
+        _unitOfWorkMock = new();
+        _validator = new(_unitOfWorkMock.Object);
     }
 
     [Test]
@@ -24,6 +24,9 @@ public class DoctorSpecializationValidatorTests
     {
         // Arrange
         var specIds = new List<Guid>();
+
+        _unitOfWorkMock.Setup(u => u.Specializations.CountAsync(It.IsAny<Specifications.Entity.EntityByIdsSpec<Domain.Entities.Specialization>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(0);
 
         // Act & Assert
         var result = await _validator.TestValidateAsync(specIds);

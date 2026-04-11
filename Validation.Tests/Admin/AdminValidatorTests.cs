@@ -5,14 +5,10 @@ using Validation.Admin;
 
 namespace Validation.Tests.Admin;
 
-public class AdminValidatorTests
+[TestFixture]
+internal class AdminValidatorTests
 {
-    private readonly AdminValidator _validator;
-
-    public AdminValidatorTests()
-    {
-        _validator = new AdminValidator();
-    }
+    private readonly AdminValidator _validator = new();
 
     [Test]
     public void Validate_FirstNameIsEmpty_ShouldHaveValidationError()

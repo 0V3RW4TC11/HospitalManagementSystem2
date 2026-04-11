@@ -2,7 +2,7 @@
 using Commands.Specialization;
 using FluentValidation;
 using Specifications.Specialization;
-using Validation.Shared;
+using Validation.Entity;
 
 namespace Validation.Specialization
 {

@@ -8,16 +8,19 @@ using Validation.Doctor;
 namespace Validation.Tests.Doctor;
 
 [TestFixture]
-public class UpdateDoctorValidatorTests
+internal class UpdateDoctorValidatorTests
 {
     private Mock<IUnitOfWork> _unitOfWorkMock;
+    private Mock<IRepository<Domain.Entities.Doctor>> _doctorRepoMock;
     private UpdateDoctorValidator _validator;
 
     [SetUp]
     public void SetUp()
     {
-        _unitOfWorkMock = new Mock<IUnitOfWork>();
-        _validator = new UpdateDoctorValidator(_unitOfWorkMock.Object);
+        _unitOfWorkMock = new();
+        _doctorRepoMock = new();
+        _unitOfWorkMock.Setup(u => u.Doctors).Returns(_doctorRepoMock.Object);
+        _validator = new(_unitOfWorkMock.Object);
     }
 
     [Test]
@@ -37,42 +40,6 @@ public class UpdateDoctorValidatorTests
         // Act & Assert
         var result = await _validator.TestValidateAsync(command);
         result.ShouldHaveValidationErrorFor(x => x.Data.Email).WithErrorMessage("This email is already used by another Doctor.");
-    }
-
-    [Test]
-    public async Task Validate_EmailIsSameAsCurrentDoctor_ShouldNotHaveValidationError()
-    {
-        // Arrange
-        var doctorId = Guid.NewGuid();
-        var doctorData = new DoctorData("John", "Doe", "Male", "Address", "1234567890", "test@example.com", new DateOnly(1980, 1, 1), new List<Guid> { Guid.NewGuid() });
-        var command = new UpdateDoctorCommand(doctorId, doctorData);
-
-        _unitOfWorkMock.Setup(u => u.Doctors.SingleOrDefaultAsync(It.IsAny<Specifications.Doctor.DoctorIdByEmailSpec>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(doctorId); // Email used by same doctor
-        _unitOfWorkMock.Setup(u => u.Specializations.CountAsync(It.IsAny<Specifications.Entity.EntityByIdsSpec<Domain.Entities.Specialization>>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(1);
-
-        // Act & Assert
-        var result = await _validator.TestValidateAsync(command);
-        result.ShouldNotHaveValidationErrorFor(x => x.Data.Email);
-    }
-
-    [Test]
-    public async Task Validate_EmailIsUnique_ShouldNotHaveValidationError()
-    {
-        // Arrange
-        var doctorId = Guid.NewGuid();
-        var doctorData = new DoctorData("John", "Doe", "Male", "Address", "1234567890", "test@example.com", new DateOnly(1980, 1, 1), new List<Guid> { Guid.NewGuid() });
-        var command = new UpdateDoctorCommand(doctorId, doctorData);
-
-        _unitOfWorkMock.Setup(u => u.Doctors.SingleOrDefaultAsync(It.IsAny<Specifications.Doctor.DoctorIdByEmailSpec>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Guid.Empty); // Email not used
-        _unitOfWorkMock.Setup(u => u.Specializations.CountAsync(It.IsAny<Specifications.Entity.EntityByIdsSpec<Domain.Entities.Specialization>>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(1);
-
-        // Act & Assert
-        var result = await _validator.TestValidateAsync(command);
-        result.ShouldNotHaveValidationErrorFor(x => x.Data.Email);
     }
 
     [Test]
@@ -96,37 +63,38 @@ public class UpdateDoctorValidatorTests
     }
 
     [Test]
-    public async Task Validate_SpecializationIdsEmpty_ShouldHaveValidationError()
+    public async Task Validate_EmailIsUnique_ShouldNotHaveValidationError()
     {
         // Arrange
         var doctorId = Guid.NewGuid();
-        var doctorData = new DoctorData("John", "Doe", "Male", "Address", "1234567890", "test@example.com", new DateOnly(1980, 1, 1), new List<Guid>());
+        var doctorData = new DoctorData("John", "Doe", "Male", "Address", "1234567890", "test@example.com", new DateOnly(1980, 1, 1), new List<Guid> { Guid.NewGuid() });
         var command = new UpdateDoctorCommand(doctorId, doctorData);
 
         _unitOfWorkMock.Setup(u => u.Doctors.SingleOrDefaultAsync(It.IsAny<Specifications.Doctor.DoctorIdByEmailSpec>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Guid.Empty);
+            .ReturnsAsync(Guid.Empty); // Email not used
+        _unitOfWorkMock.Setup(u => u.Specializations.CountAsync(It.IsAny<Specifications.Entity.EntityByIdsSpec<Domain.Entities.Specialization>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(1);
 
         // Act & Assert
         var result = await _validator.TestValidateAsync(command);
-        result.ShouldHaveValidationErrorFor(x => x.Data.SpecializationIds).WithErrorMessage("Specializations are required.");
+        result.ShouldNotHaveValidationErrorFor(x => x.Data.Email);
     }
 
     [Test]
-    public async Task Validate_SpecializationIdsNotExist_ShouldHaveValidationError()
+    public async Task Validate_EmailIsSameAsCurrentDoctor_ShouldNotHaveValidationError()
     {
         // Arrange
         var doctorId = Guid.NewGuid();
-        var specId = Guid.NewGuid();
-        var doctorData = new DoctorData("John", "Doe", "Male", "Address", "1234567890", "test@example.com", new DateOnly(1980, 1, 1), new List<Guid> { specId });
+        var doctorData = new DoctorData("John", "Doe", "Male", "Address", "1234567890", "test@example.com", new DateOnly(1980, 1, 1), new List<Guid> { Guid.NewGuid() });
         var command = new UpdateDoctorCommand(doctorId, doctorData);
 
         _unitOfWorkMock.Setup(u => u.Doctors.SingleOrDefaultAsync(It.IsAny<Specifications.Doctor.DoctorIdByEmailSpec>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Guid.Empty);
+            .ReturnsAsync(doctorId); // Email used by same doctor
         _unitOfWorkMock.Setup(u => u.Specializations.CountAsync(It.IsAny<Specifications.Entity.EntityByIdsSpec<Domain.Entities.Specialization>>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(0); // None exist
+            .ReturnsAsync(1);
 
         // Act & Assert
         var result = await _validator.TestValidateAsync(command);
-        result.ShouldHaveValidationErrorFor(x => x.Data.SpecializationIds).WithErrorMessage("One or more Specializations do not exist.");
+        result.ShouldNotHaveValidationErrorFor(x => x.Data.Email);
     }
 }

@@ -8,7 +8,7 @@ using Validation.Specialization;
 namespace Validation.Tests.Specialization;
 
 [TestFixture]
-public class CreateSpecializationValidatorTests
+internal class CreateSpecializationValidatorTests
 {
     private Mock<IUnitOfWork> _unitOfWorkMock;
     private CreateSpecializationValidator _validator;

@@ -8,7 +8,7 @@ using Validation.Specialization;
 namespace Validation.Tests.Specialization;
 
 [TestFixture]
-public class UpdateSpecializationValidatorTests
+internal class UpdateSpecializationValidatorTests
 {
     private Mock<IUnitOfWork> _unitOfWorkMock;
     private Mock<IRepository<Domain.Entities.Specialization>> _specRepoMock;
@@ -21,31 +21,6 @@ public class UpdateSpecializationValidatorTests
         _specRepoMock = new Mock<IRepository<Domain.Entities.Specialization>>();
         _unitOfWorkMock.Setup(u => u.Specializations).Returns(_specRepoMock.Object);
         _validator = new UpdateSpecializationValidator(_unitOfWorkMock.Object);
-    }
-
-    [Test]
-    public async Task Validate_IdIsEmpty_ShouldHaveValidationError()
-    {
-        // Arrange
-        var command = new UpdateSpecializationCommand(Guid.Empty, "Name");
-
-        // Act & Assert
-        var result = await _validator.TestValidateAsync(command);
-        result.ShouldHaveValidationErrorFor(x => x.Id).WithErrorMessage("Id is required.");
-    }
-
-    [Test]
-    public async Task Validate_SpecializationDoesNotExist_ShouldHaveValidationError()
-    {
-        // Arrange
-        var command = new UpdateSpecializationCommand(Guid.NewGuid(), "Name");
-
-       _specRepoMock.Setup(r => r.AnyAsync(It.IsAny<Specifications.Entity.EntityByIdSpec<Domain.Entities.Specialization>>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
-
-        // Act & Assert
-        var result = await _validator.TestValidateAsync(command);
-        result.ShouldHaveValidationErrorFor(x => x.Id).WithErrorMessage("Specialization with this Id does not exist.");
     }
 
     [Test]

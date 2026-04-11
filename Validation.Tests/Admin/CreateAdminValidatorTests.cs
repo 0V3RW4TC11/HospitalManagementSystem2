@@ -8,7 +8,7 @@ using Validation.Admin;
 namespace Validation.Tests.Admin;
 
 [TestFixture]
-public class CreateAdminValidatorTests
+internal class CreateAdminValidatorTests
 {
     private Mock<IUnitOfWork> _unitOfWorkMock;
     private CreateAdminValidator _validator;

@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace Persistence.Tests2
+namespace Persistence.Tests
 {
     [TestFixture]
     internal class IdentityProviderTests

@@ -1,7 +1,7 @@
 ﻿using Abstractions;
 using Commands.Doctor;
 using FluentValidation;
-using Validation.Shared;
+using Validation.Entity;
 
 namespace Validation.Doctor
 {

@@ -2,7 +2,7 @@
 using Commands.Admin;
 using FluentValidation;
 using Specifications.Admin;
-using Validation.Shared;
+using Validation.Entity;
 
 namespace Validation.Admin
 {

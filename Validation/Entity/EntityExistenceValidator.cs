@@ -1,11 +1,10 @@
 ﻿using Abstractions;
-using Domain.Entities;
 using FluentValidation;
 using Specifications.Entity;
 
-namespace Validation.Shared
+namespace Validation.Entity
 {
-    internal class EntityExistenceValidator<TEntity> : AbstractValidator<Guid> where TEntity : Entity
+    internal class EntityExistenceValidator<TEntity> : AbstractValidator<Guid> where TEntity : Domain.Entities.Entity
     {
         private readonly IRepository<TEntity> _repository;
 

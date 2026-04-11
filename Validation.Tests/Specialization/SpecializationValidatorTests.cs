@@ -6,7 +6,7 @@ using Validation.Specialization;
 namespace Validation.Tests.Specialization;
 
 [TestFixture]
-public class SpecializationValidatorTests
+internal class SpecializationValidatorTests
 {
     private SpecializationValidator _validator;
 

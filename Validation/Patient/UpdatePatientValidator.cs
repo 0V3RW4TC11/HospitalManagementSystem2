@@ -2,7 +2,7 @@
 using Commands.Patient;
 using FluentValidation;
 using Specifications.Patient;
-using Validation.Shared;
+using Validation.Entity;
 
 namespace Validation.Patient
 {

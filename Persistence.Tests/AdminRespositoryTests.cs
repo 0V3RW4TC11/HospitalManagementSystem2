@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Specifications.Admin;
 
-namespace Persistence.Tests2
+namespace Persistence.Tests
 {
     internal class AdminSingleByEmailSpec : SingleResultSpecification<Admin>
     {

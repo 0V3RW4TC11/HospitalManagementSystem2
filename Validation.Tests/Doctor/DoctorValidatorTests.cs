@@ -6,14 +6,14 @@ using Validation.Doctor;
 namespace Validation.Tests.Doctor;
 
 [TestFixture]
-public class DoctorValidatorTests
+internal class DoctorValidatorTests
 {
     private DoctorValidator _validator;
 
     [SetUp]
     public void SetUp()
     {
-        _validator = new DoctorValidator();
+        _validator = new();
     }
 
     [Test]

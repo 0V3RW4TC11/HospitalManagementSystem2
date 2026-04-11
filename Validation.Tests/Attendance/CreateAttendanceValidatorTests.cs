@@ -8,7 +8,7 @@ using Validation.Attendance;
 namespace Validation.Tests.Attendance;
 
 [TestFixture]
-public class CreateAttendanceValidatorTests
+internal class CreateAttendanceValidatorTests
 {
     private Mock<IUnitOfWork> _unitOfWorkMock;
     private Mock<IRepository<Domain.Entities.Doctor>> _doctorRepoMock;
