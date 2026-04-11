@@ -79,7 +79,7 @@ namespace Persistence.Tests
             });
 
             var claims = await userManager.GetClaimsAsync(user);
-            var hmsClaim = claims.FirstOrDefault(c => c.Type == "hms_user_id");
+            var hmsClaim = claims.FirstOrDefault(c => c.Type == Constants.ClaimConstants.HmsUserId);
             Assert.Multiple(() =>
             {
                 Assert.That(hmsClaim, Is.Not.Null);

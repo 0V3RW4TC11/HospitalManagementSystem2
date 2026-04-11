@@ -21,7 +21,7 @@ namespace Persistence.Helpers
 
         public static Claim CreateClaim(Guid hmsUserId)
         {
-            return new Claim(ClaimConstants.ClaimType, hmsUserId.ToString());
+            return new Claim(ClaimConstants.HmsUserId, hmsUserId.ToString());
         }
     }
 }
