@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Persistence.AppConstants;
 using Queries.Identity;
 
 namespace Persistence.Handlers.Identity
@@ -32,7 +33,7 @@ namespace Persistence.Handlers.Identity
 
             var claims = await _userManager.GetClaimsAsync(identityUser);
 
-            var hmsUserIdClaim = claims.FirstOrDefault(c => c.Type == Constants.ClaimConstants.HmsUserId)
+            var hmsUserIdClaim = claims.FirstOrDefault(c => c.Type == ClaimConstants.HmsUserId)
                 ?? throw new Exception("User has no associated HMS User Id");
 
             return Guid.Parse(hmsUserIdClaim.Value);

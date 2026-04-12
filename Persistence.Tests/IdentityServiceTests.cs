@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Persistence.AppConstants;
 
 namespace Persistence.Tests
 {
@@ -79,7 +80,7 @@ namespace Persistence.Tests
             });
 
             var claims = await userManager.GetClaimsAsync(user);
-            var hmsClaim = claims.FirstOrDefault(c => c.Type == Constants.ClaimConstants.HmsUserId);
+            var hmsClaim = claims.FirstOrDefault(c => c.Type == ClaimConstants.HmsUserId);
             Assert.Multiple(() =>
             {
                 Assert.That(hmsClaim, Is.Not.Null);

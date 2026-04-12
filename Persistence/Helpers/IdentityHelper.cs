@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Persistence.Constants;
+using Persistence.AppConstants;
 using System.Security.Claims;
 
 namespace Persistence.Helpers

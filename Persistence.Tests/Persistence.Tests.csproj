@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Handlers\Commands.Handlers.csproj" />
     <ProjectReference Include="..\Persistence\Persistence.csproj" />
     <ProjectReference Include="..\Specifications\Specifications.csproj" />
     <ProjectReference Include="..\Constants\Constants.csproj" />

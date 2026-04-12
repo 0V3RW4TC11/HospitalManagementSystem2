@@ -1,4 +1,4 @@
-﻿namespace Persistence.Constants
+﻿namespace Persistence.AppConstants
 {
     internal static class ClaimConstants
     {

@@ -24,7 +24,7 @@ namespace Commands.Handlers
         {
             await _unitOfWork.RunInTransactionAsync(async (ct) =>
             {
-                var admin = request.Adapt<Domain.Entities.Admin>();
+                var admin = request.Data.Adapt<Domain.Entities.Admin>();
                 await _unitOfWork.Admins.AddAsync(admin, ct);
                 await _unitOfWork.SaveChangesAsync(ct);
 

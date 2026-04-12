@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Abstractions;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -10,10 +12,17 @@ namespace Persistence.Tests
     internal class AspIdentityStaffServiceTests
     {
         private ServiceProvider _serviceProvider;
+        private SqliteConnection _connection;
+
+        private RepositoryDbContext Context => _serviceProvider.GetRequiredService<RepositoryDbContext>();
+        private StaffService StaffService => _serviceProvider.GetRequiredService<StaffService>();
 
         [SetUp]
         public void Setup()
         {
+            _connection = new SqliteConnection("DataSource=:memory:");
+            _connection.Open();
+
             // Set up a service collection
             var services = new ServiceCollection();
 
@@ -24,14 +33,16 @@ namespace Persistence.Tests
                 builder.AddProvider(NullLoggerProvider.Instance);
             });
 
-            // Configure DbContext with EF Core In-Memory
+            // Configure DbContext
             services.AddDbContext<RepositoryDbContext>(options =>
-                options.UseInMemoryDatabase(Guid.NewGuid().ToString()));
+                options.UseSqlite(_connection));
 
             // Add Identity services
             services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<RepositoryDbContext>()
                 .AddDefaultTokenProviders();
+
+            services.AddScoped<StaffService, AspIdentityStaffService>();
 
             // Build service provider
             _serviceProvider = services.BuildServiceProvider();
@@ -46,18 +57,16 @@ namespace Persistence.Tests
         public void TearDown()
         {
             _serviceProvider.Dispose();
+            _connection.Close();
+            _connection.Dispose();
         }
 
         [Test]
         // a.b doesnt exist in any form and should be returned
         public async Task CreateStaffUsernameAsync_UniqueName_Succeeds()
         {
-            // Arrange
-            var context = _serviceProvider.GetRequiredService<RepositoryDbContext>();
-            var staffService = new AspIdentityStaffService(context);
-
             // Act
-            var result = await staffService.CreateStaffUsernameAsync("a", "b");
+            var result = await StaffService.CreateStaffUsernameAsync("a", "b");
 
             // Assert
             Assert.That(result, Is.EqualTo("a.b@sjog.org.au"));
@@ -69,13 +78,12 @@ namespace Persistence.Tests
         public async Task CreateStaffUsernameAsync_SimilarName_Succeeds()
         {
             // Arrange
-            var context = _serviceProvider.GetRequiredService<RepositoryDbContext>();
+            var context = Context;
             context.Users.Add(new IdentityUser { UserName = "a.b@sjog.org.au" });
             context.SaveChanges();
-            var staffService = new AspIdentityStaffService(context);
 
             // Act
-            var result = await staffService.CreateStaffUsernameAsync("a", "b");
+            var result = await StaffService.CreateStaffUsernameAsync("a", "b");
 
             // Assert
             Assert.That(result, Is.EqualTo("a.b2@sjog.org.au"));
@@ -87,16 +95,15 @@ namespace Persistence.Tests
         public async Task CreateStaffUsernameAsync_SimilarNameButSkippedIteration_Succeeds()
         {
             // Arrange
-            var context = _serviceProvider.GetRequiredService<RepositoryDbContext>();
+            var context = Context;
             context.Users.AddRange(
                 new IdentityUser { UserName = "a.b@sjog.org.au" },
                 new IdentityUser { UserName = "a.b3@sjog.org.au" }
             );
             context.SaveChanges();
-            var staffService = new AspIdentityStaffService(context);
 
             // Act
-            var result = await staffService.CreateStaffUsernameAsync("a", "b");
+            var result = await StaffService.CreateStaffUsernameAsync("a", "b");
 
             // Assert
             Assert.That(result, Is.EqualTo("a.b4@sjog.org.au"));

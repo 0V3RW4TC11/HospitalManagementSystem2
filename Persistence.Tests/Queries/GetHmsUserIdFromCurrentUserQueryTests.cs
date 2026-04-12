@@ -4,11 +4,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
+using Persistence.AppConstants;
 using Persistence.Handlers.Identity;
 using Queries.Identity;
 using System.Security.Claims;
 
-namespace Persistence.Tests
+namespace Persistence.Tests.Queries
 {
     [TestFixture]
     internal class GetHmsUserIdFromCurrentUserQueryTests
@@ -129,9 +130,8 @@ namespace Persistence.Tests
             var hmsUserId = Guid.NewGuid();
             var identUserClaims = new List<Claim>
             {
-                new Claim(Constants.ClaimConstants.HmsUserId, hmsUserId.ToString())
+                new Claim(ClaimConstants.HmsUserId, hmsUserId.ToString())
             };
-
             var userManagerMock = CreateUserManagerMock();
             userManagerMock.Setup(x => x.FindByIdAsync(It.Is(identityUser.Id, StringComparer.OrdinalIgnoreCase)))
                 .ReturnsAsync(identityUser);

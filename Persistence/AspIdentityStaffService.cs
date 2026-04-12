@@ -13,9 +13,9 @@ namespace Persistence
             _context = context;
         }
 
-        protected override async Task<int> CountMatchingUserNamesAsync(Regex pattern, CancellationToken ct)
+        protected override async Task<int> CountMatchingUserNamesAsync(string pattern, CancellationToken ct)
         {
-            return await _context.Users.CountAsync(u => pattern.IsMatch(u.UserName!), ct);
+            return await _context.Users.CountAsync(u => Regex.IsMatch(u.UserName!, pattern), ct);
         }
 
         protected override async Task<bool> IsExisting(string username)

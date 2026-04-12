@@ -6,8 +6,8 @@ namespace Abstractions
     {
         public async Task<string> CreateStaffUsernameAsync(string firstName, string? lastName, CancellationToken ct = default)
         {
-            var name = lastName == null ? firstName : $"{firstName}.{lastName}";
-            var pattern = CreateRegex(name);
+            var name = lastName == null ? firstName : $"{firstName.ToLower()}.{lastName.ToLower()}";
+            var pattern = BuildPattern(name);
             int count = await CountMatchingUserNamesAsync(pattern, ct);
 
             if (count == 0)
@@ -25,19 +25,16 @@ namespace Abstractions
             }
         }
 
-        protected abstract Task<int> CountMatchingUserNamesAsync(Regex pattern, CancellationToken ct);
+        protected abstract Task<int> CountMatchingUserNamesAsync(string pattern, CancellationToken ct);
 
         protected abstract Task<bool> IsExisting(string username);
 
-        private static Regex CreateRegex(string name)
+        private static string BuildPattern(string name)
         {
             string escapedName = Regex.Escape(name);
             string escapedDomain = Regex.Escape(Constants.DomainNames.Organization);
 
-            string pattern =
-                $@"^{escapedName}(\d+)?@{escapedDomain}$";
-
-            return new Regex(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+            return $@"^{escapedName}(\d+)?@{escapedDomain}$";
         }
     }
 }
