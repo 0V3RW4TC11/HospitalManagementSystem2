@@ -20,7 +20,7 @@ namespace Commands.Handlers
             _staffService = staffService;
         }
 
-        public async Task Handle(CreateAdminCommand request, CancellationToken cancellationToken)
+        public async Task Handle(CreateAdminCommand request, CancellationToken cancellationToken = default)
         {
             await _unitOfWork.RunInTransactionAsync(async (ct) =>
             {
@@ -38,7 +38,7 @@ namespace Commands.Handlers
             }, cancellationToken);
         }
 
-        public async Task Handle(DeleteAdminCommand request, CancellationToken cancellationToken)
+        public async Task Handle(DeleteAdminCommand request, CancellationToken cancellationToken = default)
         {
             await _unitOfWork.RunInTransactionAsync(async (ct) =>
             {
@@ -49,9 +49,19 @@ namespace Commands.Handlers
             }, cancellationToken);
         }
 
-        public async Task Handle(UpdateAdminCommand request, CancellationToken cancellationToken)
+        public async Task Handle(UpdateAdminCommand request, CancellationToken cancellationToken = default)
         {
-            var admin = request.Adapt<Domain.Entities.Admin>();
+            var admin = await _unitOfWork.Admins.SingleOrDefaultAsync(new EntityByIdSpec<Domain.Entities.Admin>(request.Id), cancellationToken)
+                    ?? throw new Exception("Admin not found with Id " + request.Id);
+
+            admin.Title = request.Data.Title;
+            admin.FirstName = request.Data.FirstName;
+            admin.LastName = request.Data.LastName;
+            admin.Gender = request.Data.Gender;
+            admin.Address = request.Data.Address;
+            admin.Phone = request.Data.Phone;
+            admin.Email = request.Data.Email;
+            admin.DateOfBirth = request.Data.DateOfBirth;
 
             await _unitOfWork.Admins.UpdateAsync(admin, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
