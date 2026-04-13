@@ -1,15 +1,9 @@
 using System.Diagnostics;
-using HospitalManagementSystem2.Models;
 using Microsoft.AspNetCore.Mvc;
-<<<<<<<< HEAD:Presentation/Controllers/HomeController.cs
 using Microsoft.Extensions.Logging;
 using Presentation.Models;
 
 namespace Presentation.Controllers;
-========
-
-namespace HospitalManagementSystem2.Controllers;
->>>>>>>> origin/main:HospitalManagementSystem2/Controllers/HomeController.cs
 
 public class HomeController : Controller
 {

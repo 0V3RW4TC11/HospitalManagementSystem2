@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
 VisualStudioVersion = 18.1.11312.151 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HospitalManagementSystem2", "HospitalManagementSystem2\HospitalManagementSystem2.csproj", "{621F82AE-1F65-F4C6-91AA-A81D1D8C180F}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{E1671096-56E5-4B5D-AB08-C131878927ED}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{03822CF3-E4D3-44D7-A2DE-D6547F5BCB37}"
 EndProject

@@ -1,6 +1,8 @@
-﻿namespace Services.Dtos.Admin;
+﻿using System.Linq.Expressions;
 
-public abstract class AdminBaseDto
+namespace Domain.Entities;
+
+public class Admin : Entity
 {
     public string? Title { get; set; }
 
