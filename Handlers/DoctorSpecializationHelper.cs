@@ -1,6 +1,6 @@
 ﻿using Abstractions;
 using Domain.Entities;
-using Specifications.Doctor;
+using Specifications.DoctorSpecialization;
 
 namespace Commands.Handlers
 {

@@ -1,9 +1,8 @@
 ﻿using Ardalis.Specification;
-using Domain.Entities;
 
-namespace Specifications.Doctor
+namespace Specifications.DoctorSpecialization
 {
-    public class SpecializationIdsByDoctorIdSpec : Specification<DoctorSpecialization, Guid>
+    public class SpecializationIdsByDoctorIdSpec : Specification<Domain.Entities.DoctorSpecialization, Guid>
     {
         public SpecializationIdsByDoctorIdSpec(Guid id)
         {

@@ -1,11 +1,10 @@
 ﻿using Abstractions;
 using Commands.Doctor;
-using Commands.Handlers;
 using Mapster;
 using MediatR;
 using Specifications.Entity;
 
-namespace Handlers
+namespace Commands.Handlers
 {
     public class DoctorCommandHandler :
         IRequestHandler<CreateDoctorCommand>,
@@ -23,11 +22,11 @@ namespace Handlers
             _docSpecHelper = new DoctorSpecializationHelper(_unitOfWork.DoctorSpecializations);
         }
 
-        public async Task Handle(CreateDoctorCommand request, CancellationToken cancellationToken)
+        public async Task Handle(CreateDoctorCommand request, CancellationToken cancellationToken = default)
         {
             await _unitOfWork.RunInTransactionAsync(async (ct) =>
             {
-                var doctor = request.Adapt<Domain.Entities.Doctor>();
+                var doctor = request.Data.Adapt<Domain.Entities.Doctor>();
                 await _unitOfWork.Doctors.AddAsync(doctor, ct);
                 await _unitOfWork.SaveChangesAsync(ct);
                 await _docSpecHelper.UpdateAsync(doctor.Id, request.Data.SpecializationIds, ct);
@@ -43,7 +42,7 @@ namespace Handlers
             }, cancellationToken);
         }
 
-        public async Task Handle(DeleteDoctorCommand request, CancellationToken cancellationToken)
+        public async Task Handle(DeleteDoctorCommand request, CancellationToken cancellationToken = default)
         {
             await _unitOfWork.RunInTransactionAsync(async (ct) =>
             {
@@ -54,9 +53,18 @@ namespace Handlers
             }, cancellationToken);
         }
 
-        public async Task Handle(UpdateDoctorCommand request, CancellationToken cancellationToken)
+        public async Task Handle(UpdateDoctorCommand request, CancellationToken cancellationToken = default)
         {
-            var doctor = request.Adapt<Domain.Entities.Doctor>();
+            var doctor = await _unitOfWork.Doctors.SingleOrDefaultAsync(new EntityByIdSpec<Domain.Entities.Doctor>(request.Id), cancellationToken)
+                    ?? throw new Exception("Doctor not found with Id " + request.Id);
+
+            doctor.FirstName = request.Data.FirstName;
+            doctor.LastName = request.Data.LastName;
+            doctor.Gender = request.Data.Gender;
+            doctor.Address = request.Data.Address;
+            doctor.Phone = request.Data.Phone;
+            doctor.Email = request.Data.Email;
+            doctor.DateOfBirth = request.Data.DateOfBirth;
 
             await _unitOfWork.Doctors.UpdateAsync(doctor, cancellationToken);
             await _docSpecHelper.UpdateAsync(doctor.Id, request.Data.SpecializationIds, cancellationToken);

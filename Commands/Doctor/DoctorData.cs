@@ -7,6 +7,6 @@
         string Address,
         string Phone,
         string Email,
-        DateOnly? DateOfBirth,
+        DateOnly DateOfBirth,
         IEnumerable<Guid> SpecializationIds);
 }

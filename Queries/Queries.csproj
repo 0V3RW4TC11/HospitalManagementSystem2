@@ -11,8 +11,4 @@
     <PackageReference Include="X.PagedList" Version="10.5.9" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Queries.Dtos\Queries.Dtos.csproj" />
-  </ItemGroup>
-
 </Project>
