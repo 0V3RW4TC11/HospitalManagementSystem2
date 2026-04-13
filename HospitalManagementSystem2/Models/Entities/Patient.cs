@@ -1,0 +1,34 @@
+﻿using System.Linq.Expressions;
+
+namespace HospitalManagementSystem2.Models.Entities;
+
+public class Patient : Entity
+{
+    public string? Title { get; set; }
+
+    public string FirstName { get; set; }
+
+    public string? LastName { get; set; }
+
+    public string Gender { get; set; }
+
+    public string? Address { get; set; }
+
+    public string? Phone { get; set; }
+
+    public string Email { get; set; }
+
+    public DateOnly DateOfBirth { get; set; }
+    
+<<<<<<< HEAD:Domain/Entities/Patient.cs
+    public Constants.BloodType BloodType { get; set; }
+    
+=======
+    public BloodType BloodType { get; set; }
+
+>>>>>>> origin/main:HospitalManagementSystem2/Models/Entities/Patient.cs
+    public static Expression<Func<Patient, bool>> Matches(Patient patient)
+    {
+        return x => x.Email.ToLower() == patient.Email.ToLower();
+    }
+}
