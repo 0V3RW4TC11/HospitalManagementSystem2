@@ -109,6 +109,8 @@ namespace Persistence.Tests.Command.Handlers
             var password = "SecurePassword123!";
             var command = new CreateDoctorCommand(doctorData, password);
 
+            Context.ChangeTracker.Clear(); // clears dangling entity tracking references due to non normal use of DbContext
+
             // Act
             await handler.Handle(command);
 
@@ -168,6 +170,8 @@ namespace Persistence.Tests.Command.Handlers
             var doctor = await context.Doctors.AsNoTracking().SingleAsync(d => d.Email == doctorData.Email);
             var deleteCommand = new DeleteDoctorCommand(doctor.Id);
 
+            Context.ChangeTracker.Clear(); // clears dangling entity tracking references due to non normal use of DbContext
+
             // Act
             await handler.Handle(deleteCommand);
 
@@ -199,6 +203,8 @@ namespace Persistence.Tests.Command.Handlers
             var specializationIds2 = CreateSpecializations("Psychiatry", "Dermatology");
             var doctorData2 = CreateDoctorData("Robert", "Johnson", "robert.johnson.new@hospital.com", specializationIds2);
             var updateCommand = new UpdateDoctorCommand(doctor.Id, doctorData2);
+
+            Context.ChangeTracker.Clear(); // clears dangling entity tracking references due to non normal use of DbContext
 
             // Act
             await handler.Handle(updateCommand);
