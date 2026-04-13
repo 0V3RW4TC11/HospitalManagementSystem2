@@ -1,0 +1,25 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+@if (SignInManager.IsSignedIn(User))
+{
+    @if (User.IsInRole(Constants.AuthRoles.Admin))
+    {
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="Admins" asp-action="Dashboard">Dashboard</a>
+        </li>
+    }
+    @if (User.IsInRole(Constants.AuthRoles.Patient))
+    {
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="Patients" asp-action="Dashboard">Dashboard</a>
+        </li>
+    }
+    @if (User.IsInRole(Constants.AuthRoles.Doctor))
+    {
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="Doctors" asp-action="Dashboard">Dashboard</a>
+        </li>
+    }
+}

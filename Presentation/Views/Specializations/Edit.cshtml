@@ -1,0 +1,21 @@
+﻿@model Services.Dtos.Specialization.SpecializationDto
+
+@{
+    ViewData["Title"] = "Edit Specialization";
+}
+
+<h1>Edit Specialization</h1>
+<br />
+<form asp-action="@nameof(SpecializationsController.Edit)" method="post">
+    <input type="hidden" asp-for="Id" />
+    <div class="form-group">
+        <label asp-for="Name" class="control-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <br />
+    <div class="form-group">
+        <a asp-action="@nameof(SpecializationsController.Index)" class="btn btn-secondary">Back</a>
+        <input type="submit" value="Save" class="btn btn-primary" />
+    </div>
+</form>

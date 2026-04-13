@@ -1,6 +1,12 @@
+<<<<<<< HEAD:Services/StaffEmailService.cs
+﻿using Domain.Repositories;
+using Services.Abstractions;
+using System.Text;
+=======
 ﻿using System.Text;
 using HospitalManagementSystem2.Models.Entities;
 using Microsoft.AspNetCore.Identity;
+>>>>>>> origin/main:HospitalManagementSystem2/Services/StaffEmailGenerator.cs
 
 namespace HospitalManagementSystem2.Services;
 
@@ -16,7 +22,12 @@ public class StaffEmailGenerator : IStaffEmailGenerator
 
     public async Task<string> GenerateEmailAsync(string firstname, string? lastname, string domain)
     {
+<<<<<<< HEAD:Services/StaffEmailService.cs
+        var username = CreateUsername(firstName, lastName);
+        var domain = Constants.DomainNames.Organization;
+=======
         var username = CreateUsername(firstname, lastname);
+>>>>>>> origin/main:HospitalManagementSystem2/Services/StaffEmailGenerator.cs
         var email = new StringBuilder($"{username}@{domain}");
 
         // Check if base email is available

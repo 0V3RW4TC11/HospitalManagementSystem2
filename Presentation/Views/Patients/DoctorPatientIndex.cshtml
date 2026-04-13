@@ -1,0 +1,44 @@
+﻿@using X.PagedList.Mvc.Core
+@model X.PagedList.IPagedList<Patient.PatientListItemViewModel>
+
+@{
+    ViewData["Title"] = "Patients";
+}
+
+<h1>Patients</h1>
+<br />
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(m => m.First().FirstName)</th>
+            <th>@Html.DisplayNameFor(m => m.First().LastName)</th>
+            <th>@Html.DisplayNameFor(m => m.First().Email)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var patient in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(item => patient.FirstName)</td>
+                <td>@Html.DisplayFor(item => patient.LastName)</td>
+                <td>@Html.DisplayFor(item => patient.Email)</td>
+                <td>
+                    <a asp-action="@nameof(PatientsController.DoctorPatient)" asp-route-id="@patient.Id" class="btn btn-outline-primary">View</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Pagination controls -->
+<div>
+    @Html.PagedListPager(Model, page => Url.Action(nameof(PatientsController.Index), new { page = page }),
+    new PagedListRenderOptions {
+        LiElementClasses = new string[] { "page-item" },
+        PageClasses = new string[] { "page-link" }})
+</div>
+
+<!-- Page information -->
+<p>
+    Showing @Model.FirstItemOnPage to @Model.LastItemOnPage of @Model.TotalItemCount Patients
+</p>

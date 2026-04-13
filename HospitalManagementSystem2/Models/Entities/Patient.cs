@@ -20,22 +20,15 @@ public class Patient : Entity
 
     public DateOnly DateOfBirth { get; set; }
     
+<<<<<<< HEAD:Domain/Entities/Patient.cs
+    public Constants.BloodType BloodType { get; set; }
+    
+=======
     public BloodType BloodType { get; set; }
 
+>>>>>>> origin/main:HospitalManagementSystem2/Models/Entities/Patient.cs
     public static Expression<Func<Patient, bool>> Matches(Patient patient)
     {
         return x => x.Email.ToLower() == patient.Email.ToLower();
     }
-}
-
-public enum BloodType
-{
-    APositive,
-    ANegative,
-    BPositive,
-    BNegative,
-    AbPositive,
-    AbNegative,
-    OPositive,
-    ONegative
 }

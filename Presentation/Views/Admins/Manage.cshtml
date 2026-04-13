@@ -1,0 +1,29 @@
+﻿@model Admin.AdminManageViewModel
+
+@{
+    ViewData["Title"] = "Manage " + Model.Username;
+}
+
+@section Scripts {
+    <script src="~/js/account-lockout.js"></script>
+}
+
+@Html.AntiForgeryToken()
+
+<h1>Manage @Model.Username</h1>
+<br />
+<partial name="_AdminPartial" for="Admin" />
+<div>
+    <a asp-action="@nameof(AdminsController.Index)" class="btn btn-secondary">Back</a>
+    <a asp-action="@nameof(AdminsController.Edit)" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+    <button class="btn @(Model.IsLockedOut ? "btn-success" : "btn-danger")"
+        onclick="toggleAccountLockout('@Model.Id', @Model.IsLockedOut.ToString().ToLower())">
+        @(Model.IsLockedOut ? "Enable" : "Disable")
+    </button>
+    <form asp-action="@nameof(AdminsController.Delete)" method="post" style="display: inline-block">
+        <input type="hidden" name="id" value="@Model.Id" />
+        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+    </form>
+</div>
+
+

@@ -1,0 +1,20 @@
+﻿@model Patient.PatientProfileViewModel
+
+@{
+    ViewData["Title"] = "Edit " + Model.UserName;
+}
+
+<h1>Edit @Model.UserName</h1>
+<div class="row">
+    <div class="col-md-12">
+        <form method="post">
+            <input type="hidden" asp-for="UserName" />
+            <partial name="_PatientEditPartial" for="Patient"/>
+            <br />
+            <div class="form-group">
+                <a asp-action="@nameof(PatientsController.Profile)" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+    </div>
+</div>

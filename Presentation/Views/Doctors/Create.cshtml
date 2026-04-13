@@ -1,0 +1,28 @@
+﻿@model Doctor.DoctorCreateViewModel
+@{
+    ViewData["Title"] = "Create Doctor";
+}
+
+<h1>Create Doctor</h1>
+<div class="row">
+    <div class="col-md-12">
+        <form method="post" id="doctorCreate">
+            <partial name="_DoctorEditPartial" for="Edit"/>
+            <partial name="_PasswordCreatePartial" for="PasswordCreate" />
+            <br /><hr />
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Create</button>
+                <a asp-action="@nameof(AdminsController.Index)" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="module">
+    import { DoctorSpecsEditor } from '/js/doctor/doctor-specs-editor.js';
+    new DoctorSpecsEditor(
+        '/Specializations/Search?name=',
+        'Edit_JsonSpecializations',
+        'doctorCreate',
+        'specEditor')
+</script>

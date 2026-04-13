@@ -1,0 +1,21 @@
+﻿@model Admin.AdminManageViewModel
+
+@{
+    ViewData["Title"] = "Edit " + Model.Username;
+}
+
+<h1>Edit @Model.Username</h1>
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="@nameof(AdminsController.Edit)" method="post">
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="Username" />
+            <partial name="_AdminEditPartial" for="Admin" />
+            <br />
+            <div class="form-group">
+                <a asp-action="@nameof(AdminsController.Manage)" asp-route-id="@Model.Id" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+    </div>
+</div>

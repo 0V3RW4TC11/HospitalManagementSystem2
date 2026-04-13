@@ -1,0 +1,109 @@
+﻿using Services.Dtos.Patient;
+using Domain.Entities;
+using Domain.Exceptions;
+using Domain.Repositories;
+using Mapster;
+using Services.Abstractions;
+
+namespace Services;
+
+internal sealed class PatientService : IPatientService
+{
+    private readonly IRepositoryManager _repositoryManager;
+    private readonly AccountService _accountHelper;
+
+    public PatientService(IRepositoryManager repositoryManager, AccountService accountHelper)
+    {
+        _repositoryManager = repositoryManager;
+        _accountHelper = accountHelper;
+    }
+
+    public async Task<(PatientDto[] List, int TotalCount)> Patients(int pageNumber, int pageSize)
+    {
+        var patients = await _repositoryManager.PatientRepository.Patients(pageNumber, pageSize);
+        var dtos = patients
+            .Select(p => p.Adapt<PatientDto>())
+            .ToArray();
+        var totalCount = await _repositoryManager.PatientRepository.GetTotalCount();
+
+        return (List: dtos, TotalCount: totalCount);
+    }
+
+    public async Task CreateAsync(PatientCreateDto patientCreateDto, CancellationToken cancellationToken = default)
+    {
+        ValidatePatientCreateDto(patientCreateDto);
+        
+        await _repositoryManager.UnitOfWork.ExecuteInTransactionAsync(async () =>
+        {
+            var patient = patientCreateDto.Adapt<Patient>();
+            _repositoryManager.PatientRepository.Add(patient);
+            await _repositoryManager.UnitOfWork.SaveChangesAsync();
+
+            await _accountHelper.CreateAsync(
+                patient.Id,
+                Constants.AuthRoles.Patient,
+                patientCreateDto.Email,
+                patientCreateDto.Password);
+        });
+    }
+
+    public async Task<PatientDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var patient = await GetPatientByIdAsync(id);
+        
+        return patient.Adapt<PatientDto>();
+    }
+
+    public async Task UpdateAsync(PatientDto patientDto, CancellationToken cancellationToken = default)
+    {
+        var patient = await GetPatientByIdAsync(patientDto.Id);
+
+        ValidatePatientBaseDto(patientDto);
+        
+        patient.Title = patientDto.Title;
+        patient.FirstName = patientDto.FirstName;
+        patient.LastName = patientDto.LastName;
+        patient.Gender = patientDto.Gender;
+        patient.Address = patientDto.Address;
+        patient.Phone = patientDto.Phone;
+        patient.Email = patientDto.Email;
+        patient.BloodType = patientDto.BloodType;
+
+        await _repositoryManager.UnitOfWork.SaveChangesAsync();
+    }
+
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var patient = await GetPatientByIdAsync(id);
+
+        await _repositoryManager.UnitOfWork.ExecuteInTransactionAsync(async () =>
+        {
+            _repositoryManager.PatientRepository.Remove(patient);
+            await _repositoryManager.UnitOfWork.SaveChangesAsync();
+            
+            await _accountHelper.DeleteAsync(patient.Id);
+        });
+    }
+
+    private async Task<Patient> GetPatientByIdAsync(Guid id)
+    {
+        var patient = await _repositoryManager.PatientRepository.FindByIdAsync(id);
+        if (patient is null)
+            throw new PatientNotFoundException();
+
+        return patient;
+    }
+    
+    private static void ValidatePatientCreateDto(PatientCreateDto patientCreateDto)
+    {
+        ValidatePatientBaseDto(patientCreateDto);
+        ArgumentException.ThrowIfNullOrWhiteSpace(patientCreateDto.Password, nameof(patientCreateDto.Password));
+    }
+
+    private static void ValidatePatientBaseDto(PatientBaseDto baseDto)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(baseDto.FirstName, nameof(baseDto.FirstName));
+        ArgumentException.ThrowIfNullOrWhiteSpace(baseDto.Gender, nameof(baseDto.Gender));
+        ArgumentException.ThrowIfNullOrWhiteSpace(baseDto.Email, nameof(baseDto.Email));
+    }
+}

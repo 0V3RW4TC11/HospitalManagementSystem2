@@ -1,0 +1,21 @@
+﻿@model Attendance.AttendanceCreateViewModel
+@{
+    ViewData["Title"] = "Create Attendance";
+}
+
+<h1>Create Attendance</h1>
+<br />
+<form asp-action="Create" method="post">
+    <input type="hidden" asp-for="PatientId" />
+    <input type="hidden" asp-for="DoctorId" />
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="form-group">
+        <label asp-for="PatientName" class="control-label"></label>
+        <input asp-for="PatientName" class="form-control" readonly />
+    </div>
+    <partial name="_AttendancePartial" for="Attendance" />
+    <div class="form-group mt-3">
+        <a asp-controller="Patients" asp-action="DoctorPatient" asp-route-id="@Model.PatientId" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary">Create</button>
+    </div>
+</form>
