@@ -47,7 +47,8 @@ namespace Commands.Handlers
             await _unitOfWork.RunInTransactionAsync(async (ct) =>
             {
                 var doctor = await _unitOfWork.Doctors.SingleOrDefaultAsync(new EntityByIdSpec<Domain.Entities.Doctor>(request.Id), cancellationToken)
-                    ?? throw new Exception("Doctor not found with Id " + request.Id);
+                    ?? throw new NullReferenceException();
+
                 await _unitOfWork.Doctors.DeleteAsync(doctor, ct);
                 await _unitOfWork.IdentityProvider.DeleteIdentityAsync(doctor.Id, ct);
             }, cancellationToken);
@@ -55,16 +56,8 @@ namespace Commands.Handlers
 
         public async Task Handle(UpdateDoctorCommand request, CancellationToken cancellationToken = default)
         {
-            var doctor = await _unitOfWork.Doctors.SingleOrDefaultAsync(new EntityByIdSpec<Domain.Entities.Doctor>(request.Id), cancellationToken)
-                    ?? throw new Exception("Doctor not found with Id " + request.Id);
-
-            doctor.FirstName = request.Data.FirstName;
-            doctor.LastName = request.Data.LastName;
-            doctor.Gender = request.Data.Gender;
-            doctor.Address = request.Data.Address;
-            doctor.Phone = request.Data.Phone;
-            doctor.Email = request.Data.Email;
-            doctor.DateOfBirth = request.Data.DateOfBirth;
+            var doctor = request.Data.Adapt<Domain.Entities.Doctor>();
+            doctor.Id = request.Id;
 
             await _unitOfWork.Doctors.UpdateAsync(doctor, cancellationToken);
             await _docSpecHelper.UpdateAsync(doctor.Id, request.Data.SpecializationIds, cancellationToken);

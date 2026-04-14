@@ -18,11 +18,11 @@ namespace Commands.Handlers
             _unitOfWork = unitOfWork;
         }
 
-        public async Task Handle(CreatePatientCommand request, CancellationToken cancellationToken)
+        public async Task Handle(CreatePatientCommand request, CancellationToken cancellationToken = default)
         {
             await _unitOfWork.RunInTransactionAsync(async (ct) =>
             {
-                var patient = request.Adapt<Domain.Entities.Patient>();
+                var patient = request.Data.Adapt<Domain.Entities.Patient>();
                 await _unitOfWork.Patients.AddAsync(patient, ct);
                 await _unitOfWork.SaveChangesAsync(ct);
                 await _unitOfWork.IdentityProvider.CreateIdentityAsync(
@@ -34,20 +34,22 @@ namespace Commands.Handlers
             }, cancellationToken);
         }
 
-        public async Task Handle(DeletePatientCommand request, CancellationToken cancellationToken)
+        public async Task Handle(DeletePatientCommand request, CancellationToken cancellationToken = default)
         {
             await _unitOfWork.RunInTransactionAsync(async (ct) =>
             {
                 var patient = await _unitOfWork.Patients.SingleOrDefaultAsync(new EntityByIdSpec<Domain.Entities.Patient>(request.Id), ct)
-                    ?? throw new Exception("Patient not found with Id " + request.Id);
+                    ?? throw new NullReferenceException();
+
                 await _unitOfWork.Patients.DeleteAsync(patient, ct);
                 await _unitOfWork.IdentityProvider.DeleteIdentityAsync(patient.Id, ct);
             }, cancellationToken);
         }
 
-        public async Task Handle(UpdatePatientCommand request, CancellationToken cancellationToken)
+        public async Task Handle(UpdatePatientCommand request, CancellationToken cancellationToken = default)
         {
-            var patient = request.Adapt<Domain.Entities.Patient>();
+            var patient = request.Data.Adapt<Domain.Entities.Patient>();
+            patient.Id = request.Id;
 
             await _unitOfWork.Patients.UpdateAsync(patient, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);

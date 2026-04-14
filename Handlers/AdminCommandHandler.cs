@@ -43,7 +43,8 @@ namespace Commands.Handlers
             await _unitOfWork.RunInTransactionAsync(async (ct) =>
             {
                 var admin = await _unitOfWork.Admins.SingleOrDefaultAsync(new EntityByIdSpec<Domain.Entities.Admin>(request.Id), ct)
-                    ?? throw new Exception("Admin not found with Id " + request.Id);
+                    ?? throw new NullReferenceException();
+
                 await _unitOfWork.Admins.DeleteAsync(admin, ct);
                 await _unitOfWork.IdentityProvider.DeleteIdentityAsync(admin.Id, ct);
             }, cancellationToken);
@@ -51,17 +52,8 @@ namespace Commands.Handlers
 
         public async Task Handle(UpdateAdminCommand request, CancellationToken cancellationToken = default)
         {
-            var admin = await _unitOfWork.Admins.SingleOrDefaultAsync(new EntityByIdSpec<Domain.Entities.Admin>(request.Id), cancellationToken)
-                    ?? throw new Exception("Admin not found with Id " + request.Id);
-
-            admin.Title = request.Data.Title;
-            admin.FirstName = request.Data.FirstName;
-            admin.LastName = request.Data.LastName;
-            admin.Gender = request.Data.Gender;
-            admin.Address = request.Data.Address;
-            admin.Phone = request.Data.Phone;
-            admin.Email = request.Data.Email;
-            admin.DateOfBirth = request.Data.DateOfBirth;
+            var admin = request.Data.Adapt<Domain.Entities.Admin>();
+            admin.Id = request.Id;
 
             await _unitOfWork.Admins.UpdateAsync(admin, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);

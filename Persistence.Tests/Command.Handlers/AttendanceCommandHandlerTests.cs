@@ -62,13 +62,13 @@ namespace Persistence.Tests.Command.Handlers
         public async Task HandleCreateAttendanceCommand_ValidRequest_CreatesAttendance()
         {
             // Arrange
+            var context = Context;
             var handler = new AttendanceCommandHandler(UnitOfWork);
-
             var patient = CreatePatient();
             var doctor = CreateDoctor();
-            Context.Patients.Add(patient);
-            Context.Doctors.Add(doctor);
-            Context.SaveChanges();
+            context.Patients.Add(patient);
+            context.Doctors.Add(doctor);
+            context.SaveChanges();
 
             var data = new AttendanceData(
                 patient.Id,
@@ -83,7 +83,7 @@ namespace Persistence.Tests.Command.Handlers
             await handler.Handle(command);
 
             // Assert
-            var attendance = await Context.Attendances.AsNoTracking().SingleOrDefaultAsync();
+            var attendance = await context.Attendances.AsNoTracking().SingleOrDefaultAsync();
             Assert.That(attendance, Is.Not.Null);
             Assert.Multiple(() =>
             {
@@ -100,13 +100,13 @@ namespace Persistence.Tests.Command.Handlers
         public async Task HandleDeleteAttendanceCommand_ValidRequest_DeletesAttendance()
         {
             // Arrange
+            var context = Context;
             var handler = new AttendanceCommandHandler(UnitOfWork);
-
             var patient = CreatePatient();
             var doctor = CreateDoctor();
-            Context.Patients.Add(patient);
-            Context.Doctors.Add(doctor);
-            Context.SaveChanges();
+            context.Patients.Add(patient);
+            context.Doctors.Add(doctor);
+            context.SaveChanges();
 
             var data = new AttendanceData(
                 patient.Id,
@@ -119,27 +119,27 @@ namespace Persistence.Tests.Command.Handlers
             var createCommand = new CreateAttendanceCommand(data);
             await handler.Handle(createCommand);
 
-            var attendance = await Context.Attendances.AsNoTracking().SingleAsync();
+            var attendance = await context.Attendances.AsNoTracking().SingleAsync();
             var deleteCommand = new DeleteAttendanceCommand(attendance.Id);
 
             // Act
             await handler.Handle(deleteCommand);
 
             // Assert
-            Assert.That(Context.Attendances.Any(), Is.False);
+            Assert.That(context.Attendances.Any(), Is.False);
         }
 
         [Test]
         public async Task HandleUpdateAttendanceCommand_ValidRequest_UpdatesAttendance()
         {
             // Arrange
+            var context = Context;
             var handler = new AttendanceCommandHandler(UnitOfWork);
-
             var patient = CreatePatient();
             var doctor = CreateDoctor();
-            Context.Patients.Add(patient);
-            Context.Doctors.Add(doctor);
-            Context.SaveChanges();
+            context.Patients.Add(patient);
+            context.Doctors.Add(doctor);
+            context.SaveChanges();
 
             var data = new AttendanceData(
                 patient.Id,
@@ -162,6 +162,8 @@ namespace Persistence.Tests.Command.Handlers
 
             var attendance = await Context.Attendances.AsNoTracking().SingleAsync();
             var updateCommand = new UpdateAttendanceCommand(attendance.Id, updatedData);
+
+            Context.ChangeTracker.Clear();
 
             // Act
             await handler.Handle(updateCommand);

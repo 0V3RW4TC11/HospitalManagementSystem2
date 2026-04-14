@@ -127,6 +127,8 @@ namespace Persistence.Tests.Command.Handlers
             var admin = await context.Admins.AsNoTracking().SingleAsync(a => a.Email == adminData.Email);
             var deleteCommand = new DeleteAdminCommand(admin.Id);
 
+            context.ChangeTracker.Clear();
+
             // Act
             await handler.Handle(deleteCommand);
 
@@ -153,6 +155,8 @@ namespace Persistence.Tests.Command.Handlers
             var admin = await context.Admins.AsNoTracking().SingleAsync(a => a.Email == adminData1.Email);
             var adminData2 = new AdminData("Mr", "John", "Doe", "Male", "456 Second St", "1231231234", "john2@anotherexample.com", new DateOnly(1980, 1, 1));
             var updateCommand = new UpdateAdminCommand(admin.Id, adminData2);
+
+            context.ChangeTracker.Clear();
 
             // Act
             await handler.Handle(updateCommand);
