@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="Validation.Tests" />
+    <InternalsVisibleTo Include="Tests" />
   </ItemGroup>
 
 </Project>

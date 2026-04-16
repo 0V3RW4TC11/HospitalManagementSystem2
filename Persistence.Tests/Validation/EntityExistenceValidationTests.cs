@@ -4,7 +4,7 @@ using Moq;
 using NUnit.Framework;
 using Validation.Entity;
 
-namespace Validation.Tests.Entity
+namespace Tests.Validation
 {
     [TestFixture]
     internal class EntityExistenceValidationTests

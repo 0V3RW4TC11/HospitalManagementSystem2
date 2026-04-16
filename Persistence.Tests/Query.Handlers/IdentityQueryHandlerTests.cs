@@ -9,7 +9,7 @@ using Persistence.Handlers.Identity;
 using Queries.Identity;
 using System.Security.Claims;
 
-namespace Persistence.Tests.Query.Handlers
+namespace Tests.Query.Handlers
 {
     [TestFixture]
     internal class IdentityQueryHandlerTests

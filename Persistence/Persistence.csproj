@@ -29,7 +29,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <InternalsVisibleTo Include="Persistence.Tests2" />
+      <InternalsVisibleTo Include="Tests" />
     </ItemGroup>
 
 </Project>

@@ -7,8 +7,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Persistence;
 
-namespace Persistence.Tests.Command.Handlers
+namespace Tests.Command.Handlers
 {
     [TestFixture]
     internal class PatientCommandHandlerTests
@@ -116,7 +117,7 @@ namespace Persistence.Tests.Command.Handlers
             // Claim exists with correct data
             var claims = await userManager.GetClaimsAsync(user);
             Assert.That(claims, Is.Not.Null, "Claims");
-            var hmsIdClaim = claims.FirstOrDefault(c => c.Type == AppConstants.ClaimConstants.HmsUserId);
+            var hmsIdClaim = claims.FirstOrDefault(c => c.Type == Persistence.AppConstants.ClaimConstants.HmsUserId);
             Assert.That(hmsIdClaim, Is.Not.Null, "HmsUserId claim");
             Assert.That(Guid.Parse(hmsIdClaim.Value), Is.EqualTo(patient.Id), "HmsUserId claim value");
         }

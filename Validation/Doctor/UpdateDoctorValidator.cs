@@ -2,6 +2,7 @@
 using Commands.Doctor;
 using FluentValidation;
 using Specifications.Doctor;
+using Validation.Entity;
 
 namespace Validation.Doctor
 {
@@ -15,6 +16,7 @@ namespace Validation.Doctor
             _unitOfWork = unitOfWork;
 
             RuleFor(c => c.Data).SetValidator(new DoctorValidator());
+            RuleFor(c => c.Id).SetValidator(new EntityExistenceValidator<Domain.Entities.Doctor>(_unitOfWork.Doctors));
             RuleFor(c => c.Data.SpecializationIds).SetValidator(new DoctorSpecializationValidator(_unitOfWork));
             RuleFor(c => c.Data.Email).MustAsync(EmailMustBeUniqueForThisDoctor).WithMessage("This email is already used by another Doctor.");
         }

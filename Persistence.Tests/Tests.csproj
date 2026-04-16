@@ -26,6 +26,7 @@
     <ProjectReference Include="..\Specifications\Specifications.csproj" />
     <ProjectReference Include="..\Constants\Constants.csproj" />
     <ProjectReference Include="..\Queries\Queries.csproj" />
+    <ProjectReference Include="..\Validation\Validation.csproj" />
   </ItemGroup>
 
   <ItemGroup>
