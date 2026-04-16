@@ -1,5 +1,5 @@
 ﻿using Abstractions;
-using Commands.Handlers;
+using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -7,13 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Persistence;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Tests.MediatR
+namespace Tests.RequestPipeline
 {
     [TestFixture]
     internal class AdminPipelineTests
@@ -49,7 +44,8 @@ namespace Tests.MediatR
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<StaffService, AspIdentityStaffService>();
-            services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(AdminCommandHandler).Assembly));
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(Commands.Handlers.AssemblyReference).Assembly));
+            services.AddValidatorsFromAssembly(typeof(Validation.AssemblyReference).Assembly);
 
             _serviceProvider = services.BuildServiceProvider();
 
@@ -68,5 +64,7 @@ namespace Tests.MediatR
             _connection.Close();
             _connection.Dispose();
         }
+
+
     }
 }

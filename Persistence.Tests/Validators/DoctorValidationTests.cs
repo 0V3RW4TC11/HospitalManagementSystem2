@@ -4,7 +4,7 @@ using FluentValidation.TestHelper;
 using Moq;
 using Validation.Doctor;
 
-namespace Tests.Validation
+namespace Tests.Validators
 {
     // TODO: Tests for Doctor ID
 

@@ -4,7 +4,7 @@ using FluentValidation.TestHelper;
 using Moq;
 using Validation.Specialization;
 
-namespace Tests.Validation
+namespace Tests.Validators
 {
     [TestFixture]
     internal class SpecializationValidationTests

@@ -4,7 +4,7 @@ using Moq;
 using NUnit.Framework;
 using Validation.Doctor;
 
-namespace Tests.Validation;
+namespace Tests.Validators;
 
 [TestFixture]
 internal class DoctorSpecializationValidatorTests
