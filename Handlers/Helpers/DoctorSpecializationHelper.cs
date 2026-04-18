@@ -2,7 +2,7 @@
 using Domain.Entities;
 using Specifications.DoctorSpecialization;
 
-namespace Commands.Handlers
+namespace Handlers.Helpers
 {
     internal class DoctorSpecializationHelper
     {

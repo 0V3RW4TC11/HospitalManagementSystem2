@@ -1,6 +1,6 @@
 ﻿using Abstractions;
 using Commands.Admin;
-using Commands.Handlers;
+using Handlers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Persistence;
 
-namespace Tests.Command.Handlers
+namespace Tests.Handlers
 {
     [TestFixture]
     internal class AdminCommandHandlerTests

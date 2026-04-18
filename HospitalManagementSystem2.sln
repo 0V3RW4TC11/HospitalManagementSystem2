@@ -41,7 +41,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Specifications", "Specifica
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Queries", "Queries\Queries.csproj", "{3910E8FA-BE70-4A74-9228-5A8B7C6531A6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Commands.Handlers", "Handlers\Commands.Handlers.csproj", "{01A226D1-F2F4-4787-B0D0-5507AFBF32F8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Handlers", "Handlers\Handlers.csproj", "{01A226D1-F2F4-4787-B0D0-5507AFBF32F8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Persistence.Tests\Tests.csproj", "{68BBBD40-9724-B015-49D1-E3E833647AF3}"
 EndProject

@@ -9,11 +9,31 @@ using Persistence.Handlers.Identity;
 using Queries.Identity;
 using System.Security.Claims;
 
-namespace Tests.Query.Handlers
+namespace Tests.Handlers
 {
     [TestFixture]
     internal class IdentityQueryHandlerTests
     {
+        private static Mock<UserManager<IdentityUser>> CreateUserManagerMock() => 
+            new Mock<UserManager<IdentityUser>>(
+                new Mock<IUserStore<IdentityUser>>().Object, null, null, null, null, null, null, null, null);
+
+        private static Mock<SignInManager<IdentityUser>> CreateSignInManagerMock(ClaimsPrincipal? principal, UserManager<IdentityUser> userManager)
+        {
+            var httpContext = new DefaultHttpContext { User = principal };
+            var contextAccessorMock = new Mock<IHttpContextAccessor>();
+            contextAccessorMock.Setup(x => x.HttpContext).Returns(httpContext);
+
+            return new Mock<SignInManager<IdentityUser>>(
+                userManager,
+                contextAccessorMock.Object,
+                new Mock<IUserClaimsPrincipalFactory<IdentityUser>>().Object,
+                new Mock<IOptions<IdentityOptions>>().Object,
+                new Mock<ILogger<SignInManager<IdentityUser>>>().Object,
+                new Mock<IAuthenticationSchemeProvider>().Object,
+                new Mock<IUserConfirmation<IdentityUser>>().Object);
+        }
+
         [Test]
         public async Task HandleGetHmsUserIdFromCurrentUserQuery_NoUserSignedIn_ThrowsException()
         {
@@ -25,7 +45,7 @@ namespace Tests.Query.Handlers
 
             // Act
             var ex = Assert.ThrowsAsync<Exception>(async () => await handler.Handle(new GetHmsUserIdFromCurrentUserQuery(), CancellationToken.None));
-            
+
             // Assert
             Assert.That(ex?.Message, Is.EqualTo("No user is currently signed in."));
         }
@@ -131,26 +151,6 @@ namespace Tests.Query.Handlers
 
             // Assert
             Assert.That(result, Is.EqualTo(hmsUserId));
-        }
-
-        private static Mock<UserManager<IdentityUser>> CreateUserManagerMock()
-        {
-            return new Mock<UserManager<IdentityUser>>(new Mock<IUserStore<IdentityUser>>().Object, null, null, null, null, null, null, null, null);
-        }
-
-        private static Mock<SignInManager<IdentityUser>> CreateSignInManagerMock(ClaimsPrincipal? principal, UserManager<IdentityUser> userManager)
-        {
-            var httpContext = new DefaultHttpContext { User = principal };
-            var contextAccessorMock = new Mock<IHttpContextAccessor>();
-            contextAccessorMock.Setup(x => x.HttpContext).Returns(httpContext);
-
-            return new Mock<SignInManager<IdentityUser>>(
-                userManager,
-                contextAccessorMock.Object,
-                new Mock<IUserClaimsPrincipalFactory<IdentityUser>>().Object,
-                new Mock<IOptions<IdentityOptions>>().Object,
-                new Mock<ILogger<SignInManager<IdentityUser>>>().Object,
-                new Mock<IAuthenticationSchemeProvider>().Object);
         }
     }
 }

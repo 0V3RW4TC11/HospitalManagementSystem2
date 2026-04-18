@@ -1,5 +1,5 @@
 ﻿using Abstractions;
-using Commands.Handlers;
+using Handlers;
 using Commands.Patient;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.Sqlite;
@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Persistence;
 
-namespace Tests.Command.Handlers
+namespace Tests.Handlers
 {
     [TestFixture]
     internal class PatientCommandHandlerTests

@@ -1,4 +1,4 @@
-﻿namespace Commands.Handlers
+﻿namespace Handlers
 {
     public class AssemblyReference
     {

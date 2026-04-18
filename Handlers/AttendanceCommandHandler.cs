@@ -4,7 +4,7 @@ using Mapster;
 using MediatR;
 using Specifications.Entity;
 
-namespace Commands.Handlers
+namespace Handlers
 {
     public class AttendanceCommandHandler :
         IRequestHandler<CreateAttendanceCommand>,

@@ -1,5 +1,7 @@
 ﻿using Abstractions;
+using Commands.Admin;
 using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Persistence;
+using Validation.Behaviors;
 
 namespace Tests.RequestPipeline
 {
@@ -16,10 +19,15 @@ namespace Tests.RequestPipeline
         private ServiceProvider _serviceProvider;
         private SqliteConnection _connection;
 
-        private RepositoryDbContext Context => _serviceProvider.GetRequiredService<RepositoryDbContext>();
-        private IUnitOfWork UnitOfWork => _serviceProvider.GetRequiredService<IUnitOfWork>();
-        private UserManager<IdentityUser> UserManager => _serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
-        private StaffService StaffService => _serviceProvider.GetRequiredService<StaffService>();
+        private DbSet<Domain.Entities.Admin> GetAdmins()
+        {
+            var context = _serviceProvider.GetRequiredService<Persistence.RepositoryDbContext>();
+            return context.Admins;
+        }
+
+        private ISender GetSender() => _serviceProvider.GetRequiredService<ISender>();
+
+        private UserManager<IdentityUser> GetUserManager() => _serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
 
         [SetUp]
         public void Setup()
@@ -44,8 +52,13 @@ namespace Tests.RequestPipeline
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<StaffService, AspIdentityStaffService>();
-            services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(Commands.Handlers.AssemblyReference).Assembly));
+
             services.AddValidatorsFromAssembly(typeof(Validation.AssemblyReference).Assembly);
+            services.AddMediatR(cfg =>
+            {
+                cfg.RegisterServicesFromAssembly(typeof(global::Handlers.AssemblyReference).Assembly);
+                cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+            });
 
             _serviceProvider = services.BuildServiceProvider();
 
@@ -65,6 +78,32 @@ namespace Tests.RequestPipeline
             _connection.Dispose();
         }
 
+        [Test]
+        public async Task CreateAdminCommand_ValidCommand_ShouldPass()
+        {
+            // Arrange
+            var command = new CreateAdminCommand(
+                new AdminData("Mr", "John", "Doe", "Male", "123 Main St", "1234567890", "john@example.com", new DateOnly(1980, 1, 1)),
+                "SecurePassword123!");
 
+            // Act
+            await GetSender().Send(command);
+
+            // Assert
+            Assert.That(GetAdmins().Count(), Is.EqualTo(1));
+            Assert.That(GetUserManager().Users.Count, Is.EqualTo(1));
+        }
+
+        [Test]
+        public async Task CreateAdminCommand_InvalidCommand_ShouldFail()
+        {
+            // Arrange
+            var command = new CreateAdminCommand(
+                new AdminData("Mr", "", "Doe", "Male", "123 Main St", "1234567890", "john@example.com", new DateOnly(1980, 1, 1)),
+                "SecurePassword123!");
+
+            // Assert
+            Assert.ThrowsAsync<ValidationException>(async () => await GetSender().Send(command));
+        }
     }
 }
