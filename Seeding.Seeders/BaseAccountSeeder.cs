@@ -12,7 +12,6 @@ namespace Seeding.Seeders
     internal abstract class BaseAccountSeeder<T> : ISeeder where T : Entity
     {
         protected readonly IDbContextFactory<HmsDbContext> _contextFactory;
-        //private readonly AccountSeeder _accountSeeder = new();
         private readonly IdentityClaimsSeeder _claimsSeeder = new();
         private readonly Func<T, string> _emailAccessor;
         private readonly ConcurrentBag<T> _entitiesBag = new();
