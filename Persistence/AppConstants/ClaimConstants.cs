@@ -2,6 +2,6 @@
 {
     internal static class ClaimConstants
     {
-        public static string HmsUserId { get; } = "hms-user-id";
+        public static string HmsUserId { get; } = "hmsuserid";
     }
 }

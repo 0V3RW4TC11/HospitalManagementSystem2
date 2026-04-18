@@ -2,8 +2,6 @@
 
 public interface IRepositoryManager
 {
-    IAccountRepository AccountRepository { get; }
-    
     IAdminRepository AdminRepository { get; }
     
     IAttendanceRepository AttendanceRepository { get; }

@@ -24,8 +24,6 @@ namespace Seeders.Services
         {
             var context = _databaseService.Services.GetRequiredService<RepositoryDbContext>();
 
-            if (await context.Accounts.AnyAsync())
-                return true;
             if (await context.Admins.AnyAsync())
                 return true;
             if (await context.Patients.AnyAsync())
@@ -40,6 +38,10 @@ namespace Seeders.Services
                 return true;
             if (await context.Users.AnyAsync())
                 return true;
+            if (await context.UserRoles.AnyAsync())
+                return true;
+            if (await context.UserClaims.AnyAsync())
+                return true;
 
             return false;
         }
@@ -52,7 +54,6 @@ namespace Seeders.Services
             var context = _databaseService.Services.GetRequiredService<RepositoryDbContext>();
 
             await Task.WhenAll(
-                context.Accounts.ExecuteDeleteAsync(),
                 context.Admins.ExecuteDeleteAsync(),
                 context.Patients.ExecuteDeleteAsync(),
                 context.Doctors.ExecuteDeleteAsync(),
@@ -60,6 +61,7 @@ namespace Seeders.Services
                 context.Specializations.ExecuteDeleteAsync(),
                 context.Attendances.ExecuteDeleteAsync(),
                 context.Users.ExecuteDeleteAsync(),
+                context.UserClaims.ExecuteDeleteAsync(),
                 context.UserRoles.ExecuteDeleteAsync()
             );
         }

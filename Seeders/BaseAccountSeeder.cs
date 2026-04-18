@@ -12,7 +12,8 @@ namespace Seeders
     internal abstract class BaseAccountSeeder<T> : ISeeder where T : Entity
     {
         protected readonly IDbContextFactory<RepositoryDbContext> _contextFactory;
-        private readonly AccountSeeder _accountSeeder = new();
+        //private readonly AccountSeeder _accountSeeder = new();
+        private readonly IdentityClaimsSeeder _claimsSeeder = new();
         private readonly Func<T, string> _emailAccessor;
         private readonly ConcurrentBag<T> _entitiesBag = new();
         private readonly IdentityUserRolesSeeder _identityRolesSeeder = new();
@@ -50,7 +51,7 @@ namespace Seeders
 
                     var identityUsers = _identityUsersSeeder.Create(entities, _emailAccessor, _passwordHash);
                     _identityRolesSeeder.Create(identityUsers, _roleId);
-                    _accountSeeder.Create(entities, identityUsers);
+                    _claimsSeeder.Create(entities, identityUsers);
                 });
 
             await Task.WhenAll(CreateInsertTasks());
@@ -87,7 +88,7 @@ namespace Seeders
                 AsyncHelper.InvokeAsync(async () =>
                 {
                     await using var context = await _contextFactory.CreateDbContextAsync();
-                    await _accountSeeder.BulkInsertAsync(context);
+                    await _claimsSeeder.BulkInsertAsync(context);
                 })
             };
         }
@@ -97,7 +98,7 @@ namespace Seeders
             _entitiesBag.Clear();
             _identityUsersSeeder.Dispose();
             _identityRolesSeeder.Dispose();
-            _accountSeeder.Dispose();
+            _claimsSeeder.Dispose();
         }
     }
 }
