@@ -9,7 +9,7 @@ namespace Validation.Attendance
     {
         public DeleteAttendanceValidator(IUnitOfWork unitOfWork)
         {
-            RuleFor(c => c.Id).SetValidator(new EntityExistenceValidator<Domain.Entities.Attendance>(unitOfWork.Attendances));
+            RuleFor(c => c.Id).SetValidator(new EntityExistenceValidator<Entities.Attendance>(unitOfWork.Attendances));
         }
     }
 }

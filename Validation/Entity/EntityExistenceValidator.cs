@@ -4,7 +4,7 @@ using Specifications.Entity;
 
 namespace Validation.Entity
 {
-    internal class EntityExistenceValidator<TEntity> : AbstractValidator<Guid> where TEntity : Domain.Entities.Entity
+    internal class EntityExistenceValidator<TEntity> : AbstractValidator<Guid> where TEntity : Entities.Entity
     {
         private readonly IRepository<TEntity> _repository;
 

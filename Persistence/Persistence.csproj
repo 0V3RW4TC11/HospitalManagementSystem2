@@ -20,7 +20,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Abstractions\Abstractions.csproj" />
       <ProjectReference Include="..\Commands\Commands.csproj" />
-      <ProjectReference Include="..\Domain\Domain.csproj" />
+      <ProjectReference Include="..\Entities\Entities.csproj" />
       <ProjectReference Include="..\Queries\Queries.csproj" />
     </ItemGroup>
 
@@ -30,7 +30,7 @@
 
     <ItemGroup>
       <InternalsVisibleTo Include="Tests" />
-      <InternalsVisibleTo Include="Seeders" />
+      <InternalsVisibleTo Include="Seeding.Seeders" />
     </ItemGroup>
 
 </Project>

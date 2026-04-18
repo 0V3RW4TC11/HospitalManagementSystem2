@@ -9,7 +9,7 @@ namespace Validation.Specialization
     {
         public DeleteSpecializationValidator(IUnitOfWork unitOfWork)
         {
-            RuleFor(c => c.Id).SetValidator(new EntityExistenceValidator<Domain.Entities.Specialization>(unitOfWork.Specializations));
+            RuleFor(c => c.Id).SetValidator(new EntityExistenceValidator<Entities.Specialization>(unitOfWork.Specializations));
         }
     }
 }

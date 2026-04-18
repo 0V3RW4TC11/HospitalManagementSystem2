@@ -14,7 +14,7 @@ namespace Validation.Specialization
         {
             _unitOfWork = unitOfWork;
             RuleFor(c => c.Name).NotEmpty().WithMessage("Name is required.");
-            RuleFor(c => c.Id).SetValidator(new EntityExistenceValidator<Domain.Entities.Specialization>(_unitOfWork.Specializations));
+            RuleFor(c => c.Id).SetValidator(new EntityExistenceValidator<Entities.Specialization>(_unitOfWork.Specializations));
             RuleFor(c => c).MustAsync(NameMustBeUniqueForThisSpecialization).WithMessage("This name is already used by another Specialization.");
         }
 

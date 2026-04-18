@@ -8,7 +8,7 @@ namespace Validation.Attendance
     {
         private static readonly TimeSpan _dateTolerance = TimeSpan.FromHours(6);
 
-        public static async Task<Domain.Entities.Attendance?> GetAttendanceInDateRangeAsync(AttendanceData data, IUnitOfWork unitOfWork, CancellationToken ct)
+        public static async Task<Entities.Attendance?> GetAttendanceInDateRangeAsync(AttendanceData data, IUnitOfWork unitOfWork, CancellationToken ct)
         {
             var dateMin = data.DateTime.AddHours(-_dateTolerance.TotalHours);
             var dateMax = data.DateTime.AddHours(_dateTolerance.TotalHours);

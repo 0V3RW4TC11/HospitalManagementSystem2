@@ -1,5 +1,5 @@
 ﻿using Abstractions;
-using Domain.Entities;
+using Entities;
 using Specifications.DoctorSpecialization;
 
 namespace Handlers.Helpers

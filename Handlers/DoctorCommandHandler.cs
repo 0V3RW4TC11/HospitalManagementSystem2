@@ -1,5 +1,6 @@
 ﻿using Abstractions;
 using Commands.Doctor;
+using Entities;
 using Handlers.Helpers;
 using Mapster;
 using MediatR;
@@ -27,7 +28,7 @@ namespace Handlers
         {
             await _unitOfWork.RunInTransactionAsync(async (ct) =>
             {
-                var doctor = request.Data.Adapt<Domain.Entities.Doctor>();
+                var doctor = request.Data.Adapt<Doctor>();
                 await _unitOfWork.Doctors.AddAsync(doctor, ct);
                 await _unitOfWork.SaveChangesAsync(ct);
                 await _docSpecHelper.UpdateAsync(doctor.Id, request.Data.SpecializationIds, ct);
@@ -47,7 +48,7 @@ namespace Handlers
         {
             await _unitOfWork.RunInTransactionAsync(async (ct) =>
             {
-                var doctor = await _unitOfWork.Doctors.SingleOrDefaultAsync(new EntityByIdSpec<Domain.Entities.Doctor>(request.Id), cancellationToken)
+                var doctor = await _unitOfWork.Doctors.SingleOrDefaultAsync(new EntityByIdSpec<Doctor>(request.Id), cancellationToken)
                     ?? throw new NullReferenceException();
 
                 await _unitOfWork.Doctors.DeleteAsync(doctor, ct);
@@ -57,7 +58,7 @@ namespace Handlers
 
         public async Task Handle(UpdateDoctorCommand request, CancellationToken cancellationToken = default)
         {
-            var doctor = request.Data.Adapt<Domain.Entities.Doctor>();
+            var doctor = request.Data.Adapt<Doctor>();
             doctor.Id = request.Id;
 
             await _unitOfWork.Doctors.UpdateAsync(doctor, cancellationToken);

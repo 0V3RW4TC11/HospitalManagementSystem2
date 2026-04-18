@@ -1,5 +1,6 @@
 ﻿using Abstractions;
 using Commands.Attendance;
+using Entities;
 using Mapster;
 using MediatR;
 using Specifications.Entity;
@@ -20,7 +21,7 @@ namespace Handlers
 
         public async Task Handle(CreateAttendanceCommand request, CancellationToken cancellationToken = default)
         {
-            var attendance = request.Data.Adapt<Domain.Entities.Attendance>();
+            var attendance = request.Data.Adapt<Attendance>();
 
             await _unitOfWork.Attendances.AddAsync(attendance, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -28,7 +29,7 @@ namespace Handlers
 
         public async Task Handle(DeleteAttendanceCommand request, CancellationToken cancellationToken = default)
         {
-            var attendance = await _unitOfWork.Attendances.SingleOrDefaultAsync(new EntityByIdSpec<Domain.Entities.Attendance>(request.Id), cancellationToken)
+            var attendance = await _unitOfWork.Attendances.SingleOrDefaultAsync(new EntityByIdSpec<Attendance>(request.Id), cancellationToken)
                 ?? throw new NullReferenceException();
 
             await _unitOfWork.Attendances.DeleteAsync(attendance, cancellationToken);
@@ -37,7 +38,7 @@ namespace Handlers
 
         public async Task Handle(UpdateAttendanceCommand request, CancellationToken cancellationToken = default)
         {
-            var attendance = request.Data.Adapt<Domain.Entities.Attendance>();
+            var attendance = request.Data.Adapt<Attendance>();
             attendance.Id = request.Id;
 
             await _unitOfWork.Attendances.UpdateAsync(attendance, cancellationToken);

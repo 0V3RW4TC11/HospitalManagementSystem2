@@ -2,7 +2,7 @@
 
 namespace Specifications.Attendance
 {
-    public class AttendanceByDoctorPatientDateRangeSpec : SingleResultSpecification<Domain.Entities.Attendance>
+    public class AttendanceByDoctorPatientDateRangeSpec : SingleResultSpecification<Entities.Attendance>
     {
         public AttendanceByDoctorPatientDateRangeSpec(Guid doctorId, Guid patientId, DateTime dateMin, DateTime dateMax)
         {

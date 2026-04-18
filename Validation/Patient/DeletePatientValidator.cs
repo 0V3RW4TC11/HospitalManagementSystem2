@@ -9,7 +9,7 @@ namespace Validation.Patient
     {
         public DeletePatientValidator(IUnitOfWork unitOfWork)
         {
-            RuleFor(c => c.Id).SetValidator(new EntityExistenceValidator<Domain.Entities.Patient>(unitOfWork.Patients));
+            RuleFor(c => c.Id).SetValidator(new EntityExistenceValidator<Entities.Patient>(unitOfWork.Patients));
         }
     }
 }

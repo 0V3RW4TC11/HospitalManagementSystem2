@@ -2,7 +2,7 @@
 
 namespace Specifications.Admin
 {
-    public class AdminByEmailSpec : Specification<Domain.Entities.Admin>
+    public class AdminByEmailSpec : Specification<Entities.Admin>
     {
         public AdminByEmailSpec(string email)
         {

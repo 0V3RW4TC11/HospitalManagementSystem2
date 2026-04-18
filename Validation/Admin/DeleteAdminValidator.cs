@@ -9,7 +9,7 @@ namespace Validation.Admin
     {
         public DeleteAdminValidator(IUnitOfWork unitOfWork)
         {
-            RuleFor(c => c.Id).SetValidator(new EntityExistenceValidator<Domain.Entities.Admin>(unitOfWork.Admins));
+            RuleFor(c => c.Id).SetValidator(new EntityExistenceValidator<Entities.Admin>(unitOfWork.Admins));
         }
     }
 }

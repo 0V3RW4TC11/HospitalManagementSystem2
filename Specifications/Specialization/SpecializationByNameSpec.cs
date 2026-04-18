@@ -2,7 +2,7 @@
 
 namespace Specifications.Specialization
 {
-    public class SpecializationByNameSpec : Specification<Domain.Entities.Specialization>
+    public class SpecializationByNameSpec : Specification<Entities.Specialization>
     {
         public SpecializationByNameSpec(string name)
         {

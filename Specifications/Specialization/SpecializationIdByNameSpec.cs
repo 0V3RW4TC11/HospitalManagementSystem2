@@ -2,7 +2,7 @@
 
 namespace Specifications.Specialization
 {
-    public class SpecializationIdByNameSpec : SingleResultSpecification<Domain.Entities.Specialization, Guid>
+    public class SpecializationIdByNameSpec : SingleResultSpecification<Entities.Specialization, Guid>
     {
         public SpecializationIdByNameSpec(string name)
         {

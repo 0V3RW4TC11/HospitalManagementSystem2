@@ -1,5 +1,6 @@
 ﻿using Abstractions;
 using Commands.Admin;
+using Entities;
 using Mapster;
 using MediatR;
 using Specifications.Entity;
@@ -24,7 +25,7 @@ namespace Handlers
         {
             await _unitOfWork.RunInTransactionAsync(async (ct) =>
             {
-                var admin = request.Data.Adapt<Domain.Entities.Admin>();
+                var admin = request.Data.Adapt<Admin>();
                 await _unitOfWork.Admins.AddAsync(admin, ct);
                 await _unitOfWork.SaveChangesAsync(ct);
 
@@ -42,7 +43,7 @@ namespace Handlers
         {
             await _unitOfWork.RunInTransactionAsync(async (ct) =>
             {
-                var admin = await _unitOfWork.Admins.SingleOrDefaultAsync(new EntityByIdSpec<Domain.Entities.Admin>(request.Id), ct)
+                var admin = await _unitOfWork.Admins.SingleOrDefaultAsync(new EntityByIdSpec<Admin>(request.Id), ct)
                     ?? throw new NullReferenceException();
 
                 await _unitOfWork.Admins.DeleteAsync(admin, ct);
@@ -52,7 +53,7 @@ namespace Handlers
 
         public async Task Handle(UpdateAdminCommand request, CancellationToken cancellationToken = default)
         {
-            var admin = request.Data.Adapt<Domain.Entities.Admin>();
+            var admin = request.Data.Adapt<Admin>();
             admin.Id = request.Id;
 
             await _unitOfWork.Admins.UpdateAsync(admin, cancellationToken);

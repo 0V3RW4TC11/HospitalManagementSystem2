@@ -2,9 +2,9 @@
 
 namespace Specifications.DoctorSpecialization
 {
-    public class DoctorSpecializationsByDoctorSpecializationsSpec : Specification<Domain.Entities.DoctorSpecialization>
+    public class DoctorSpecializationsByDoctorSpecializationsSpec : Specification<Entities.DoctorSpecialization>
     {
-        public DoctorSpecializationsByDoctorSpecializationsSpec(IEnumerable<Domain.Entities.DoctorSpecialization> doctorSpecs)
+        public DoctorSpecializationsByDoctorSpecializationsSpec(IEnumerable<Entities.DoctorSpecialization> doctorSpecs)
         {
             Query.Where(ds => doctorSpecs.Any(x =>
                 ds.DoctorId == x.DoctorId &&

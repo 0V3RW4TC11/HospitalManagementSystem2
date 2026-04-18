@@ -1,5 +1,5 @@
 ﻿using Abstractions;
-using Domain.Entities;
+using Entities;
 using Microsoft.AspNetCore.Identity;
 
 namespace Persistence

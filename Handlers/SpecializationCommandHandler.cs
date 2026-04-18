@@ -1,5 +1,6 @@
 ﻿using Abstractions;
 using Commands.Specialization;
+using Entities;
 using Mapster;
 using MediatR;
 using Specifications.Entity;
@@ -20,7 +21,7 @@ namespace Handlers
 
         public async Task Handle(CreateSpecializationCommand request, CancellationToken cancellationToken = default)
         {
-            var specialization = request.Adapt<Domain.Entities.Specialization>();
+            var specialization = request.Adapt<Specialization>();
 
             await _unitOfWork.Specializations.AddAsync(specialization, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -28,7 +29,7 @@ namespace Handlers
 
         public async Task Handle(DeleteSpecializationCommand request, CancellationToken cancellationToken = default)
         {
-            var specialization = await _unitOfWork.Specializations.SingleOrDefaultAsync(new EntityByIdSpec<Domain.Entities.Specialization>(request.Id), cancellationToken)
+            var specialization = await _unitOfWork.Specializations.SingleOrDefaultAsync(new EntityByIdSpec<Specialization>(request.Id), cancellationToken)
                 ?? throw new NullReferenceException();
             
             await _unitOfWork.Specializations.DeleteAsync(specialization, cancellationToken);
@@ -37,7 +38,7 @@ namespace Handlers
 
         public async Task Handle(UpdateSpecializationCommand request, CancellationToken cancellationToken = default)
         {
-            var specialization = request.Adapt<Domain.Entities.Specialization>();
+            var specialization = request.Adapt<Specialization>();
             specialization.Id = request.Id;
 
             await _unitOfWork.Specializations.UpdateAsync(specialization, cancellationToken);

@@ -2,7 +2,7 @@
 
 namespace Specifications.Admin
 {
-    public class AdminIdByEmailSpec : SingleResultSpecification<Domain.Entities.Admin, Guid>
+    public class AdminIdByEmailSpec : SingleResultSpecification<Entities.Admin, Guid>
     {
         public AdminIdByEmailSpec(string email)
         {

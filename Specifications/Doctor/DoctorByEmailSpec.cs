@@ -2,7 +2,7 @@
 
 namespace Specifications.Doctor
 {
-    public class DoctorByEmailSpec : Specification<Domain.Entities.Doctor>
+    public class DoctorByEmailSpec : Specification<Entities.Doctor>
     {
         public DoctorByEmailSpec(string email)
         {

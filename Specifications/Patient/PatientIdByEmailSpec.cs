@@ -2,7 +2,7 @@
 
 namespace Specifications.Patient
 {
-    public class PatientIdByEmailSpec : SingleResultSpecification<Domain.Entities.Patient, Guid>
+    public class PatientIdByEmailSpec : SingleResultSpecification<Entities.Patient, Guid>
     {
         public PatientIdByEmailSpec(string email)
         {
