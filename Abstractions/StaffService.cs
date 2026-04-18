@@ -4,9 +4,12 @@ namespace Abstractions
 {
     public abstract class StaffService
     {
+        protected abstract Task<int> CountMatchingUserNamesAsync(string pattern, CancellationToken ct);
+        protected abstract Task<bool> IsExisting(string username);
+
         public async Task<string> CreateStaffUsernameAsync(string firstName, string? lastName, CancellationToken ct = default)
         {
-            var name = lastName == null ? firstName : $"{firstName.ToLower()}.{lastName.ToLower()}";
+            var name = lastName == null ? firstName.ToLower() : $"{firstName.ToLower()}.{lastName.ToLower()}";
             var pattern = BuildPattern(name);
             int count = await CountMatchingUserNamesAsync(pattern, ct);
 
@@ -24,10 +27,6 @@ namespace Abstractions
                 return $"{name}{count}@{Constants.DomainNames.Organization}";
             }
         }
-
-        protected abstract Task<int> CountMatchingUserNamesAsync(string pattern, CancellationToken ct);
-
-        protected abstract Task<bool> IsExisting(string username);
 
         private static string BuildPattern(string name)
         {
