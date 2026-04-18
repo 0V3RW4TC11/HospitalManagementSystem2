@@ -18,7 +18,7 @@ namespace Tests.Handlers
         private SqliteConnection _connection;
         private string _doctorRoleId = string.Empty;
 
-        private RepositoryDbContext Context => _serviceProvider.GetRequiredService<RepositoryDbContext>();
+        private HmsDbContext Context => _serviceProvider.GetRequiredService<HmsDbContext>();
         private IUnitOfWork UnitOfWork => _serviceProvider.GetRequiredService<IUnitOfWork>();
         private UserManager<IdentityUser> UserManager => _serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
         private StaffService StaffService => _serviceProvider.GetRequiredService<StaffService>();
@@ -37,11 +37,11 @@ namespace Tests.Handlers
                 builder.AddProvider(NullLoggerProvider.Instance);
             });
 
-            services.AddDbContext<RepositoryDbContext>(options =>
+            services.AddDbContext<HmsDbContext>(options =>
                 options.UseSqlite(_connection));
 
             services.AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<RepositoryDbContext>()
+                .AddEntityFrameworkStores<HmsDbContext>()
                 .AddDefaultTokenProviders();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -50,7 +50,7 @@ namespace Tests.Handlers
             _serviceProvider = services.BuildServiceProvider();
 
             using var scope = _serviceProvider.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<RepositoryDbContext>();
+            var context = scope.ServiceProvider.GetRequiredService<HmsDbContext>();
             context.Database.EnsureCreated();
 
             var identityRole = new IdentityRole(Constants.AuthRoles.Doctor);

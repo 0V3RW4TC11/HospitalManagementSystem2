@@ -42,7 +42,7 @@ namespace Seeders
             doctorSpecializations.ForEach(_doctorSpecializationsBag.Add);
         }
 
-        public async Task BulkInsertAsync(RepositoryDbContext context)
+        public async Task BulkInsertAsync(HmsDbContext context)
         {
             await context.BulkInsertAsync(
                 _doctorSpecializationsBag,

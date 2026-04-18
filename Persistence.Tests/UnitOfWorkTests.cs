@@ -16,7 +16,7 @@ namespace Tests
         private ServiceProvider _serviceProvider;
         private SqliteConnection _connection;
 
-        private RepositoryDbContext Context => _serviceProvider.GetRequiredService<RepositoryDbContext>();
+        private HmsDbContext Context => _serviceProvider.GetRequiredService<HmsDbContext>();
         private IUnitOfWork UnitOfWork => _serviceProvider.GetRequiredService<IUnitOfWork>();
 
         [SetUp]
@@ -36,12 +36,12 @@ namespace Tests
             });
 
             // Configure ApplicationDbContext with SQLite in-memory
-            services.AddDbContext<RepositoryDbContext>(options =>
+            services.AddDbContext<HmsDbContext>(options =>
                 options.UseSqlite(_connection));
 
             // Add Identity services
             services.AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<RepositoryDbContext>()
+                .AddEntityFrameworkStores<HmsDbContext>()
                 .AddDefaultTokenProviders();
 
             // Add services
@@ -52,7 +52,7 @@ namespace Tests
 
             // Ensure the database schema is created (including Identity tables)
             using var scope = _serviceProvider.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<RepositoryDbContext>();
+            var context = scope.ServiceProvider.GetRequiredService<HmsDbContext>();
             context.Database.EnsureCreated();
         }
 

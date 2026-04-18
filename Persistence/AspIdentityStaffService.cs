@@ -6,9 +6,9 @@ namespace Persistence
 {
     internal sealed class AspIdentityStaffService : StaffService
     {
-        private readonly RepositoryDbContext _context;
+        private readonly HmsDbContext _context;
 
-        public AspIdentityStaffService(RepositoryDbContext context)
+        public AspIdentityStaffService(HmsDbContext context)
         {
             _context = context;
         }

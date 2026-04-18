@@ -4,7 +4,7 @@ namespace Seeders
 {
     internal static class SpecializationsSeeder
     {
-        public static async Task<IEnumerable<Guid>> SeedAsync(RepositoryDbContext context, string pathToCsv)
+        public static async Task<IEnumerable<Guid>> SeedAsync(HmsDbContext context, string pathToCsv)
         {
             var specializationNames = File.ReadLines(pathToCsv)
                 .Select(line => line.Trim())

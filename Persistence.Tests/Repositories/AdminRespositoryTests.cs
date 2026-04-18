@@ -25,7 +25,7 @@ namespace Tests.Repositories
         private ServiceProvider _serviceProvider;
         private SqliteConnection _connection;
 
-        private RepositoryDbContext Context => _serviceProvider.GetRequiredService<RepositoryDbContext>();
+        private HmsDbContext Context => _serviceProvider.GetRequiredService<HmsDbContext>();
 
         private static Admin CreateAdmin() => new()
         {
@@ -63,13 +63,13 @@ namespace Tests.Repositories
                 builder.AddProvider(NullLoggerProvider.Instance);
             });
 
-            services.AddDbContext<RepositoryDbContext>(options =>
+            services.AddDbContext<HmsDbContext>(options =>
                 options.UseSqlite(_connection));
 
             _serviceProvider = services.BuildServiceProvider();
 
             using var scope = _serviceProvider.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<RepositoryDbContext>();
+            var context = scope.ServiceProvider.GetRequiredService<HmsDbContext>();
             context.Database.EnsureCreated();
         }
 

@@ -2,13 +2,12 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Persistence.Configurations;
 
 namespace Persistence;
 
-public sealed class RepositoryDbContext : IdentityDbContext<IdentityUser>
+public sealed class HmsDbContext : IdentityDbContext<IdentityUser>
 {
-    public RepositoryDbContext(DbContextOptions<RepositoryDbContext> options) : base(options)
+    public HmsDbContext(DbContextOptions<HmsDbContext> options) : base(options)
     {
     }
     
@@ -24,14 +23,12 @@ public sealed class RepositoryDbContext : IdentityDbContext<IdentityUser>
 
     public DbSet<DoctorSpecialization> DoctorSpecializations { get; set; }
 
-    public DbSet<Account> Accounts { get; set; }
-
     protected override void OnModelCreating(ModelBuilder builder)
     {
         // Configure Identity services
         base.OnModelCreating(builder);
         
         // Configure Db schema from configuration classes
-        builder.ApplyConfigurationsFromAssembly(typeof(RepositoryDbContext).Assembly);
+        builder.ApplyConfigurationsFromAssembly(typeof(HmsDbContext).Assembly);
     }
 }

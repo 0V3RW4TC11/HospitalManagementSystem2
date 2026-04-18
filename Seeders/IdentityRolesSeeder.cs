@@ -8,7 +8,7 @@ namespace Seeders
     {
         public static async Task SeedAsync(IServiceProvider services)
         {
-            var context = services.GetRequiredService<RepositoryDbContext>();
+            var context = services.GetRequiredService<HmsDbContext>();
             var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
             var rolesAll = Constants.AuthRoles.AsArray();

@@ -21,7 +21,7 @@ namespace Tests.RequestPipeline
 
         private DbSet<Domain.Entities.Admin> GetAdmins()
         {
-            var context = _serviceProvider.GetRequiredService<Persistence.RepositoryDbContext>();
+            var context = _serviceProvider.GetRequiredService<Persistence.HmsDbContext>();
             return context.Admins;
         }
 
@@ -43,11 +43,11 @@ namespace Tests.RequestPipeline
                 builder.AddProvider(NullLoggerProvider.Instance);
             });
 
-            services.AddDbContext<RepositoryDbContext>(options =>
+            services.AddDbContext<HmsDbContext>(options =>
                 options.UseSqlite(_connection));
 
             services.AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<RepositoryDbContext>()
+                .AddEntityFrameworkStores<HmsDbContext>()
                 .AddDefaultTokenProviders();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -63,7 +63,7 @@ namespace Tests.RequestPipeline
             _serviceProvider = services.BuildServiceProvider();
 
             using var scope = _serviceProvider.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<RepositoryDbContext>();
+            var context = scope.ServiceProvider.GetRequiredService<HmsDbContext>();
             context.Database.EnsureCreated();
 
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();

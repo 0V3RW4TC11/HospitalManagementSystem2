@@ -22,7 +22,7 @@ namespace Seeders.Services
 
         public async Task<bool> HasDataAsync()
         {
-            var context = _databaseService.Services.GetRequiredService<RepositoryDbContext>();
+            var context = _databaseService.Services.GetRequiredService<HmsDbContext>();
 
             if (await context.Admins.AnyAsync())
                 return true;
@@ -51,7 +51,7 @@ namespace Seeders.Services
             if (_databaseService is null)
                 throw new InvalidOperationException("Service is not initialized.");
 
-            var context = _databaseService.Services.GetRequiredService<RepositoryDbContext>();
+            var context = _databaseService.Services.GetRequiredService<HmsDbContext>();
 
             await Task.WhenAll(
                 context.Admins.ExecuteDeleteAsync(),
@@ -118,7 +118,7 @@ namespace Seeders.Services
         {
             var roleId = await _roleHelper.GetRoleIdAsync(Constants.AuthRoles.Doctor);
             var services = _databaseService.Services;
-            var context = services.GetRequiredService<RepositoryDbContext>();
+            var context = services.GetRequiredService<HmsDbContext>();
             var specIds = await SpecializationsSeeder.SeedAsync(
                 context,
                 Path.Combine(AppContext.BaseDirectory, "Data", "specializations.csv"));

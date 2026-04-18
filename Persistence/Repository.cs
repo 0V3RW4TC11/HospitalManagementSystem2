@@ -9,7 +9,7 @@ namespace Persistence
     {
         private readonly DbSet<T> _set;
 
-        public Repository(RepositoryDbContext context)
+        public Repository(HmsDbContext context)
         {
             _set = context.Set<T>();
         }

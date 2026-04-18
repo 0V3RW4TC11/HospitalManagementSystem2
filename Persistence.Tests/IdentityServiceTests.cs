@@ -32,12 +32,12 @@ namespace Tests
             });
 
             // Configure DbContext with EF Core In-Memory
-            services.AddDbContext<RepositoryDbContext>(options =>
+            services.AddDbContext<HmsDbContext>(options =>
                 options.UseInMemoryDatabase(Guid.NewGuid().ToString()));
 
             // Add Identity services
             services.AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<RepositoryDbContext>()
+                .AddEntityFrameworkStores<HmsDbContext>()
                 .AddDefaultTokenProviders();
 
             // Add Identity provider
@@ -48,7 +48,7 @@ namespace Tests
 
             // Ensure the database schema is created
             using var scope = _serviceProvider.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<RepositoryDbContext>();
+            var context = scope.ServiceProvider.GetRequiredService<HmsDbContext>();
             context.Database.EnsureCreated();
         }
 

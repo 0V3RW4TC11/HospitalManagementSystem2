@@ -11,7 +11,7 @@ namespace Seeders
 {
     internal abstract class BaseAccountSeeder<T> : ISeeder where T : Entity
     {
-        protected readonly IDbContextFactory<RepositoryDbContext> _contextFactory;
+        protected readonly IDbContextFactory<HmsDbContext> _contextFactory;
         //private readonly AccountSeeder _accountSeeder = new();
         private readonly IdentityClaimsSeeder _claimsSeeder = new();
         private readonly Func<T, string> _emailAccessor;
@@ -27,7 +27,7 @@ namespace Seeders
             string password,
             Func<T, string> emailAccessor)
         {
-            _contextFactory = services.GetRequiredService<IDbContextFactory<RepositoryDbContext>>();
+            _contextFactory = services.GetRequiredService<IDbContextFactory<HmsDbContext>>();
             _emailAccessor = emailAccessor;
             _passwordHash = IdentityPasswordHashHelper.HashPassword(services, password);
             _roleId = roleId;

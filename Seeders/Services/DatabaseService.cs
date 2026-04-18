@@ -24,7 +24,7 @@ namespace Seeders.Services
 
         public async Task InitializeDatabaseAsync()
         {
-            var database = Services.GetRequiredService<RepositoryDbContext>().Database;
+            var database = Services.GetRequiredService<HmsDbContext>().Database;
             await database.MigrateAsync();
         }
 
@@ -55,16 +55,16 @@ namespace Seeders.Services
             });
 
             // Add DbContext
-            services.AddDbContext<RepositoryDbContext>(options =>
+            services.AddDbContext<HmsDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
             // Add DbContextFactory
-            services.AddDbContextFactory<RepositoryDbContext>(options =>
+            services.AddDbContextFactory<HmsDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
             // Add Asp Identity Middleware
             services.AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<RepositoryDbContext>()
+                .AddEntityFrameworkStores<HmsDbContext>()
                 .AddDefaultTokenProviders();
 
             // Build and return service provider

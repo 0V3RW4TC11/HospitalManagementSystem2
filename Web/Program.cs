@@ -1,30 +1,27 @@
-using Domain.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
-using Persistence.Repositories;
-using Services;
-using Services.Abstractions;
+//using Persistence.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
                        throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<RepositoryDbContext>(
+builder.Services.AddDbContext<HmsDbContext>(
     options => options.UseSqlServer(connectionString,
         options => options.MigrationsAssembly("Persistence")));
 /* NEED? --> builder.Services.AddDatabaseDeveloperPageExceptionFilter();*/
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-    .AddEntityFrameworkStores<RepositoryDbContext>()
+    .AddEntityFrameworkStores<HmsDbContext>()
     .AddDefaultTokenProviders();
 
 builder.Services.AddControllersWithViews()
     .AddApplicationPart(typeof(Presentation.AssemblyReference).Assembly);
 
-builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
-builder.Services.AddScoped<IServiceManager, ServiceManager>();
+//builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
+//builder.Services.AddScoped<IServiceManager, ServiceManager>();
 
 var app = builder.Build();
 

@@ -15,7 +15,7 @@ namespace Tests
         private ServiceProvider _serviceProvider;
         private SqliteConnection _connection;
 
-        private RepositoryDbContext Context => _serviceProvider.GetRequiredService<RepositoryDbContext>();
+        private HmsDbContext Context => _serviceProvider.GetRequiredService<HmsDbContext>();
         private StaffService StaffService => _serviceProvider.GetRequiredService<StaffService>();
 
         [SetUp]
@@ -35,12 +35,12 @@ namespace Tests
             });
 
             // Configure DbContext
-            services.AddDbContext<RepositoryDbContext>(options =>
+            services.AddDbContext<HmsDbContext>(options =>
                 options.UseSqlite(_connection));
 
             // Add Identity services
             services.AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<RepositoryDbContext>()
+                .AddEntityFrameworkStores<HmsDbContext>()
                 .AddDefaultTokenProviders();
 
             services.AddScoped<StaffService, AspIdentityStaffService>();
@@ -50,7 +50,7 @@ namespace Tests
 
             // Ensure the database schema is created
             using var scope = _serviceProvider.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<RepositoryDbContext>();
+            var context = scope.ServiceProvider.GetRequiredService<HmsDbContext>();
             context.Database.EnsureCreated();
         }
 

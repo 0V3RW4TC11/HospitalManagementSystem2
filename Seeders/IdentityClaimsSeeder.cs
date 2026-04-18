@@ -23,7 +23,7 @@ namespace Seeders
             accounts.ForEach(_claimsBag.Add);
         }
 
-        public async Task BulkInsertAsync(RepositoryDbContext context)
+        public async Task BulkInsertAsync(HmsDbContext context)
         {
             await context.BulkInsertAsync(_claimsBag, new BulkConfig { PreserveInsertOrder = false });
         }

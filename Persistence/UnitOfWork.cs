@@ -6,7 +6,7 @@ namespace Persistence
 {
     internal class UnitOfWork : IUnitOfWork
     {
-        private readonly RepositoryDbContext _context;
+        private readonly HmsDbContext _context;
         private readonly Lazy<IRepository<Admin>> _lazyAdmins;
         private readonly Lazy<IRepository<Attendance>> _lazyAttendances;
         private readonly Lazy<IRepository<Doctor>> _lazyDoctors;
@@ -15,7 +15,7 @@ namespace Persistence
         private readonly Lazy<IRepository<Patient>> _lazyPatients;
         private readonly Lazy<IRepository<Specialization>> _lazySpecializations;
 
-        public UnitOfWork(RepositoryDbContext context, UserManager<IdentityUser> userManager)
+        public UnitOfWork(HmsDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
             _lazyAdmins = new Lazy<IRepository<Admin>>(() => new Repository<Admin>(_context));

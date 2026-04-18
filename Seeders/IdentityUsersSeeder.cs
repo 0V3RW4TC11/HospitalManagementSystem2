@@ -9,7 +9,7 @@ namespace Seeders
     {
         private readonly ConcurrentBag<IdentityUser> _identityUsersBag = new();
 
-        public async Task BulkInsertAsync(RepositoryDbContext context)
+        public async Task BulkInsertAsync(HmsDbContext context)
         {
             await context.BulkInsertAsync(
                 _identityUsersBag,
