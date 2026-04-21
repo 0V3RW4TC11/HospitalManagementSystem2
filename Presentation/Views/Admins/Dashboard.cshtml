@@ -5,10 +5,10 @@
 <h1>Administrator Dashboard</h1>
 <br />
 <div class="d-flex flex-column align-items-baseline mt-4" style="min-height: 100vh;">
-    <a asp-action="@nameof(AdminsController.Profile)" class="btn btn-primary mb-2">My Profile</a>
+    @* <a asp-action="@nameof(AdminsController.Profile)" class="btn btn-primary mb-2">My Profile</a> *@
     <br />
-    <a asp-controller="Specializations" asp-action="@nameof(SpecializationsController.Index)" class="btn btn-primary mb-2">Manage Specializations</a>
+    @* <a asp-controller="Specializations" asp-action="@nameof(SpecializationsController.Index)" class="btn btn-primary mb-2">Manage Specializations</a> *@
     <a asp-action="@nameof(AdminsController.Index)" class="btn btn-primary mb-2">Manage Administrators</a>
-    <a asp-controller="Doctors" asp-action="@nameof(DoctorsController.Index)" class="btn btn-primary mb-2">Manage Doctors</a>
-    <a asp-controller="Patients" asp-action="@nameof(PatientsController.Index)" class="btn btn-primary mb-2">Manage Patients</a>
+    @* <a asp-controller="Doctors" asp-action="@nameof(DoctorsController.Index)" class="btn btn-primary mb-2">Manage Doctors</a>
+    <a asp-controller="Patients" asp-action="@nameof(PatientsController.Index)" class="btn btn-primary mb-2">Manage Patients</a> *@
 </div>

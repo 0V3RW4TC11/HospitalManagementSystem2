@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.19" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.19" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.19" />
@@ -19,8 +20,10 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Handlers\Handlers.csproj" />
       <ProjectReference Include="..\Persistence\Persistence.csproj" />
       <ProjectReference Include="..\Presentation\Presentation.csproj" />
+      <ProjectReference Include="..\Validation\Validation.csproj" />
     </ItemGroup>
 
 </Project>

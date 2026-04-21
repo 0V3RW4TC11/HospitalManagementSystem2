@@ -1,7 +1,9 @@
+using Abstractions;
+using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
-//using Persistence.Repositories;
+using Validation.Behaviors;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,8 +22,17 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
 builder.Services.AddControllersWithViews()
     .AddApplicationPart(typeof(Presentation.AssemblyReference).Assembly);
 
-//builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
-//builder.Services.AddScoped<IServiceManager, ServiceManager>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<StaffService, AspIdentityStaffService>();
+
+builder.Services.AddValidatorsFromAssembly(typeof(Validation.AssemblyReference).Assembly);
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssemblies(
+        typeof(global::Handlers.AssemblyReference).Assembly,
+        typeof(Persistence.AssemblyReference).Assembly);
+    cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+});
 
 var app = builder.Build();
 

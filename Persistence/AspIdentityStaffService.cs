@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace Persistence
 {
-    internal sealed class AspIdentityStaffService : StaffService
+    public sealed class AspIdentityStaffService : StaffService
     {
         private readonly HmsDbContext _context;
 

@@ -8,6 +8,52 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="ViewModels\**" />
+      <Compile Remove="Views\Attendances\**" />
+      <Compile Remove="Views\Doctors\**" />
+      <Compile Remove="Views\Patients\**" />
+      <Compile Remove="Views\Specializations\**" />
+      <Content Remove="ViewModels\**" />
+      <Content Remove="Views\Attendances\**" />
+      <Content Remove="Views\Doctors\**" />
+      <Content Remove="Views\Patients\**" />
+      <Content Remove="Views\Specializations\**" />
+      <EmbeddedResource Remove="ViewModels\**" />
+      <EmbeddedResource Remove="Views\Attendances\**" />
+      <EmbeddedResource Remove="Views\Doctors\**" />
+      <EmbeddedResource Remove="Views\Patients\**" />
+      <EmbeddedResource Remove="Views\Specializations\**" />
+      <None Remove="ViewModels\**" />
+      <None Remove="Views\Attendances\**" />
+      <None Remove="Views\Doctors\**" />
+      <None Remove="Views\Patients\**" />
+      <None Remove="Views\Specializations\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="Controllers\AttendancesController.cs" />
+      <Compile Remove="Controllers\DoctorsController.cs" />
+      <Compile Remove="Controllers\PatientsController.cs" />
+      <Compile Remove="Controllers\SpecializationsController.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Remove="Views\Admins\Create.cshtml" />
+      <Content Remove="Views\Admins\Edit.cshtml" />
+      <Content Remove="Views\Admins\EditProfile.cshtml" />
+      <Content Remove="Views\Admins\Profile.cshtml" />
+      <Content Remove="Views\Admins\_AdminEditPartial.cshtml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Include="ViewModels\Account\AccountChangePasswordViewModel.cs" />
+      <Compile Include="ViewModels\Account\AccountLoginViewModel.cs" />
+      <Compile Include="ViewModels\Account\AccountResetPasswordViewModel.cs" />
+      <Compile Include="ViewModels\ErrorViewModel.cs" />
+      <Compile Include="ViewModels\PasswordCreateViewModel.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
       <PackageReference Include="Mapster" Version="7.4.0" />
       <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.3.0" />
       <PackageReference Include="X.PagedList" Version="10.5.9" />
@@ -16,11 +62,8 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Commands\Commands.csproj" />
-      <ProjectReference Include="..\Services.Abstractions\Services.Abstractions.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Views\Components\" />
+      <ProjectReference Include="..\Queries\Queries.csproj" />
+      <ProjectReference Include="..\ViewModels\ViewModels.csproj" />
     </ItemGroup>
 
 </Project>

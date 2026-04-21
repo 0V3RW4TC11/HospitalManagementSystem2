@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace Presentation.ViewModels.Admin
+namespace ViewModels.Admin
 {
-    public class AdminViewModel
+    public class DataViewModel
     {
         public string? Title { get; set; }
 

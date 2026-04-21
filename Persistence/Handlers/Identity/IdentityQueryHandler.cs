@@ -5,7 +5,7 @@ using Queries.Identity;
 
 namespace Persistence.Handlers.Identity
 {
-    internal sealed class IdentityQueryHandler : IRequestHandler<GetHmsUserIdFromCurrentUserQuery, Guid>
+    internal sealed class IdentityQueryHandler : IRequestHandler<GetHmsUserIdQuery, Guid>
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
@@ -16,7 +16,7 @@ namespace Persistence.Handlers.Identity
             _userManager = userManager;
         }
 
-        public async Task<Guid> Handle(GetHmsUserIdFromCurrentUserQuery request, CancellationToken cancellationToken)
+        public async Task<Guid> Handle(GetHmsUserIdQuery request, CancellationToken cancellationToken)
         {
             var user = _signInManager.Context.User;
             

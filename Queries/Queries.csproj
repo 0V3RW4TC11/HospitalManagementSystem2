@@ -11,4 +11,8 @@
     <PackageReference Include="X.PagedList" Version="10.5.9" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ViewModels\ViewModels.csproj" />
+  </ItemGroup>
+
 </Project>

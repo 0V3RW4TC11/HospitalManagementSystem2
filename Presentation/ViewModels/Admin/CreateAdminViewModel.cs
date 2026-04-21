@@ -4,10 +4,17 @@ using Presentation.ViewModels.Components;
 
 namespace Presentation.ViewModels.Admin
 {
-    internal class CreateAdminViewModel : AdminViewModel
+    public class CreateAdminViewModel : AdminViewModel
     {
-        public CreatePasswordComponent CreatePassword { get; set; }
+        public CreateAdminCommand Command
+        {
+            get
+            {
+                var data = this.Adapt<AdminData>();
+                return new(data, CreatePassword.Password);
+            }
+        }
 
-        public CreateAdminCommand Command => this.Adapt<CreateAdminCommand>();
+        public CreatePasswordComponent CreatePassword { get; set; }
     }
 }

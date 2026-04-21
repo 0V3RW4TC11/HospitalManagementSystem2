@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Persistence
 {
-    internal class UnitOfWork : IUnitOfWork
+    public sealed class UnitOfWork : IUnitOfWork
     {
         private readonly HmsDbContext _context;
         private readonly Lazy<IRepository<Admin>> _lazyAdmins;

@@ -1,20 +1,17 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Commands.Identity;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.Operations;
 using Presentation.Helpers;
 using Presentation.ViewModels.Account;
-using Services.Abstractions;
 
 namespace Presentation.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly IIdentityService _accountService;
+        private readonly ISender _sender;
 
-        public AccountController(IServiceManager manager)
-        {
-            _accountService = manager.IdentityService;
-        }
+        public AccountController(ISender sender) => _sender = sender;
 
         [HttpGet]
         [AllowAnonymous]
@@ -32,11 +29,11 @@ namespace Presentation.Controllers
             {
                 try
                 {
-                    await _accountService.LoginAsync(
-                       model.UserName,
-                       model.Password,
-                       model.IsPersistant,
-                       false);
+                    await _sender.Send(new LoginCommand(
+                        model.UserName,
+                        model.Password,
+                        model.IsPersistant,
+                        false));
 
                     return UrlHelper.Redirect(this, returnUrl);
                 }
@@ -52,7 +49,7 @@ namespace Presentation.Controllers
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
-            await _accountService.LogoutAsync();
+            await _sender.Send(new LogoutCommand());
             return RedirectToAction("Index", "Home");
         }
 
@@ -88,7 +85,7 @@ namespace Presentation.Controllers
         {
             try
             {
-                await _accountService.SetLockoutAsync(id, enabled);
+                await _sender.Send(new SetLockOutCommand(id, enabled));
                 return Ok();
             }
             catch (Exception ex)

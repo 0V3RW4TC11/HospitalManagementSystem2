@@ -44,7 +44,7 @@ namespace Tests.Handlers
             var handler = new IdentityQueryHandler(signInManagerMock.Object, userManagerMock.Object);
 
             // Act
-            var ex = Assert.ThrowsAsync<Exception>(async () => await handler.Handle(new GetHmsUserIdFromCurrentUserQuery(), CancellationToken.None));
+            var ex = Assert.ThrowsAsync<Exception>(async () => await handler.Handle(new GetHmsUserIdQuery(), CancellationToken.None));
 
             // Assert
             Assert.That(ex?.Message, Is.EqualTo("No user is currently signed in."));
@@ -63,7 +63,7 @@ namespace Tests.Handlers
             var handler = new IdentityQueryHandler(signInManagerMock.Object, userManagerMock.Object);
 
             // Act
-            var ex = Assert.ThrowsAsync<Exception>(async () => await handler.Handle(new GetHmsUserIdFromCurrentUserQuery(), CancellationToken.None));
+            var ex = Assert.ThrowsAsync<Exception>(async () => await handler.Handle(new GetHmsUserIdQuery(), CancellationToken.None));
 
             // Assert
             Assert.That(ex?.Message, Is.EqualTo("Signed in user has no Asp Identity claim"));
@@ -87,7 +87,7 @@ namespace Tests.Handlers
             var handler = new IdentityQueryHandler(signInManagerMock.Object, userManagerMock.Object);
 
             // Act
-            var ex = Assert.ThrowsAsync<Exception>(async () => await handler.Handle(new GetHmsUserIdFromCurrentUserQuery(), CancellationToken.None));
+            var ex = Assert.ThrowsAsync<Exception>(async () => await handler.Handle(new GetHmsUserIdQuery(), CancellationToken.None));
 
             // Assert
             Assert.That(ex?.Message, Is.EqualTo("No Asp Identity found for ID " + identityUserId));
@@ -115,7 +115,7 @@ namespace Tests.Handlers
             var handler = new IdentityQueryHandler(signInManagerMock.Object, userManagerMock.Object);
 
             // Act
-            var ex = Assert.ThrowsAsync<Exception>(async () => await handler.Handle(new GetHmsUserIdFromCurrentUserQuery(), CancellationToken.None));
+            var ex = Assert.ThrowsAsync<Exception>(async () => await handler.Handle(new GetHmsUserIdQuery(), CancellationToken.None));
 
             // Assert
             Assert.That(ex?.Message, Is.EqualTo("User has no associated HMS User Id"));
@@ -147,7 +147,7 @@ namespace Tests.Handlers
             var handler = new IdentityQueryHandler(signInManagerMock.Object, userManagerMock.Object);
 
             // Act
-            var result = await handler.Handle(new GetHmsUserIdFromCurrentUserQuery(), CancellationToken.None);
+            var result = await handler.Handle(new GetHmsUserIdQuery(), CancellationToken.None);
 
             // Assert
             Assert.That(result, Is.EqualTo(hmsUserId));
