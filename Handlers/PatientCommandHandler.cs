@@ -26,7 +26,7 @@ namespace Handlers
                 var patient = request.Data.Adapt<Patient>();
                 await _unitOfWork.Patients.AddAsync(patient, ct);
                 await _unitOfWork.SaveChangesAsync(ct);
-                await _unitOfWork.IdentityProvider.CreateIdentityAsync(
+                await _unitOfWork.IdentityService.CreateIdentityAsync(
                     patient.Id,
                     patient.Email,
                     request.Password,
@@ -43,7 +43,7 @@ namespace Handlers
                     ?? throw new NullReferenceException();
 
                 await _unitOfWork.Patients.DeleteAsync(patient, ct);
-                await _unitOfWork.IdentityProvider.DeleteIdentityAsync(patient.Id, ct);
+                await _unitOfWork.IdentityService.DeleteIdentityAsync(patient.Id, ct);
             }, cancellationToken);
         }
 

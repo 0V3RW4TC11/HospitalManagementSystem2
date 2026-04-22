@@ -35,7 +35,7 @@ namespace Handlers
                 await _unitOfWork.SaveChangesAsync(ct);
 
                 var userName = await _staffService.CreateStaffUsernameAsync(doctor.FirstName, doctor.LastName, ct);
-                await _unitOfWork.IdentityProvider.CreateIdentityAsync(
+                await _unitOfWork.IdentityService.CreateIdentityAsync(
                     doctor.Id,
                     userName,
                     request.Password,
@@ -52,7 +52,7 @@ namespace Handlers
                     ?? throw new NullReferenceException();
 
                 await _unitOfWork.Doctors.DeleteAsync(doctor, ct);
-                await _unitOfWork.IdentityProvider.DeleteIdentityAsync(doctor.Id, ct);
+                await _unitOfWork.IdentityService.DeleteIdentityAsync(doctor.Id, ct);
             }, cancellationToken);
         }
 
