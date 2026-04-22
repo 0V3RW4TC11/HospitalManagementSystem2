@@ -4,14 +4,14 @@ namespace Presentation.Helpers
 {
     internal static class UrlHelper
     {
-        public static IActionResult Redirect(Controller controller, string? url)
+        public static IActionResult RedirectOrDefaultAction(Controller controller, string? url, string defController, string defAction, object? routeValues = null)
         {
-            if (string.IsNullOrEmpty(url) || controller.Url.IsLocalUrl(url) is false)
+            if (!string.IsNullOrEmpty(url) && controller.Url.IsLocalUrl(url))
             {
-                return controller.RedirectToAction("Index", "Home");
+                return controller.Redirect(url);
             }
 
-            return controller.Redirect(url);
+            return controller.RedirectToAction(defAction, defController, routeValues);
         }
     }
 }

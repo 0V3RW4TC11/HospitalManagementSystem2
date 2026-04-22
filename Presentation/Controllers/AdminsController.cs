@@ -1,8 +1,11 @@
 ﻿using Commands.Admin;
+using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Queries.Admin;
+using Queries.Identity;
+using ViewModels.Admin;
 
 namespace Presentation.Controllers
 {
@@ -25,23 +28,24 @@ namespace Presentation.Controllers
             return View();
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> Create(CreateAdminViewModel model)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        try
-        //        {
-        //            await _sender.Send(model.Command);
-        //            return RedirectToAction(nameof(Index));
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            ModelState.AddModelError(string.Empty, ex.Message);
-        //        }
-        //    }
-        //    return View(model);
-        //}
+        [HttpPost]
+        public async Task<IActionResult> Create(CreateViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var command = model.Adapt<CreateAdminCommand>();
+                    await _sender.Send(command);
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                }
+            }
+            return View(model);
+        }
 
         [HttpPost]
         public async Task<IActionResult> Delete(Guid id)
@@ -57,78 +61,41 @@ namespace Presentation.Controllers
             }
         }
 
-        //[HttpGet]
-        //public async Task<IActionResult> Edit(Guid id)
-        //{
-        //    try
-        //    {
-        //        var model = new AdminManageViewModel(
-        //            await _adminService.GetByIdAsync(id),
-        //            await _identityService.GetUserNameAsync(id),
-        //            await _identityService.IsLockedOutAsync(id));
-        //        return View(model);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw;
-        //    }
-        //}
+        [HttpGet]
+        public async Task<IActionResult> Edit(Guid id, string returnUrl)
+        {
+            try
+            {
+                var model = await _sender.Send(new GetEditAdminModel(id));
+                ViewData["ReturnUrl"] = returnUrl;
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
 
-        //[HttpPost]
-        //public async Task<IActionResult> Edit(ManageAdminViewModel model)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        try
-        //        {
-        //            await _adminService.UpdateAsync(model.Dto);
-        //            return RedirectToAction(nameof(Manage), new { id = model.Id});
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            ModelState.AddModelError(string.Empty, ex.Message);
-        //        }
-        //    }
+        [HttpPost]
+        public async Task<IActionResult> Edit(EditViewModel model, string returnUrl)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var command = model.Adapt<UpdateAdminCommand>();
+                    await _sender.Send(command);
+                    return Redirect(returnUrl);
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                }
+            }
 
-        //    return View(model);
-        //}
-
-        //[HttpGet]
-        //public async Task<IActionResult> EditProfile()
-        //{
-        //    try
-        //    {
-        //        var id = await _identityService.GetLoggedInUserId();
-        //        var model = new AdminProfileViewModel(
-        //            await _adminService.GetByIdAsync(id),
-        //            await _identityService.GetUserNameAsync(id));
-        //        return View(model);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw;
-        //    }
-        //}
-
-        //[HttpPost]
-        //public async Task<IActionResult> EditProfile(ProfileAdminViewModel model)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        try
-        //        {
-        //            var id = await _identityService.GetLoggedInUserId();
-        //            await _adminService.UpdateAsync(model.Dto(id));
-        //            return RedirectToAction(nameof(Profile));
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            throw;
-        //        }
-        //    }
-
-        //    return View(model);
-        //}
+            ViewData["ReturnUrl"] = returnUrl;
+            return View(model);
+        }
 
         [HttpGet]
         public async Task<IActionResult> Index(int? page)
@@ -152,7 +119,7 @@ namespace Presentation.Controllers
         {
             try
             {
-                var model = await _sender.Send(new GetManageAdminQuery(id));
+                var model = await _sender.Send(new GetManageAdminModel(id));
                 return View(model);
             }
             catch (Exception ex)
@@ -161,23 +128,19 @@ namespace Presentation.Controllers
             }
         }
 
-        //[HttpGet]
-        //public async Task<IActionResult> Profile()
-        //{
-        //    try
-        //    {
-        //        var id = await _identityService.GetLoggedInUserId();
-
-        //        var model = new AdminProfileViewModel(
-        //            await _adminService.GetByIdAsync(id),
-        //            await _identityService.GetUserNameAsync(id));
-
-        //        return View(model);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw;
-        //    }
-        //}
+        [HttpGet]
+        public async Task<IActionResult> Profile()
+        {
+            try
+            {
+                var id = await _sender.Send(new GetHmsUserIdQuery());
+                var model = await _sender.Send(new GetEditAdminModel(id));
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
     }
 }

@@ -35,7 +35,11 @@ namespace Presentation.Controllers
                         model.IsPersistant,
                         false));
 
-                    return UrlHelper.Redirect(this, returnUrl);
+                    return UrlHelper.RedirectOrDefaultAction(
+                        this, 
+                        returnUrl, 
+                        nameof(HomeController).Replace("Controller", ""), 
+                        nameof(HomeController.Index));
                 }
                 catch (Exception ex)
                 {

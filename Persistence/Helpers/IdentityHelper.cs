@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Persistence.AppConstants;
 using System.Security.Claims;
 
@@ -6,7 +7,7 @@ namespace Persistence.Helpers
 {
     internal static class IdentityHelper
     {
-        public static async Task<IdentityUser> GetUserFromHmsUserIdAsync(UserManager<IdentityUser> userManager, Guid hmsUserId)
+        public static async Task<IdentityUser> GetUserFromHmsIdAsync(UserManager<IdentityUser> userManager, Guid hmsUserId)
         {
             var claim = CreateClaim(hmsUserId);
             return (await userManager.GetUsersForClaimAsync(claim)).SingleOrDefault()

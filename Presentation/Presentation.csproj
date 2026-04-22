@@ -38,11 +38,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Content Remove="Views\Admins\Create.cshtml" />
-      <Content Remove="Views\Admins\Edit.cshtml" />
       <Content Remove="Views\Admins\EditProfile.cshtml" />
-      <Content Remove="Views\Admins\Profile.cshtml" />
-      <Content Remove="Views\Admins\_AdminEditPartial.cshtml" />
     </ItemGroup>
 
     <ItemGroup>

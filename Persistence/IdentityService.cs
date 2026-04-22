@@ -29,7 +29,7 @@ namespace Persistence
         public async Task DeleteIdentityAsync(Guid hmsUserId, CancellationToken cancellationToken)
         {
             var claim = IdentityHelper.CreateClaim(hmsUserId);
-            var user = await IdentityHelper.GetUserFromHmsUserIdAsync(_userManager, hmsUserId);
+            var user = await IdentityHelper.GetUserFromHmsIdAsync(_userManager, hmsUserId);
 
             var claimResult = await _userManager.RemoveClaimAsync(user, claim);
             IdentityHelper.ThrowOnIdentityFail(claimResult);

@@ -1,6 +1,4 @@
-﻿using System.Linq.Expressions;
-
-namespace Entities;
+﻿namespace Entities;
 
 public class Admin : Entity
 {

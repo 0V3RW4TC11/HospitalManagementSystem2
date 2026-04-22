@@ -1,5 +1,5 @@
-﻿@using Presentation.ViewModels.Admin
-@model ProfileAdminViewModel
+﻿@using global::ViewModels.Admin;
+@model EditViewModel
 
 @{
     ViewData["Title"] = "Profile " + Model.UserName;
@@ -7,8 +7,8 @@
 
 <h1>Profile @Model.UserName</h1>
 <br />
-<partial name="_AdminPartial" for="Admin" />
+<partial name="_AdminPartial" for="Data" />
 <div>
     <a asp-action="@nameof(AdminsController.Dashboard)" class="btn btn-secondary">Back</a>
-    <a asp-action="@nameof(AdminsController.EditProfile)" class="btn btn-primary">Edit</a>
+    <a asp-action="@nameof(AdminsController.Edit)" asp-route-id="@Model.Id" asp-route-returnUrl="@Url.Action(nameof(AdminsController.Profile))" class="btn btn-primary">Edit</a>
 </div>

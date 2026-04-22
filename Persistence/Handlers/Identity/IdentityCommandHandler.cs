@@ -23,7 +23,7 @@ namespace Persistence.Handlers.Identity
 
         public async Task Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
         {
-            var user = await IdentityHelper.GetUserFromHmsUserIdAsync(_userManager, request.HmsUserId);
+            var user = await IdentityHelper.GetUserFromHmsIdAsync(_userManager, request.HmsUserId);
             var result = await _userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
             IdentityHelper.ThrowOnIdentityFail(result);
         }
@@ -45,7 +45,7 @@ namespace Persistence.Handlers.Identity
 
         public async Task Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
         {
-            var user = await IdentityHelper.GetUserFromHmsUserIdAsync(_userManager, request.HmsUserId);
+            var user = await IdentityHelper.GetUserFromHmsIdAsync(_userManager, request.HmsUserId);
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var result = await _userManager.ResetPasswordAsync(user, token, request.NewPassword);
             IdentityHelper.ThrowOnIdentityFail(result);
@@ -53,7 +53,7 @@ namespace Persistence.Handlers.Identity
 
         public async Task Handle(SetLockOutCommand request, CancellationToken cancellationToken)
         {
-            var user = await IdentityHelper.GetUserFromHmsUserIdAsync(_userManager, request.HmsUserId);
+            var user = await IdentityHelper.GetUserFromHmsIdAsync(_userManager, request.HmsUserId);
             user.LockoutEnabled = request.Enabled;
             user.LockoutEnd = request.Enabled ? DateTimeOffset.MaxValue : null;
         }
