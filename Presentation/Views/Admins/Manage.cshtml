@@ -1,5 +1,6 @@
 ﻿@using global::ViewModels.Admin;
-@model ManageViewModel
+@using global::ViewModels.User;
+@model ManageViewModel<DataViewModel>
 
 @{
     ViewData["Title"] = "Manage " + Model.UserName;

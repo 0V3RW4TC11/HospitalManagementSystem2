@@ -1,5 +1,6 @@
 ﻿@using global::ViewModels.Admin;
-@model EditViewModel
+@using global::ViewModels.User;
+@model EditViewModel<DataViewModel>
 
 @{
     ViewData["Title"] = "Profile " + Model.UserName;

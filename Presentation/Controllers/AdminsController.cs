@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Queries.Admin;
 using Queries.Identity;
 using ViewModels.Admin;
+using ViewModels.User;
 
 namespace Presentation.Controllers
 {
@@ -29,7 +30,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateViewModel model)
+        public async Task<IActionResult> Create(CreateViewModel<DataViewModel> model)
         {
             if (ModelState.IsValid)
             {
@@ -77,7 +78,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(EditViewModel model, string returnUrl)
+        public async Task<IActionResult> Edit(EditViewModel<DataViewModel> model, string returnUrl)
         {
             if (ModelState.IsValid)
             {

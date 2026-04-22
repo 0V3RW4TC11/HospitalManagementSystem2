@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Persistence.Helpers;
 using Queries.Admin;
 using ViewModels.Admin;
+using ViewModels.User;
 using X.PagedList;
 using X.PagedList.EF;
 
@@ -12,8 +13,8 @@ namespace Persistence.Handlers.Admin
 {
     public class AdminQueryHandler(HmsDbContext context, UserManager<IdentityUser> userManager) : 
         IRequestHandler<GetPagedAdminsQuery, IPagedList<IndexViewModel>>,
-        IRequestHandler<GetManageAdminModel, ManageViewModel>,
-        IRequestHandler<GetEditAdminModel, EditViewModel>
+        IRequestHandler<GetManageAdminModel, ManageViewModel<DataViewModel>>,
+        IRequestHandler<GetEditAdminModel, EditViewModel<DataViewModel>>
     {
         public async Task<IPagedList<IndexViewModel>> Handle(GetPagedAdminsQuery request, CancellationToken cancellationToken)
         {
@@ -24,12 +25,12 @@ namespace Persistence.Handlers.Admin
                 .ToPagedListAsync(request.PageNumber, request.PageSize, totalCount);
         }
 
-        public async Task<ManageViewModel> Handle(GetManageAdminModel request, CancellationToken cancellationToken)
+        public async Task<ManageViewModel<DataViewModel>> Handle(GetManageAdminModel request, CancellationToken cancellationToken)
         {
             var admin = await context.Admins.SingleAsync(a => a.Id == request.Id, cancellationToken);
             var user = await IdentityHelper.GetUserFromHmsIdAsync(userManager, request.Id);
 
-            return new ManageViewModel
+            return new ManageViewModel<DataViewModel>
             {
                 Id = admin.Id,
                 UserName = user.UserName ?? throw new ArgumentNullException(),
@@ -38,12 +39,12 @@ namespace Persistence.Handlers.Admin
             };
         }
 
-        public async Task<EditViewModel> Handle(GetEditAdminModel request, CancellationToken cancellationToken)
+        public async Task<EditViewModel<DataViewModel>> Handle(GetEditAdminModel request, CancellationToken cancellationToken)
         {
             var admin = await context.Admins.SingleAsync(a => a.Id == request.Id, cancellationToken);
             var user = await IdentityHelper.GetUserFromHmsIdAsync(userManager, request.Id);
 
-            return new EditViewModel
+            return new EditViewModel<DataViewModel>
             {
                 Id = admin.Id,
                 UserName = user.UserName ?? throw new ArgumentNullException(),
