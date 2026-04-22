@@ -39,10 +39,11 @@
     @Html.PagedListPager(Model, page => Url.Action(nameof(AdminsController.Index), new { page = page }),
     new PagedListRenderOptions {
         LiElementClasses = new string[] { "page-item" },
-        PageClasses = new string[] { "page-link" }})
+        PageClasses = new string[] { "page-link" }
+    })
 </div>
 
 <!-- Page information -->
 <p>
-    Showing @Model.FirstItemOnPage to @Model.LastItemOnPage of @Model.TotalItemCount Admins
+    @Model.FirstItemOnPage - @Model.LastItemOnPage of @Model.TotalItemCount Admins
 </p>
