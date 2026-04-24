@@ -34,16 +34,9 @@
 
     <ItemGroup>
       <Content Remove="Views\Admins\EditProfile.cshtml" />
-      <Content Remove="Views\Patients\Create.cshtml" />
-      <Content Remove="Views\Patients\Dashboard.cshtml" />
       <Content Remove="Views\Patients\DoctorPatient.cshtml" />
       <Content Remove="Views\Patients\DoctorPatientIndex.cshtml" />
-      <Content Remove="Views\Patients\Edit.cshtml" />
       <Content Remove="Views\Patients\EditProfile.cshtml" />
-      <Content Remove="Views\Patients\Manage.cshtml" />
-      <Content Remove="Views\Patients\Profile.cshtml" />
-      <Content Remove="Views\Patients\_PatientEditPartial.cshtml" />
-      <Content Remove="Views\Patients\_PatientPartial.cshtml" />
     </ItemGroup>
 
     <ItemGroup>

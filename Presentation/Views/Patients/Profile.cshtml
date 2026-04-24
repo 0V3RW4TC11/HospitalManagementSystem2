@@ -1,15 +1,16 @@
-﻿@using Presentation.ViewModels.Patient
-@model PatientProfileViewModel
+﻿@using global::ViewModels.Patient;
+@using global::ViewModels.User
+@model EditViewModel<PatientDataViewModel>
 @{
     ViewData["Title"] = "Profile " + Model.UserName;
 }
 
 <h1>Profile @Model.UserName</h1>
 <br />
-<partial name="_PatientPartial" for="Patient" />
+<partial name="_PatientPartial" for="Data" />
 <div>
-    <a class="btn btn-secondary" asp-action="@nameof(PatientsController.Dashboard)">Back</a>
-    <a class="btn btn-primary" asp-action="@nameof(PatientsController.EditProfile)">Edit</a>
+    <a asp-action="@nameof(PatientsController.Dashboard)" class="btn btn-secondary">Back</a>
+    <a asp-action="@nameof(PatientsController.Edit)" asp-route-id="@Model.Id" asp-route-returnUrl="@Url.Action(nameof(PatientsController.Profile), new { Model.Id })" class="btn btn-primary">Edit</a>
 </div>
 
 

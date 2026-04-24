@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace ViewModels.Admin
+namespace ViewModels.Patient
 {
-    public class IndexViewModel
+    public class PatientIndexViewModel
     {
         public Guid Id { get; set; }
 

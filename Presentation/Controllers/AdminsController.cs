@@ -11,12 +11,8 @@ using ViewModels.User;
 namespace Presentation.Controllers
 {
     [Authorize(Roles = Constants.AuthRoles.Admin)]
-    public class AdminsController : Controller
+    public class AdminsController(ISender sender) : Controller
     {
-        private readonly ISender _sender;
-
-        public AdminsController(ISender sender) => _sender = sender;
-
         [HttpGet]
         public IActionResult Dashboard()
         {
@@ -30,14 +26,14 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateViewModel<DataViewModel> model)
+        public async Task<IActionResult> Create(CreateViewModel<AdminDataViewModel> model)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
                     var command = model.Adapt<CreateAdminCommand>();
-                    await _sender.Send(command);
+                    await sender.Send(command);
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)
@@ -53,7 +49,7 @@ namespace Presentation.Controllers
         {
             try
             {
-                await _sender.Send(new DeleteAdminCommand(id));
+                await sender.Send(new DeleteAdminCommand(id));
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -67,7 +63,7 @@ namespace Presentation.Controllers
         {
             try
             {
-                var model = await _sender.Send(new GetEditAdminModel(id));
+                var model = await sender.Send(new GetAdminEditModel(id));
                 ViewData["ReturnUrl"] = returnUrl;
                 return View(model);
             }
@@ -78,14 +74,14 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(EditViewModel<DataViewModel> model, string returnUrl)
+        public async Task<IActionResult> Edit(EditViewModel<AdminDataViewModel> model, string returnUrl)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
                     var command = model.Adapt<UpdateAdminCommand>();
-                    await _sender.Send(command);
+                    await sender.Send(command);
                     return Redirect(returnUrl);
                 }
                 catch (Exception ex)
@@ -106,7 +102,7 @@ namespace Presentation.Controllers
 
             try
             {
-                var results = await _sender.Send(new GetPagedAdminsQuery(pageNum, pageSize));
+                var results = await sender.Send(new GetAdminPagedModels(pageNum, pageSize));
                 return View(results);
             }
             catch (Exception ex)
@@ -120,7 +116,7 @@ namespace Presentation.Controllers
         {
             try
             {
-                var model = await _sender.Send(new GetManageAdminModel(id));
+                var model = await sender.Send(new GetAdminManageModel(id));
                 return View(model);
             }
             catch (Exception ex)
@@ -134,8 +130,8 @@ namespace Presentation.Controllers
         {
             try
             {
-                var id = await _sender.Send(new GetHmsUserIdQuery());
-                var model = await _sender.Send(new GetEditAdminModel(id));
+                var id = await sender.Send(new GetHmsUserIdQuery());
+                var model = await sender.Send(new GetAdminEditModel(id));
                 return View(model);
             }
             catch (Exception ex)

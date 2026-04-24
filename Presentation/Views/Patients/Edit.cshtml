@@ -1,5 +1,7 @@
-﻿@using Presentation.ViewModels.Patient
-@model PatientEditByIdViewModel
+﻿@using global::ViewModels.Patient;
+@using global::ViewModels.User
+@* @using Helpers; *@
+@model EditViewModel<PatientDataViewModel>
 
 @{
     ViewData["Title"] = "Edit " + Model.UserName;
@@ -11,10 +13,11 @@
         <form method="post">
             <input type="hidden" asp-for="Id" />
             <input type="hidden" asp-for="UserName" />
-            <partial name="_PatientEditPartial" for="Patient"/>
+            <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+            <partial name="_PatientEditPartial" for="Data"/>
             <br />
             <div class="form-group">
-                <a asp-action="@nameof(PatientsController.Manage)" asp-route-id="@Model.Id" class="btn btn-secondary">Cancel</a>
+                <a href="@ViewData["ReturnUrl"]?.ToString()" class="btn btn-secondary">Cancel</a>
                 <button type="submit" class="btn btn-primary">Save</button>
             </div>
         </form>

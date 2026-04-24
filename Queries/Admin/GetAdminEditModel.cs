@@ -4,5 +4,5 @@ using ViewModels.User;
 
 namespace Queries.Admin
 {
-    public record GetManageAdminModel(Guid Id) : IRequest<ManageViewModel<DataViewModel>>;
+    public record GetAdminEditModel(Guid Id) : IRequest<EditViewModel<AdminDataViewModel>>;
 }

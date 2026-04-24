@@ -7,12 +7,8 @@ using Presentation.ViewModels.Account;
 
 namespace Presentation.Controllers
 {
-    public class AccountController : Controller
+    public class AccountController(ISender sender) : Controller
     {
-        private readonly ISender _sender;
-
-        public AccountController(ISender sender) => _sender = sender;
-
         [HttpGet]
         [AllowAnonymous]
         public IActionResult Login(string? returnUrl = null)
@@ -29,7 +25,7 @@ namespace Presentation.Controllers
             {
                 try
                 {
-                    await _sender.Send(new LoginCommand(
+                    await sender.Send(new LoginCommand(
                         model.UserName,
                         model.Password,
                         model.IsPersistant,
@@ -53,7 +49,7 @@ namespace Presentation.Controllers
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
-            await _sender.Send(new LogoutCommand());
+            await sender.Send(new LogoutCommand());
             return RedirectToAction("Index", "Home");
         }
 
@@ -89,7 +85,7 @@ namespace Presentation.Controllers
         {
             try
             {
-                await _sender.Send(new SetLockOutCommand(id, enabled));
+                await sender.Send(new SetLockOutCommand(id, enabled));
                 return Ok();
             }
             catch (Exception ex)

@@ -1,11 +1,14 @@
-﻿@{
+﻿@using Presentation.Controllers;
+@using Presentation.Helpers;
+
+@{
     ViewData["Title"] = "Patient Dashboard";
 }
 
 <h1>Patient Dashboard</h1>
 <br />
 <div class="d-flex flex-column align-items-baseline mt-4" style="min-height: 100vh;">
-    <a asp-controller="Patients" asp-action="Profile" class="btn btn-primary mb-2">My Profile</a>
+    <a asp-controller="@(ControllerNameExtensions.GetControllerName<PatientsController>())" asp-action="Profile" class="btn btn-primary mb-2">My Profile</a>
     <br />
-    <a asp-controller="Attendances" asp-action="PatientAttendances" class="btn btn-primary mb-2">My Attendances</a>
+    @* <a asp-controller="@(ControllerNameExtensions.GetControllerName<AttendancesController>())" asp-action="PatientAttendances" class="btn btn-primary mb-2">My Attendances</a> *@
 </div>

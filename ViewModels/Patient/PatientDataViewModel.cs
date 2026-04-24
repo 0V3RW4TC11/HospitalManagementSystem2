@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using Constants;
 
-namespace ViewModels.Admin
+namespace ViewModels.Patient
 {
-    public class DataViewModel
+    public class PatientDataViewModel
     {
         public string? Title { get; set; }
 
@@ -13,18 +14,19 @@ namespace ViewModels.Admin
         [DisplayName("Last Name")]
         public string? LastName { get; set; }
 
+        public string Gender { get; set; }
+
         public string? Address { get; set; }
 
-        [DisplayName("Phone Number")]
-        public string Phone { get; set; }
+        public string? Phone { get; set; }
 
-        [DisplayName("Email Address")]
         public string Email { get; set; }
 
-        [DisplayName("Date Of Birth")]
-        [DataType(DataType.Date)]
-        public DateOnly? DateOfBirth { get; set; }
+        [DisplayName("Blood Type")]
+        public BloodType BloodType { get; set; }
 
-        public string? Gender { get; set; }
+        [DisplayName("Date of Birth")]
+        [DataType(DataType.Date)]
+        public DateOnly DateOfBirth { get; set; }
     }
 }

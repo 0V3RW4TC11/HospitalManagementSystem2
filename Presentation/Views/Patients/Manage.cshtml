@@ -1,5 +1,6 @@
-﻿@using Presentation.ViewModels.Patient
-@model PatientManageViewModel
+﻿@using global::ViewModels.Patient;
+@using global::ViewModels.User;
+@model ManageViewModel<PatientDataViewModel>
 @{
     ViewData["Title"] = "Details " + Model.UserName;
 }
@@ -12,10 +13,10 @@
 
 <h1>Details @Model.UserName</h1>
 <br />
-<partial name="_PatientPartial" for="Patient"/>
+<partial name="_PatientPartial" for="Data"/>
 <div>
     <a class="btn btn-secondary" asp-action="@nameof(PatientsController.Index)">Back</a>
-    <a class="btn btn-primary" asp-action="@nameof(PatientsController.Edit)" asp-route-id="@Model.Id">Edit</a>
+    <a class="btn btn-primary" asp-action="@nameof(PatientsController.Edit)" asp-route-id="@Model.Id" asp-route-returnUrl="@Url.Action(nameof(PatientsController.Manage))">Edit</a>
     <button class="btn @(Model.IsLockedOut ? "btn-success" : "btn-danger")"
             onclick="toggleAccountLockout('@Model.Id', @Model.IsLockedOut.ToString().ToLower())">
         @(Model.IsLockedOut ? "Enable" : "Disable")
@@ -25,5 +26,3 @@
         <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
     </form>
 </div>
-
-
