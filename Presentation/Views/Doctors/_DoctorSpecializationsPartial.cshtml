@@ -1,0 +1,14 @@
+@model IEnumerable<string>
+
+@if (Model?.Any() == true)
+{
+    <div class="mt-3">
+        <h5>Specializations</h5>
+        <ul class="list-group">
+            @foreach (var specialization in Model)
+            {
+                <li class="list-group-item">@specialization</li>
+            }
+        </ul>
+    </div>
+}

@@ -6,6 +6,6 @@ namespace ViewModels.User
     {
         public T Data { get; set; }
 
-        public CreatePasswordViewModel Password { get; set; }
+        public CreatePasswordViewModel PasswordModel { get; set; }
     }
 }

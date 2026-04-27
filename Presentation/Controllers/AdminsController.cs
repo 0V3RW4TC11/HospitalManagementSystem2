@@ -32,8 +32,8 @@ namespace Presentation.Controllers
             {
                 try
                 {
-                    var command = model.Adapt<CreateAdminCommand>();
-                    await sender.Send(command);
+                    var adminData = model.Data.Adapt<AdminData>();
+                    await sender.Send(new CreateAdminCommand(adminData, model.PasswordModel.Password));
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)

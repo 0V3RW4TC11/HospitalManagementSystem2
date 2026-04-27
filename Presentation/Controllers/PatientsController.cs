@@ -11,7 +11,7 @@ using ViewModels.User;
 
 namespace Presentation.Controllers
 {
-    [Authorize(Roles = $"{Constants.AuthRoles.Admin},{Constants.AuthRoles.Patient}")]
+    [Authorize(Roles = Constants.AuthRoles.Patient)]
     public class PatientsController(ISender sender) : Controller
     {
         [HttpGet]
@@ -33,8 +33,8 @@ namespace Presentation.Controllers
             {
                 try
                 {
-                    var command = model.Adapt<CreatePatientCommand>();
-                    await sender.Send(command);
+                    var patientData = model.Data.Adapt<PatientData>();
+                    await sender.Send(new CreatePatientCommand(patientData, model.PasswordModel.Password));
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)

@@ -1,0 +1,13 @@
+@using global::ViewModels.Doctor;
+@model DoctorSpecializationsJson;
+
+<input asp-for="Json" type="hidden" />
+<div id="ds-editor"></div>
+
+<script type="module">
+    import { DoctorSpecsEditor } from '/js/doctor/doctor-specs-editor.js';
+    new DoctorSpecsEditor(
+        '/Specializations/Search?name=',
+        '@Html.IdFor(m => m.Json)',
+        'ds-editor')
+</script>

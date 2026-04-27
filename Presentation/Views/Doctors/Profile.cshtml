@@ -1,5 +1,5 @@
-﻿@using Presentation.ViewModels.Doctor
-@model DoctorProfileViewModel
+﻿@using global::ViewModels.Doctor;
+@model ProfileDoctorViewModel
 
 @{
     ViewData["Title"] = "Profile " + Model.UserName;
@@ -7,8 +7,10 @@
 
 <h1>Profile @Model.UserName</h1>
 <br />
-<partial name="_DoctorPartial" for="DoctorAndSpecs" />
+<partial name="_DoctorPartial" for="Data" />
+<partial name="_DoctorSpecializationsPartial" for="SpecializationNames" />
+<br />
 <div>
     <a asp-action="@nameof(DoctorsController.Dashboard)" class="btn btn-secondary">Back</a>
-    <a asp-action="@nameof(DoctorsController.EditProfile)" class="btn btn-primary">Edit</a>
+    <a asp-action="@nameof(DoctorsController.Edit)" asp-route-id="@Model.Id" asp-route-returnUrl="@Url.Action(nameof(DoctorsController.Profile))" class="btn btn-primary">Edit</a>
 </div>

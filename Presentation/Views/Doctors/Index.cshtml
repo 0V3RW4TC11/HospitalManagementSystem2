@@ -1,6 +1,6 @@
-﻿@using Presentation.ViewModels.Doctor
+﻿@using global::ViewModels.Doctor;
 @using X.PagedList.Mvc.Core
-@model X.PagedList.IPagedList<DoctorListItemViewModel>
+@model X.PagedList.IPagedList<DoctorIndexViewModel>
 
 @{
     ViewData["Title"] = "Doctors";
@@ -44,5 +44,5 @@
 
 <!-- Page information -->
 <p>
-    Showing @Model.FirstItemOnPage to @Model.LastItemOnPage of @Model.TotalItemCount Admins
+    Showing @Model.FirstItemOnPage to @Model.LastItemOnPage of @Model.TotalItemCount Doctors
 </p>

@@ -1,8 +1,9 @@
-﻿@using Presentation.ViewModels.Doctor
-@model DoctorManageViewModel
+﻿@using global::ViewModels.Doctor;
+@using global::ViewModels.User;
+@model ManageDoctorViewModel
 
 @{
-    ViewData["Title"] = "Manage " + Model.Username;
+    ViewData["Title"] = "Manage " + Model.UserName;
 }
 
 @section Scripts {
@@ -11,14 +12,14 @@
 
 @Html.AntiForgeryToken()
 
-<h1>Manage @Model.Username</h1>
+<h1>Manage @Model.UserName</h1>
 <br />
-<partial name="_DoctorPartial" for="DoctorAndSpecs" />
+<partial name="_DoctorPartial" for="Data" />
+<partial name="_DoctorSpecializationsPartial" for="SpecializationNames" />
 <br />
-<hr />
 <div>
     <a asp-action="@nameof(DoctorsController.Index)" class="btn btn-secondary">Back</a>
-    <a asp-action="@nameof(DoctorsController.Edit)" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+    <a asp-action="@nameof(DoctorsController.Edit)" asp-route-id="@Model.Id" asp-route-returnUrl="@Url.Action(nameof(DoctorsController.Manage), new { Model.Id })" class="btn btn-primary">Edit</a>
     <button class="btn @(Model.IsLockedOut ? "btn-success" : "btn-danger")"
             onclick="toggleAccountLockout('@Model.Id', @Model.IsLockedOut.ToString().ToLower())">
         @(Model.IsLockedOut ? "Enable" : "Disable")

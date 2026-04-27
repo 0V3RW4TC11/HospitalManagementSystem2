@@ -42,30 +42,65 @@ namespace Presentation.Attributes
             }
 
             // For non-admin users, verify they own the resource being modified
-            // Find the EditViewModel<T> parameter from the action method arguments
-            var model = context.ActionArguments.Values.FirstOrDefault(v => v?.GetType().Name == "EditViewModel`1");
+            Guid? resourceId = null;
+
+            // First, try to find the resource ID from an EditViewModel<T> parameter (POST requests)
+            var model = context.ActionArguments.Values.FirstOrDefault(v => 
+            {
+                if (v == null) return false;
+                var type = v.GetType();
+                // Check if it's EditViewModel<T> or inherits from EditViewModel<T>
+                return type.Name == "EditViewModel`1" || 
+                       type.BaseType?.Name == "EditViewModel`1" ||
+                       (type.BaseType != null && IsEditViewModelType(type.BaseType));
+            });
 
             if (model != null)
             {
                 // Extract the resource ID from the model's Id property
                 var idProperty = model.GetType().GetProperty("Id");
-                if (idProperty != null && idProperty.GetValue(model) is Guid resourceId)
+                if (idProperty != null && idProperty.GetValue(model) is Guid modelId)
                 {
-                    // Get the current user's ID from the identity service via MediatR
-                    var sender = context.HttpContext.RequestServices.GetRequiredService<ISender>();
-                    var currentUserId = await sender.Send(new GetHmsUserIdQuery());
+                    resourceId = modelId;
+                }
+            }
 
-                    // If the user's ID matches the resource ID, they own it and can proceed
-                    if (currentUserId == resourceId)
-                    {
-                        await next();
-                        return;
-                    }
+            // If no model was found, try to get the ID directly from action arguments (GET requests)
+            if (resourceId == null && context.ActionArguments.TryGetValue("id", out var idArg))
+            {
+                if (idArg is Guid guidId)
+                {
+                    resourceId = guidId;
+                }
+            }
+
+            // If we found a resource ID, verify ownership
+            if (resourceId.HasValue && resourceId.Value != Guid.Empty)
+            {
+                // Get the current user's ID from the identity service via MediatR
+                var sender = context.HttpContext.RequestServices.GetRequiredService<ISender>();
+                var currentUserId = await sender.Send(new GetHmsUserIdQuery());
+
+                // If the user's ID matches the resource ID, they own it and can proceed
+                if (currentUserId == resourceId.Value)
+                {
+                    await next();
+                    return;
                 }
             }
 
             // User is neither an admin nor the resource owner - deny access
             context.Result = new ForbidResult();
+        }
+
+        /// <summary>
+        /// Helper method to recursively check if a type is or inherits from EditViewModel<T>
+        /// </summary>
+        private bool IsEditViewModelType(Type type)
+        {
+            if (type == null) return false;
+            if (type.Name == "EditViewModel`1") return true;
+            return type.BaseType != null && IsEditViewModelType(type.BaseType);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿@{
+﻿@using Presentation.Helpers
+@{
     ViewData["Title"] = "Doctor Dashboard";
 }
 
@@ -7,6 +8,6 @@
 <div class="d-flex flex-column align-items-baseline mt-4" style="min-height: 100vh;">
     <a asp-action="@nameof(DoctorsController.Profile)" class="btn btn-primary mb-2">My Profile</a>
     <br />
-    <a asp-controller="Patients" asp-action="@nameof(PatientsController.DoctorPatientIndex)" class="btn btn-primary mb-2">Patients</a>
-    <a asp-controller="Attendances" asp-action="@nameof(AttendancesController.DoctorAttendances)" class="btn btn-primary mb-2">My Attendances</a>
+    @* <a asp-controller="@(ControllerNameExtensions.GetControllerName<PatientsController>())" asp-action="@nameof(PatientsController.DoctorPatientIndex)" class="btn btn-primary mb-2">Patients</a> *@
+    @* <a asp-controller="Attendances" asp-action="@nameof(AttendancesController.DoctorAttendances)" class="btn btn-primary mb-2">My Attendances</a> *@
 </div>

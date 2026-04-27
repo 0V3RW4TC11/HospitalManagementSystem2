@@ -7,17 +7,17 @@ export class DoctorSpecsEditor {
     constructor(
         searchUrl,
         jsonDataId,
-        formId,
         containerId)
     {
         this.$jsonData = $(`#${jsonDataId}`);
         this.$container = $(`#${containerId}`);
+        let form = this.$container.closest('form');
 
         $(() => {
             this.#initialize(searchUrl);
             this.#deserializeSpecs();
             $(document).on('click', (event) => this.onResultsUnfocus(event));
-            $(`#${formId}`).on('submit', (event) => this.onFormSubmit(event));
+            form.on('submit', (event) => this.onFormSubmit(event));
         });
     }
 

@@ -1,6 +1,5 @@
 ﻿using Abstractions;
 using Microsoft.EntityFrameworkCore;
-using System.Text.RegularExpressions;
 
 namespace Persistence
 {
@@ -15,7 +14,8 @@ namespace Persistence
 
         protected override async Task<int> CountMatchingUserNamesAsync(string pattern, CancellationToken ct)
         {
-            return await _context.Users.CountAsync(u => Regex.IsMatch(u.UserName!, pattern), ct);
+            var sqlLikePattern = RegexToSqlLikeConverter.Convert(pattern);
+            return await _context.Users.CountAsync(u => EF.Functions.Like(u.UserName!, sqlLikePattern), ct);
         }
 
         protected override async Task<bool> IsExisting(string username)

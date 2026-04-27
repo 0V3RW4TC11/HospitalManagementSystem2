@@ -1,62 +1,49 @@
-﻿@using Presentation.ViewModels.Doctor
-@model DoctorAndSpecsViewModel
+﻿@using global::ViewModels.Doctor;
+@model DoctorDataViewModel
 
 <div>
     <dl class="row">
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Doctor.FirstName)
+            @Html.DisplayNameFor(model => model.FirstName)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Doctor.FirstName)
+            @Html.DisplayFor(model => model.FirstName)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Doctor.LastName)
+            @Html.DisplayNameFor(model => model.LastName)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Doctor.LastName)
+            @Html.DisplayFor(model => model.LastName)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Doctor.Gender)
+            @Html.DisplayNameFor(model => model.Gender)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Doctor.Gender)
+            @Html.DisplayFor(model => model.Gender)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Doctor.Address)
+            @Html.DisplayNameFor(model => model.Address)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Doctor.Address)
+            @Html.DisplayFor(model => model.Address)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Doctor.Phone)
+            @Html.DisplayNameFor(model => model.Phone)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Doctor.Phone)
+            @Html.DisplayFor(model => model.Phone)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Doctor.Email)
+            @Html.DisplayNameFor(model => model.Email)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Doctor.Email)
+            @Html.DisplayFor(model => model.Email)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Doctor.DateOfBirth)
+            @Html.DisplayNameFor(model => model.DateOfBirth)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Doctor.DateOfBirth)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Specializations)
-        </dt>
-        <dd class="col-sm-10">
-            <ul style="list-style-type: none; padding-left: 0">
-                @foreach (var name in Model.Specializations)
-                {
-                    <li>
-                        @name
-                    </li>
-                }
-            </ul>
+            @Html.DisplayFor(model => model.DateOfBirth)
         </dd>
     </dl>
 </div>
