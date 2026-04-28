@@ -8,6 +8,9 @@ using X.PagedList.EF;
 
 namespace Persistence.Helpers
 {
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // TODO: Make into generic handler
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
     internal class UserQueryHandlerHelper(HmsDbContext context, UserManager<IdentityUser> userManager)
     {
         private async Task<TEntity> GetEntityAsync<TEntity>(Guid id, CancellationToken ct)

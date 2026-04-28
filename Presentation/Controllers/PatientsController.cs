@@ -6,12 +6,13 @@ using Microsoft.AspNetCore.Mvc;
 using Presentation.Attributes;
 using Queries.Identity;
 using Queries.Patient;
+using Queries.Shared;
 using ViewModels.Patient;
 using ViewModels.User;
 
 namespace Presentation.Controllers
 {
-    [Authorize(Roles = Constants.AuthRoles.Patient)]
+    [Authorize(Roles = $"{Constants.AuthRoles.Admin},{Constants.AuthRoles.Patient}" )]
     public class PatientsController(ISender sender) : Controller
     {
         [HttpGet]
@@ -107,7 +108,7 @@ namespace Presentation.Controllers
 
             try
             {
-                var results = await sender.Send(new GetPatientPagedModels(pageNum, pageSize));
+                var results = await sender.Send(new GetPagedModels<PatientIndexViewModel>(pageNum, pageSize));
                 return View(results);
             }
             catch (Exception ex)

@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Queries.Shared;
 using Queries.Specialization;
 using ViewModels.Specialization;
 
@@ -85,28 +86,23 @@ namespace Presentation.Controllers
         //    return View(dto);
         //}
 
-        //[Authorize(Roles = "Admin")]
-        //[HttpGet]
-        //public async Task<IActionResult> Index(int? page)
-        //{
-        //    int pageNum = page ?? 1;
-        //    int pageSize = 10;
+        [Authorize(Roles = Constants.AuthRoles.Admin)]
+        [HttpGet]
+        public async Task<IActionResult> Index(int? page)
+        {
+            int pageNum = page ?? 1;
+            int pageSize = 10;
 
-        //    try
-        //    {
-        //        var paginated = await _specializationService.SpecializationsPaged(pageNum, pageSize);
-        //        var results = new StaticPagedList<SpecializationDto>(
-        //            paginated.List,
-        //            pageNum,
-        //            pageSize,
-        //            paginated.TotalCount);
-        //        return View(results);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw;
-        //    }
-        //}
+            try
+            {
+                var pagedModels = await sender.Send(new GetPagedModels<SpecializationViewModel>(pageNum, pageSize));
+                return View(pagedModels);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
 
         [Authorize]
         [HttpGet]

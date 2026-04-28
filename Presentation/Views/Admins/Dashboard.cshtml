@@ -10,7 +10,7 @@
 <div class="d-flex flex-column align-items-baseline mt-4" style="min-height: 100vh;">
     <a asp-action="@nameof(AdminsController.Profile)" class="btn btn-primary mb-2">Profile</a>
     <br />
-    @* <a asp-controller="Specializations" asp-action="@nameof(SpecializationsController.Index)" class="btn btn-primary mb-2">Manage Specializations</a> *@
+    <a asp-controller="@(ControllerNameExtensions.GetControllerName<SpecializationsController>())" asp-action="@nameof(SpecializationsController.Index)" class="btn btn-primary mb-2">Manage Specializations</a>
     <a asp-action="@nameof(AdminsController.Index)" class="btn btn-primary mb-2">Manage Administrators</a>
     <a asp-controller="@(ControllerNameExtensions.GetControllerName<DoctorsController>())" asp-action="@nameof(DoctorsController.Index)" class="btn btn-primary mb-2">Manage Doctors</a>
     <a asp-controller="@(ControllerNameExtensions.GetControllerName<PatientsController>())" asp-action="@nameof(PatientsController.Index)" class="btn btn-primary mb-2">Manage Patients</a>

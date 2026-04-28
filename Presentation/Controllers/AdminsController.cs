@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Queries.Admin;
 using Queries.Identity;
+using Queries.Shared;
 using ViewModels.Admin;
 using ViewModels.User;
 
@@ -102,7 +103,7 @@ namespace Presentation.Controllers
 
             try
             {
-                var results = await sender.Send(new GetAdminPagedModels(pageNum, pageSize));
+                var results = await sender.Send(new GetPagedModels<AdminIndexViewModel>(pageNum, pageSize));
                 return View(results);
             }
             catch (Exception ex)

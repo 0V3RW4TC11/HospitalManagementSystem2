@@ -10,16 +10,12 @@
     <ItemGroup>
       <Compile Remove="ViewModels\**" />
       <Compile Remove="Views\Attendances\**" />
-      <Compile Remove="Views\Specializations\**" />
       <Content Remove="ViewModels\**" />
       <Content Remove="Views\Attendances\**" />
-      <Content Remove="Views\Specializations\**" />
       <EmbeddedResource Remove="ViewModels\**" />
       <EmbeddedResource Remove="Views\Attendances\**" />
-      <EmbeddedResource Remove="Views\Specializations\**" />
       <None Remove="ViewModels\**" />
       <None Remove="Views\Attendances\**" />
-      <None Remove="Views\Specializations\**" />
     </ItemGroup>
 
     <ItemGroup>
@@ -32,6 +28,8 @@
       <Content Remove="Views\Patients\DoctorPatient.cshtml" />
       <Content Remove="Views\Patients\DoctorPatientIndex.cshtml" />
       <Content Remove="Views\Patients\EditProfile.cshtml" />
+      <Content Remove="Views\Specializations\Create.cshtml" />
+      <Content Remove="Views\Specializations\Edit.cshtml" />
     </ItemGroup>
 
     <ItemGroup>
