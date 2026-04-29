@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Attributes;
 using Queries.Identity;
-using Queries.Patient;
 using Queries.Shared;
 using ViewModels.Patient;
 using ViewModels.User;
@@ -68,7 +67,7 @@ namespace Presentation.Controllers
         {
             try
             {
-                var model = await sender.Send(new GetPatientEditModel(id));
+                var model = await sender.Send(new GetEditModel<PatientDataViewModel>(id));
                 ViewData["ReturnUrl"] = returnUrl;
                 return View(model);
             }
@@ -123,7 +122,7 @@ namespace Presentation.Controllers
         {
             try
             {
-                var model = await sender.Send(new GetPatientManageModel(id));
+                var model = await sender.Send(new GetManageModel<PatientDataViewModel>(id));
                 return View(model);
             }
             catch (Exception ex)
@@ -138,7 +137,7 @@ namespace Presentation.Controllers
             try
             {
                 var id = await sender.Send(new GetHmsUserIdQuery());
-                var model = await sender.Send(new GetPatientEditModel(id));
+                var model = await sender.Send(new GetEditModel<PatientDataViewModel>(id));
                 return View(model);
             }
             catch (Exception ex)

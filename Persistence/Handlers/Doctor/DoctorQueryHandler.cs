@@ -11,7 +11,7 @@ using ViewModels.Specialization;
 namespace Persistence.Handlers.Doctor
 {
     public class DoctorQueryHandler(HmsDbContext context, UserManager<IdentityUser> userManager) :
-        PagedModelsQueryHandler<Entities.Doctor, DoctorIndexViewModel>(context, x => x.FirstName),
+        PagedQueryHandlerBase<Entities.Doctor, DoctorIndexViewModel>(context, x => x.FirstName),
         IRequestHandler<GetDoctorManageModel, ManageDoctorViewModel>,
         IRequestHandler<GetDoctorEditModel, EditDoctorViewModel>,
         IRequestHandler<GetDoctorProfileModel, ProfileDoctorViewModel>

@@ -3,7 +3,6 @@ using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Queries.Admin;
 using Queries.Identity;
 using Queries.Shared;
 using ViewModels.Admin;
@@ -64,7 +63,7 @@ namespace Presentation.Controllers
         {
             try
             {
-                var model = await sender.Send(new GetAdminEditModel(id));
+                var model = await sender.Send(new GetEditModel<AdminDataViewModel>(id));
                 ViewData["ReturnUrl"] = returnUrl;
                 return View(model);
             }
@@ -117,7 +116,7 @@ namespace Presentation.Controllers
         {
             try
             {
-                var model = await sender.Send(new GetAdminManageModel(id));
+                var model = await sender.Send(new GetManageModel<AdminDataViewModel>(id));
                 return View(model);
             }
             catch (Exception ex)
@@ -132,7 +131,7 @@ namespace Presentation.Controllers
             try
             {
                 var id = await sender.Send(new GetHmsUserIdQuery());
-                var model = await sender.Send(new GetAdminEditModel(id));
+                var model = await sender.Send(new GetEditModel<AdminDataViewModel>(id));
                 return View(model);
             }
             catch (Exception ex)

@@ -8,7 +8,7 @@ using ViewModels.Specialization;
 namespace Persistence.Handlers.Specialization
 {
     public class SpecializationQueryHandler(HmsDbContext context) :
-        PagedModelsQueryHandler<Entities.Specialization, SpecializationViewModel>(context, x => x.Name),
+        PagedQueryHandlerBase<Entities.Specialization, SpecializationViewModel>(context, x => x.Name),
         IRequestHandler<FindSpecsByName, IEnumerable<SpecializationViewModel>>
     {
         private readonly HmsDbContext _context = context;
