@@ -1,5 +1,6 @@
 ﻿@using global::ViewModels.Doctor;
-@model CreateDoctorViewModel
+@using global::ViewModels.User;
+@model CreateViewModel<DoctorSpecsEdit>
 @{
     ViewData["Title"] = "Create Doctor";
 }
@@ -10,7 +11,7 @@
         <form method="post">
             <partial name="_DoctorEditPartial" for="Data" />
             <partial name="_CreatePasswordPartial" for="PasswordModel" />
-            <partial name="_DoctorSpecsEditorPartial" for="SpecializationsJson" />
+            <partial name="_DoctorSpecsEditorPartial" for="Data.SpecializationsJson" />
             <br /><hr />
             <div class="form-group">
                 <button type="submit" class="btn btn-primary">Create</button>

@@ -1,6 +1,6 @@
 ﻿@using global::ViewModels.Doctor;
 @using global::ViewModels.User;
-@model ManageDoctorViewModel
+@model ManageViewModel<DoctorSpecsView>
 
 @{
     ViewData["Title"] = "Manage " + Model.UserName;
@@ -15,7 +15,7 @@
 <h1>Manage @Model.UserName</h1>
 <br />
 <partial name="_DoctorPartial" for="Data" />
-<partial name="_DoctorSpecializationsPartial" for="SpecializationNames" />
+<partial name="_DoctorSpecializationsPartial" for="Data.SpecializationNames" />
 <br />
 <div>
     <a asp-action="@nameof(DoctorsController.Index)" class="btn btn-secondary">Back</a>

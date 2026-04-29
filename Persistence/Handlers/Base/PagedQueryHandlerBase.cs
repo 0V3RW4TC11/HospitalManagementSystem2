@@ -8,17 +8,17 @@ using X.PagedList.EF;
 
 namespace Persistence.Handlers.Base
 {
-    public class PagedQueryHandlerBase<TEntity, TIndexModel>(HmsDbContext context, Expression<Func<TEntity, string>> keySelector) :
-        IRequestHandler<GetPagedModels<TIndexModel>, IPagedList<TIndexModel>>
+    public class PagedQueryHandlerBase<TEntity, TDataModel>(HmsDbContext context, Expression<Func<TEntity, string>> keySelector) :
+        IRequestHandler<GetPagedModels<TDataModel>, IPagedList<TDataModel>>
         where TEntity : class
-        where TIndexModel : class
+        where TDataModel : class
     {
-        public async Task<IPagedList<TIndexModel>> Handle(GetPagedModels<TIndexModel> request, CancellationToken cancellationToken)
+        public virtual async Task<IPagedList<TDataModel>> Handle(GetPagedModels<TDataModel> request, CancellationToken cancellationToken)
         {
             var totalCount = await context.Set<TEntity>().CountAsync(cancellationToken);
             return await context.Set<TEntity>()
                 .OrderBy(keySelector)
-                .ProjectToType<TIndexModel>()
+                .ProjectToType<TDataModel>()
                 .ToPagedListAsync(request.PageNumber, request.PageSize, totalCount);
         }
     }

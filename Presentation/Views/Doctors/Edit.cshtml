@@ -1,5 +1,6 @@
 ﻿@using global::ViewModels.Doctor;
-@model EditDoctorViewModel
+@using global::ViewModels.User;
+@model EditViewModel<DoctorSpecsEdit>
 
 @{
     ViewData["Title"] = "Edit " + Model.UserName;
@@ -13,7 +14,7 @@
             <input type="hidden" asp-for="Id" />
             <input type="hidden" asp-for="UserName" />
             <partial name="_DoctorEditPartial" for="Data" />
-            <partial name="_DoctorSpecsEditorPartial" for="SpecializationsJson" />
+            <partial name="_DoctorSpecsEditorPartial" for="Data.SpecializationsJson" />
             <br />
             <div class="form-group">
                 <a href="@ViewData["ReturnUrl"]" class="btn btn-secondary">Cancel</a>

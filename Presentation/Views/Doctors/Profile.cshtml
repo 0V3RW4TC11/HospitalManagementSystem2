@@ -1,5 +1,6 @@
 ﻿@using global::ViewModels.Doctor;
-@model ProfileDoctorViewModel
+@using global::ViewModels.User;
+@model EditViewModel<DoctorSpecsView>
 
 @{
     ViewData["Title"] = "Profile " + Model.UserName;
@@ -8,7 +9,7 @@
 <h1>Profile @Model.UserName</h1>
 <br />
 <partial name="_DoctorPartial" for="Data" />
-<partial name="_DoctorSpecializationsPartial" for="SpecializationNames" />
+<partial name="_DoctorSpecializationsPartial" for="Data.SpecializationNames" />
 <br />
 <div>
     <a asp-action="@nameof(DoctorsController.Dashboard)" class="btn btn-secondary">Back</a>
