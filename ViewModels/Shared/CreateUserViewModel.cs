@@ -1,8 +1,8 @@
 ﻿using ViewModels.Identity;
 
-namespace ViewModels.User
+namespace ViewModels.Shared
 {
-    public class CreateViewModel<T> where T : class
+    public class CreateUserViewModel<T> where T : class
     {
         public T Data { get; set; }
 

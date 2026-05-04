@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Commands.Specialization;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Queries.Shared;
@@ -7,84 +8,85 @@ using ViewModels.Specialization;
 
 namespace Presentation.Controllers
 {
+    [Authorize]
     public class SpecializationsController(ISender sender) : Controller
     {
-        //[Authorize(Roles = "Admin")]
-        //[HttpGet]
-        //public IActionResult Create()
-        //{
-        //    return View();
-        //}
+        [Authorize(Roles = Constants.AuthRoles.Admin)]
+        [HttpGet]
+        public IActionResult Create()
+        {
+            return View();
+        }
 
-        //[Authorize(Roles = "Admin")]
-        //[HttpPost]
-        //public async Task<IActionResult> Create(SpecializationCreateDto dto)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        try
-        //        {
-        //            await _specializationService.CreateAsync(dto);
-        //            return RedirectToAction(nameof(Index));
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            ModelState.AddModelError(string.Empty, ex.Message);
-        //        }
-        //    }
-        //    return View(dto);
-        //}
+        [Authorize(Roles = Constants.AuthRoles.Admin)]
+        [HttpPost]
+        public async Task<IActionResult> Create(string name)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await sender.Send(new CreateSpecializationCommand(name));
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                }
+            }
+            return View(nameof(Create), name);
+        }
 
-        //[Authorize(Roles = "Admin")]
-        //[HttpPost]
-        //public async Task<IActionResult> Delete(Guid id)
-        //{
-        //    try
-        //    {
-        //        await _specializationService.DeleteAsync(id);
-        //        return Ok();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        ModelState.AddModelError(string.Empty, ex.Message);
-        //        return StatusCode(500, ex.Message);
-        //    }
-        //}
+        [Authorize(Roles = Constants.AuthRoles.Admin)]
+        [HttpPost]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            try
+            {
+                await sender.Send(new DeleteSpecializationCommand(id));
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+        }
 
-        //[Authorize(Roles = "Admin")]
-        //[HttpGet]
-        //public async Task<IActionResult> Edit(Guid id)
-        //{
-        //    try
-        //    {
-        //        var model = await _specializationService.GetByIdAsync(id);
-        //        return View(model);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        ModelState.AddModelError(string.Empty, ex.Message);
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //}
+        [Authorize(Roles = Constants.AuthRoles.Admin)]
+        [HttpGet]
+        public async Task<IActionResult> Edit(Guid id)
+        {
+            try
+            {
+                var model = await sender.Send(new GetEditSpecModel(id));
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return RedirectToAction(nameof(Index));
+            }
+        }
 
-        //[Authorize(Roles = "Admin")]
-        //[HttpPost]
-        //public async Task<IActionResult> Edit(SpecializationDto dto)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        try
-        //        {
-        //            await _specializationService.UpdateAsync(dto);
-        //            return RedirectToAction(nameof(Index));
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            ModelState.AddModelError(string.Empty, ex.Message);
-        //        }
-        //    }
-        //    return View(dto);
-        //}
+        [Authorize(Roles = Constants.AuthRoles.Admin)]
+        [HttpPost]
+        public async Task<IActionResult> Edit(SpecViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await sender.Send(new UpdateSpecializationCommand(model.Id, model.Name));
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                }
+            }
+            return View(model);
+        }
 
         [Authorize(Roles = Constants.AuthRoles.Admin)]
         [HttpGet]
@@ -95,7 +97,7 @@ namespace Presentation.Controllers
 
             try
             {
-                var pagedModels = await sender.Send(new GetPagedModels<SpecializationViewModel>(pageNum, pageSize));
+                var pagedModels = await sender.Send(new GetPagedModels<SpecViewModel>(pageNum, pageSize));
                 return View(pagedModels);
             }
             catch (Exception ex)
@@ -104,9 +106,8 @@ namespace Presentation.Controllers
             }
         }
 
-        [Authorize]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<SpecializationViewModel>>> Search(string name)
+        public async Task<ActionResult<IEnumerable<SpecViewModel>>> Search(string name)
         {
             try
             {

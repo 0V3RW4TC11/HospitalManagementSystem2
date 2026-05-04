@@ -28,8 +28,6 @@
       <Content Remove="Views\Patients\DoctorPatient.cshtml" />
       <Content Remove="Views\Patients\DoctorPatientIndex.cshtml" />
       <Content Remove="Views\Patients\EditProfile.cshtml" />
-      <Content Remove="Views\Specializations\Create.cshtml" />
-      <Content Remove="Views\Specializations\Edit.cshtml" />
     </ItemGroup>
 
     <ItemGroup>

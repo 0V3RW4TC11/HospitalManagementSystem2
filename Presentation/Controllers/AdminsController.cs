@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Queries.Identity;
 using Queries.Shared;
 using ViewModels.Admin;
-using ViewModels.User;
+using ViewModels.Shared;
 
 namespace Presentation.Controllers
 {
@@ -26,7 +26,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateViewModel<AdminDataViewModel> model)
+        public async Task<IActionResult> Create(CreateUserViewModel<AdminDataViewModel> model)
         {
             if (ModelState.IsValid)
             {
@@ -63,7 +63,7 @@ namespace Presentation.Controllers
         {
             try
             {
-                var model = await sender.Send(new GetEditModel<AdminDataViewModel>(id));
+                var model = await sender.Send(new GetEditUserModel<AdminDataViewModel>(id));
                 ViewData["ReturnUrl"] = returnUrl;
                 return View(model);
             }
@@ -74,7 +74,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(EditViewModel<AdminDataViewModel> model, string returnUrl)
+        public async Task<IActionResult> Edit(EditUserViewModel<AdminDataViewModel> model, string returnUrl)
         {
             if (ModelState.IsValid)
             {
@@ -116,7 +116,7 @@ namespace Presentation.Controllers
         {
             try
             {
-                var model = await sender.Send(new GetManageModel<AdminDataViewModel>(id));
+                var model = await sender.Send(new GetManageUserModel<AdminDataViewModel>(id));
                 return View(model);
             }
             catch (Exception ex)
@@ -131,7 +131,7 @@ namespace Presentation.Controllers
             try
             {
                 var id = await sender.Send(new GetHmsUserIdQuery());
-                var model = await sender.Send(new GetEditModel<AdminDataViewModel>(id));
+                var model = await sender.Send(new GetEditUserModel<AdminDataViewModel>(id));
                 return View(model);
             }
             catch (Exception ex)

@@ -1,6 +1,6 @@
 ﻿namespace ViewModels.Specialization
 {
-    public class SpecializationViewModel
+    public class SpecViewModel
     {
         public Guid Id { get; set; }
 

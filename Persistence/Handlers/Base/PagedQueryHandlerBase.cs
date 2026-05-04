@@ -13,10 +13,12 @@ namespace Persistence.Handlers.Base
         where TEntity : class
         where TDataModel : class
     {
+        protected HmsDbContext Context { get; } = context;
+
         public virtual async Task<IPagedList<TDataModel>> Handle(GetPagedModels<TDataModel> request, CancellationToken cancellationToken)
         {
-            var totalCount = await context.Set<TEntity>().CountAsync(cancellationToken);
-            return await context.Set<TEntity>()
+            var totalCount = await Context.Set<TEntity>().CountAsync(cancellationToken);
+            return await Context.Set<TEntity>()
                 .OrderBy(keySelector)
                 .ProjectToType<TDataModel>()
                 .ToPagedListAsync(request.PageNumber, request.PageSize, totalCount);

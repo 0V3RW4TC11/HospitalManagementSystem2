@@ -1,4 +1,5 @@
-﻿@model Services.Dtos.Specialization.SpecializationDto
+﻿@using global::ViewModels.Specialization;
+@model SpecViewModel
 
 @{
     ViewData["Title"] = "Edit Specialization";
@@ -7,6 +8,7 @@
 <h1>Edit Specialization</h1>
 <br />
 <form asp-action="@nameof(SpecializationsController.Edit)" method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
     <input type="hidden" asp-for="Id" />
     <div class="form-group">
         <label asp-for="Name" class="control-label"></label>

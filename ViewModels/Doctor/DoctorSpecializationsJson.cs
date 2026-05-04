@@ -9,7 +9,7 @@ namespace ViewModels.Doctor
 
         public string Json { get; set; } // View interacts with this
 
-        public void SetJsonFromSpecializations(IEnumerable<SpecializationViewModel> models)
+        public void SetJsonFromSpecializations(IEnumerable<SpecViewModel> models)
         {
             Json = JsonSerializer.Serialize(models, JsonOptions);
         }
@@ -17,7 +17,7 @@ namespace ViewModels.Doctor
         public IEnumerable<Guid> GetSpecializationIdsFromJson()
         {
             return JsonSerializer
-                .Deserialize<IEnumerable<SpecializationViewModel>>(Json, JsonOptions)?
+                .Deserialize<IEnumerable<SpecViewModel>>(Json, JsonOptions)?
                 .Select(s => s.Id)
                 .ToHashSet() ?? throw new Exception("Failed to parse Json");
         }

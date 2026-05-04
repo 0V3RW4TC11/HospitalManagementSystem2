@@ -1,6 +1,6 @@
 ﻿@using X.PagedList.Mvc.Core
 @using global::ViewModels.Specialization;
-@model X.PagedList.IPagedList<SpecializationViewModel>
+@model X.PagedList.IPagedList<SpecViewModel>
 
 @{
     ViewData["Title"] = "Specializations";
@@ -13,7 +13,7 @@
 <h1>Specializations</h1>
 <br />
 <p>
-    @* <a asp-action="@nameof(SpecializationsController.Create)" class="btn btn-primary">Create</a> *@
+    <a asp-action="@nameof(SpecializationsController.Create)" class="btn btn-primary">Create</a>
 </p>
 <table class="table">
     <thead>
@@ -27,8 +27,8 @@
             <tr>
                 <td>@Html.DisplayFor(item => spec.Name)</td>
                 <td>
-                    @* <a asp-action="@nameof(SpecializationsController.Edit)" asp-route-id="@spec.Id" class="btn btn-outline-primary">Edit</a> *@
-                    @* <a class="btn btn-outline-danger" onclick="deleteSpec('@spec.Id')">Delete</a> *@
+                    <a asp-action="@nameof(SpecializationsController.Edit)" asp-route-id="@spec.Id" class="btn btn-outline-primary">Edit</a>
+                    <a class="btn btn-outline-danger" onclick="deleteSpec('@spec.Id')">Delete</a>
                 </td>
             </tr>
         }

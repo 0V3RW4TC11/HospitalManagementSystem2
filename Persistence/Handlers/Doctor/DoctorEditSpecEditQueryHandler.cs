@@ -4,15 +4,15 @@ using Microsoft.EntityFrameworkCore;
 using Persistence.Handlers.Base;
 using Queries.Shared;
 using ViewModels.Doctor;
+using ViewModels.Shared;
 using ViewModels.Specialization;
-using ViewModels.User;
 
 namespace Persistence.Handlers.Doctor
 {
     public class DoctorEditSpecEditQueryHandler(HmsDbContext context, UserManager<IdentityUser> userManager) :
         EditQueryHandlerBase<Entities.Doctor, DoctorSpecsEdit>(context, userManager)
     {
-        public override async Task<EditViewModel<DoctorSpecsEdit>> Handle(GetEditModel<DoctorSpecsEdit> request, CancellationToken cancellationToken)
+        public override async Task<EditUserViewModel<DoctorSpecsEdit>> Handle(GetEditUserModel<DoctorSpecsEdit> request, CancellationToken cancellationToken)
         {
             var model = await base.Handle(request, cancellationToken);
             
@@ -23,7 +23,7 @@ namespace Persistence.Handlers.Doctor
                     ds => ds.SpecializationId,
                     s => s.Id,
                     (ds, s) => s)
-                .ProjectToType<SpecializationViewModel>()
+                .ProjectToType<SpecViewModel>()
                 .ToListAsync(cancellationToken);
 
             var dsJson = new DoctorSpecializationsJson();

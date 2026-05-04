@@ -3,5 +3,5 @@ using ViewModels.Specialization;
 
 namespace Queries.Specialization
 {
-    public record FindSpecsByName(string Name) : IRequest<IEnumerable<SpecViewModel>>;
+    public record GetEditSpecModel(Guid Id) : IRequest<SpecViewModel>;
 }

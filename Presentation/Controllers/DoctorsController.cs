@@ -7,7 +7,7 @@ using Presentation.Attributes;
 using Queries.Identity;
 using Queries.Shared;
 using ViewModels.Doctor;
-using ViewModels.User;
+using ViewModels.Shared;
 
 namespace Presentation.Controllers
 {
@@ -23,7 +23,7 @@ namespace Presentation.Controllers
 
         [HttpPost]
         [Authorize(Roles = Constants.AuthRoles.Admin)]
-        public async Task<IActionResult> Create(CreateViewModel<DoctorSpecsEdit> model)
+        public async Task<IActionResult> Create(CreateUserViewModel<DoctorSpecsEdit> model)
         {
             if (ModelState.IsValid)
             {
@@ -89,7 +89,7 @@ namespace Presentation.Controllers
         {
             try
             {
-                var model = await sender.Send(new GetManageModel<DoctorSpecsView>(id));
+                var model = await sender.Send(new GetManageUserModel<DoctorSpecsView>(id));
                 return View(model);
             }
             catch (Exception ex)
@@ -104,7 +104,7 @@ namespace Presentation.Controllers
         {
             try
             {
-                var model = await sender.Send(new GetEditModel<DoctorSpecsEdit>(id));
+                var model = await sender.Send(new GetEditUserModel<DoctorSpecsEdit>(id));
                 ViewData["ReturnUrl"] = returnUrl;
                 return View(model);
             }
@@ -116,7 +116,7 @@ namespace Presentation.Controllers
 
         [HttpPost]
         [AuthorizeAdminOrOwner]
-        public async Task<IActionResult> Edit(EditViewModel<DoctorSpecsEdit> model, string returnUrl)
+        public async Task<IActionResult> Edit(EditUserViewModel<DoctorSpecsEdit> model, string returnUrl)
         {
             if (ModelState.IsValid)
             {
@@ -142,7 +142,7 @@ namespace Presentation.Controllers
             try
             {
                 var id = await sender.Send(new GetHmsUserIdQuery());
-                var model = await sender.Send(new GetEditModel<DoctorSpecsView>(id));
+                var model = await sender.Send(new GetEditUserModel<DoctorSpecsView>(id));
                 return View(model);
             }
             catch (Exception ex)

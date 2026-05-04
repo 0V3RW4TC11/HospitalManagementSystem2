@@ -8,17 +8,22 @@ using ViewModels.Specialization;
 namespace Persistence.Handlers.Specialization
 {
     public class SpecializationQueryHandler(HmsDbContext context) :
-        PagedQueryHandlerBase<Entities.Specialization, SpecializationViewModel>(context, x => x.Name),
-        IRequestHandler<FindSpecsByName, IEnumerable<SpecializationViewModel>>
+        PagedQueryHandlerBase<Entities.Specialization, SpecViewModel>(context, x => x.Name),
+        IRequestHandler<GetEditSpecModel, SpecViewModel>,
+        IRequestHandler<FindSpecsByName, IEnumerable<SpecViewModel>>
     {
-        private readonly HmsDbContext _context = context;
-
-        public async Task<IEnumerable<SpecializationViewModel>> Handle(FindSpecsByName request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<SpecViewModel>> Handle(FindSpecsByName request, CancellationToken cancellationToken)
         {
-            return await _context.Specializations
+            return await Context.Specializations
                 .Where(s => s.Name.Contains(request.Name))
-                .ProjectToType<SpecializationViewModel>()
+                .ProjectToType<SpecViewModel>()
                 .ToListAsync(cancellationToken);
+        }
+
+        public async Task<SpecViewModel> Handle(GetEditSpecModel request, CancellationToken cancellationToken)
+        {
+            var entity = await Context.Specializations.SingleAsync(s => s.Id == request.Id, cancellationToken);
+            return entity.Adapt<SpecViewModel>();
         }
     }
 }

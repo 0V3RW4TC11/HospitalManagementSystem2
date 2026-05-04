@@ -1,6 +1,6 @@
-﻿namespace ViewModels.User
+﻿namespace ViewModels.Shared
 {
-    public class EditViewModel<T> where T : class
+    public class EditUserViewModel<T> where T : class
     {
         public T Data { get; set; }
 

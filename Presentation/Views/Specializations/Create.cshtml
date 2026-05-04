@@ -1,4 +1,4 @@
-﻿@model Services.Dtos.Specialization.SpecializationCreateDto
+﻿@model string
 
 @{
     ViewData["Title"] = "Create Specialization";
@@ -7,10 +7,10 @@
 <h1>Create Specialization</h1>
 <br />
 <form asp-action="@nameof(SpecializationsController.Create)" method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
     <div class="form-group">
-        <label asp-for="Name" class="control-label"></label>
-        <input asp-for="Name" class="form-control" />
-        <span asp-validation-for="Name" class="text-danger"></span>
+        <label for="name" class="control-label">Specialization Name</label>
+        <input type="text" id="name" name="name" class="form-control" required />
     </div>
     <br />
     <div class="form-group">

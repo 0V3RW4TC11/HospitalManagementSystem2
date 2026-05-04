@@ -3,27 +3,26 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Persistence.Handlers.Helpers;
 using Queries.Shared;
-using ViewModels.User;
+using ViewModels.Shared;
 
 namespace Persistence.Handlers.Base
 {
     public class EditQueryHandlerBase<TEntity, TDataModel>(HmsDbContext context, UserManager<IdentityUser> userManager) :
-        IRequestHandler<GetEditModel<TDataModel>, EditViewModel<TDataModel>>
+        IRequestHandler<GetEditUserModel<TDataModel>, EditUserViewModel<TDataModel>>
         where TEntity : Entities.Entity
         where TDataModel : class
     {
         protected HmsDbContext Context { get; } = context;
-        protected UserManager<IdentityUser> UserManager { get; } = userManager;
 
-        public virtual async Task<EditViewModel<TDataModel>> Handle(GetEditModel<TDataModel> request, CancellationToken cancellationToken)
+        public virtual async Task<EditUserViewModel<TDataModel>> Handle(GetEditUserModel<TDataModel> request, CancellationToken cancellationToken)
         {
             var (Entity, User) = await UserQueryHelper.GetUserData<TEntity>(
                 Context,
-                UserManager,
+                userManager,
                 request.Id, 
                 cancellationToken);
 
-            return new EditViewModel<TDataModel>
+            return new EditUserViewModel<TDataModel>
             {
                 Id = Entity.Id,
                 Data = Entity.Adapt<TDataModel>(),
