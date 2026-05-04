@@ -24,9 +24,12 @@ namespace Persistence.Handlers.Base
 
             return new ManageUserViewModel<TDataModel>
             {
-                Id = Entity.Id,
-                Data = Entity.Adapt<TDataModel>(),
-                UserName = User.UserName!,
+                Edit = new()
+                {
+                    Id = Entity.Id,
+                    Data = Entity.Adapt<TDataModel>(),
+                    UserName = User.UserName!
+                },
                 IsLockedOut = User.LockoutEnabled
             };
         }

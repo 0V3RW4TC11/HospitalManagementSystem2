@@ -2,7 +2,7 @@
 @using global::ViewModels.Shared
 @model ManageUserViewModel<PatientDataViewModel>
 @{
-    ViewData["Title"] = "Details " + Model.UserName;
+    ViewData["Title"] = "Details " + Model.Edit.UserName;
 }
 
 @section Scripts {
@@ -11,18 +11,18 @@
 
 @Html.AntiForgeryToken()
 
-<h1>Details @Model.UserName</h1>
+<h1>Details @Model.Edit.UserName</h1>
 <br />
-<partial name="_PatientPartial" for="Data"/>
+<partial name="_PatientPartial" for="Edit.Data" />
 <div>
     <a class="btn btn-secondary" asp-action="@nameof(PatientsController.Index)">Back</a>
-    <a class="btn btn-primary" asp-action="@nameof(PatientsController.Edit)" asp-route-id="@Model.Id" asp-route-returnUrl="@Url.Action(nameof(PatientsController.Manage))">Edit</a>
+    <a class="btn btn-primary" asp-action="@nameof(PatientsController.Edit)" asp-route-id="@Model.Edit.Id" asp-route-returnUrl="@Url.Action(nameof(PatientsController.Manage))">Edit</a>
     <button class="btn @(Model.IsLockedOut ? "btn-success" : "btn-danger")"
-            onclick="toggleAccountLockout('@Model.Id', @Model.IsLockedOut.ToString().ToLower())">
+            onclick="toggleAccountLockout('@Model.Edit.Id', @Model.IsLockedOut.ToString().ToLower())">
         @(Model.IsLockedOut ? "Enable" : "Disable")
     </button>
     <form asp-action="@nameof(PatientsController.Delete)" method="post" style="display: inline-block">
-        <input type="hidden" name="id" value="@Model.Id" />
+        <input type="hidden" name="id" value="@Model.Edit.Id" />
         <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
     </form>
 </div>

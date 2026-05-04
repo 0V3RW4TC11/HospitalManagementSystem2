@@ -3,7 +3,7 @@
 @model ManageUserViewModel<AdminDataViewModel>
 
 @{
-    ViewData["Title"] = "Manage " + Model.UserName;
+    ViewData["Title"] = "Manage " + Model.Edit.UserName;
 }
 
 @section Scripts {
@@ -12,18 +12,18 @@
 
 @Html.AntiForgeryToken()
 
-<h1>Manage @Model.UserName</h1>
+<h1>Manage @Model.Edit.UserName</h1>
 <br />
-<partial name="_AdminPartial" for="Data" />
+<partial name="_AdminPartial" for="Edit.Data" />
 <div>
     <a asp-action="@nameof(AdminsController.Index)" class="btn btn-secondary">Back</a>
-    <a asp-action="@nameof(AdminsController.Edit)" asp-route-id="@Model.Id" asp-route-returnUrl="@Url.Action(nameof(AdminsController.Manage), new { Model.Id })" class="btn btn-primary">Edit</a>
+    <a asp-action="@nameof(AdminsController.Edit)" asp-route-id="@Model.Edit.Id" asp-route-returnUrl="@Url.Action(nameof(AdminsController.Manage), new { Model.Edit.Id })" class="btn btn-primary">Edit</a>
     <button class="btn @(Model.IsLockedOut ? "btn-success" : "btn-danger")"
-        onclick="toggleAccountLockout('@Model.Id', @Model.IsLockedOut.ToString().ToLower())">
+        onclick="toggleAccountLockout('@Model.Edit.Id', @Model.IsLockedOut.ToString().ToLower())">
         @(Model.IsLockedOut ? "Enable" : "Disable")
     </button>
     <form asp-action="@nameof(AdminsController.Delete)" method="post" style="display: inline-block">
-        <input type="hidden" name="id" value="@Model.Id" />
+        <input type="hidden" name="id" value="@Model.Edit.Id" />
         <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
     </form>
 </div>

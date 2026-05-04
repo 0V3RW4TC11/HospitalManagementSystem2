@@ -14,7 +14,7 @@ namespace Persistence.Handlers.Doctor
             GetManageUserModel<DoctorSpecsView> request, CancellationToken cancellationToken)
         {
             var model = await base.Handle(request, cancellationToken);
-            model.Data.SpecializationNames = await DoctorQueryHelper.GetSpecializationNamesByDoctorId(
+            model.Edit.Data.SpecializationNames = await DoctorQueryHelper.GetSpecializationNamesByDoctorId(
                 Context,
                 request.Id,
                 cancellationToken);
